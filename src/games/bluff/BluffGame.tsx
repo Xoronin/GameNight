@@ -56,54 +56,61 @@ function hashString(value: string) {
   return hash;
 }
 
+function calculateRoundBreakdown(
+  playerId: string,
+  answers: BluffAnswer[],
+  votes: BluffVote[],
+) {
+  const correctAnswer = answers.find(
+    (answer) => answer.isCorrect,
+  );
+
+  const playerVote = votes.find(
+    (vote) => vote.playerId === playerId,
+  );
+
+  const guessedCorrectly =
+    !!correctAnswer &&
+    playerVote?.answerId === correctAnswer.id;
+
+  const playerFake = answers.find(
+    (answer) => answer.playerId === playerId,
+  );
+
+  const fooledPlayers = playerFake
+    ? votes.filter(
+        (vote) =>
+          vote.answerId === playerFake.id &&
+          vote.playerId !== playerId,
+      ).length
+    : 0;
+
+  const correctPoints =
+    guessedCorrectly ? 1000 : 0;
+
+  const bluffPoints =
+    fooledPlayers * 500;
+
+  return {
+    guessedCorrectly,
+    fooledPlayers,
+    correctPoints,
+    bluffPoints,
+    total: correctPoints + bluffPoints,
+  };
+}
+
 function calculateRoundPoints(
   playerId: string,
   answers: BluffAnswer[],
   votes: BluffVote[],
 ) {
-  let points = 0;
-
-  const correctAnswer =
-    answers.find(
-      (answer) => answer.isCorrect,
-    );
-
-  const playerVote =
-    votes.find(
-      (vote) =>
-        vote.playerId === playerId,
-    );
-
-  if (
-    correctAnswer &&
-    playerVote?.answerId ===
-      correctAnswer.id
-  ) {
-    points += 1000;
-  }
-
-  const playerFake =
-    answers.find(
-      (answer) =>
-        answer.playerId === playerId,
-    );
-
-  if (playerFake) {
-    const fooledCount =
-      votes.filter(
-        (vote) =>
-          vote.answerId ===
-            playerFake.id &&
-          vote.playerId !==
-            playerId,
-      ).length;
-
-    points += fooledCount * 500;
-  }
-
-  return points;
+  return calculateRoundBreakdown(
+    playerId,
+    answers,
+    votes,
+  ).total;
 }
-
 function BluffGame({
   roomCode,
 }: BluffGameProps) {
@@ -609,12 +616,15 @@ function BluffGame({
     );
   }
 
-  const myRoundPoints =
-    calculateRoundPoints(
-      localPlayer.id,
-      answers,
-      votes,
+    const myRoundBreakdown =
+    calculateRoundBreakdown(
+        localPlayer.id,
+        answers,
+        votes,
     );
+
+    const myRoundPoints =
+    myRoundBreakdown.total;
 
   return (
     <div className="page gamePage">
@@ -910,20 +920,29 @@ function BluffGame({
                 <X size={24} />
               )}
 
-              <div>
+                <div>
                 <strong>
-                  {myRoundPoints >
-                  0
+                    {myRoundPoints > 0
                     ? `+${myRoundPoints} points`
                     : "No points this round"}
                 </strong>
 
                 <span>
-                  Correct guess:
-                  +1000 · Fool a
-                  player: +500
+                    {myRoundBreakdown.guessedCorrectly
+                    ? `Correct answer +${myRoundBreakdown.correctPoints}`
+                    : "Wrong answer +0"}
+
+                    {" · "}
+
+                    {myRoundBreakdown.fooledPlayers > 0
+                    ? `${myRoundBreakdown.fooledPlayers} ${
+                        myRoundBreakdown.fooledPlayers === 1
+                            ? "player"
+                            : "players"
+                        } fooled +${myRoundBreakdown.bluffPoints}`
+                    : "No players fooled +0"}
                 </span>
-              </div>
+                </div>
             </div>
 
             <h1>
