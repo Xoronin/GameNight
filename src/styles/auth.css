@@ -1,0 +1,92 @@
+.authCard {
+  max-width: 520px;
+  margin: 80px auto 0;
+  padding: 36px;
+
+  border: 1px solid #ffffff0d;
+  border-radius: 20px;
+
+  background: #111117;
+
+  text-align: center;
+}
+
+.authCard h1 {
+  margin: 10px 0;
+  font-size: 40px;
+}
+
+.authCard > p {
+  color: #8f8f9e;
+  line-height: 1.6;
+}
+
+.authForm {
+  margin-top: 28px;
+
+  display: grid;
+  gap: 16px;
+
+  text-align: left;
+}
+
+.authForm label {
+  display: grid;
+  gap: 7px;
+
+  color: #9b9baa;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.authForm input {
+  width: 100%;
+  min-height: 54px;
+
+  padding: 0 15px;
+
+  border: 1px solid #ffffff15;
+  border-radius: 12px;
+
+  background: #09090d;
+  color: #f7f7fb;
+
+  outline: none;
+}
+
+.authForm input:focus {
+  border-color: #8b5cf6;
+}
+
+.authSubmitButton {
+  width: 100%;
+  margin-top: 4px;
+
+  justify-content: center;
+}
+
+.authSwitchButton {
+  margin-top: 22px;
+
+  border: 0;
+  background: transparent;
+
+  color: #a78bfa;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+@media (max-width: 560px) {
+  .authCard {
+    margin-top: 50px;
+    padding: 26px 20px;
+  }
+
+  .authCard h1 {
+    font-size: 34px;
+  }
+}
