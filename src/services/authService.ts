@@ -25,26 +25,78 @@ function mapProfile(row: ProfileRow): Profile {
   };
 }
 
+function normalizeUsername(username: string) {
+  return username.trim().toLowerCase();
+}
+
+function usernameToEmail(username: string) {
+  const normalized = normalizeUsername(username);
+
+  return `${normalized}@gamenight.local`;
+}
+
 export async function signUp(
-  email: string,
-  password: string,
   username: string,
+  password: string,
 ) {
-  const cleanedEmail = email.trim();
   const cleanedUsername = username.trim();
 
-  const { data, error } = await supabase.auth.signUp({
-    email: cleanedEmail,
-    password,
-    options: {
-      data: {
-        username: cleanedUsername,
-        display_name: cleanedUsername,
+  if (!cleanedUsername) {
+    throw new Error("Please enter a username.");
+  }
+
+  if (cleanedUsername.length < 3) {
+    throw new Error(
+      "Username must be at least 3 characters.",
+    );
+  }
+
+  if (password.length < 6) {
+    throw new Error(
+      "Password must be at least 6 characters.",
+    );
+  }
+
+  const { data: existingProfile, error: lookupError } =
+    await supabase
+      .from("profiles")
+      .select("id")
+      .eq("username", cleanedUsername)
+      .maybeSingle();
+
+  if (lookupError) {
+    throw new Error(
+      `Could not check username: ${lookupError.message}`,
+    );
+  }
+
+  if (existingProfile) {
+    throw new Error("This username is already taken.");
+  }
+
+  const email = usernameToEmail(cleanedUsername);
+
+  const { data, error } =
+    await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username: cleanedUsername,
+          display_name: cleanedUsername,
+        },
       },
-    },
-  });
+    });
 
   if (error) {
+    if (
+      error.message
+        .toLowerCase()
+        .includes("already registered")
+    ) {
+      throw new Error("This username is already taken.");
+    }
+
     throw new Error(error.message);
   }
 
@@ -52,17 +104,29 @@ export async function signUp(
 }
 
 export async function signIn(
-  email: string,
+  username: string,
   password: string,
 ) {
+  const cleanedUsername = username.trim();
+
+  if (!cleanedUsername || !password) {
+    throw new Error(
+      "Please enter your username and password.",
+    );
+  }
+
+  const email = usernameToEmail(cleanedUsername);
+
   const { data, error } =
     await supabase.auth.signInWithPassword({
-      email: email.trim(),
+      email,
       password,
     });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(
+      "Invalid username or password.",
+    );
   }
 
   return data;

@@ -1,9 +1,11 @@
 import {
   ArrowLeft,
   LogIn,
+  User,
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import { joinRoom } from "../services/roomService";
 import "../styles/lobby.css";
 import {
@@ -14,7 +16,15 @@ import {
 function JoinRoom() {
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
+  const {
+    user,
+    profile,
+    loading: authLoading,
+  } = useAuth();
+
+  const [guestName, setGuestName] =
+    useState("");
+
   const [roomCode, setRoomCode] =
     useState("");
 
@@ -24,15 +34,27 @@ function JoinRoom() {
   const [joining, setJoining] =
     useState(false);
 
+  const profileName =
+    profile?.displayName ||
+    profile?.username ||
+    user?.email?.split("@")[0] ||
+    "";
+
+  const isLoggedIn = !!user;
+
   const submit = async () => {
-    const cleanedName = name.trim();
+    const playerName = isLoggedIn
+      ? profileName
+      : guestName.trim();
+
     const cleanedCode =
       roomCode.trim().toUpperCase();
 
     if (
-      !cleanedName ||
+      !playerName ||
       !cleanedCode ||
-      joining
+      joining ||
+      authLoading
     ) {
       return;
     }
@@ -41,8 +63,11 @@ function JoinRoom() {
       setJoining(true);
       setError(null);
 
-      const player =
-        createPlayer(cleanedName, false);
+      const player = createPlayer(
+        playerName,
+        false,
+        user?.id,
+      );
 
       await joinRoom(
         cleanedCode,
@@ -69,7 +94,9 @@ function JoinRoom() {
     <div className="page">
       <button
         className="backButton"
-        onClick={() => navigate("/")}
+        onClick={() =>
+          navigate("/")
+        }
       >
         <ArrowLeft size={18} />
         Home
@@ -82,10 +109,31 @@ function JoinRoom() {
 
         <h1>Join a room</h1>
 
-        <p>
-          Enter your name and the room code shown
-          on the host's screen.
-        </p>
+        {isLoggedIn ? (
+          <div className="accountIdentity">
+            <div className="accountIdentityAvatar">
+              {profileName
+                .charAt(0)
+                .toUpperCase()}
+            </div>
+
+            <div>
+              <strong>
+                {profileName}
+              </strong>
+
+              <span>
+                Joining with your profile
+              </span>
+            </div>
+          </div>
+        ) : (
+          <p>
+            Enter your name and the room
+            code shown on the host's
+            screen.
+          </p>
+        )}
 
         <form
           className="joinForm"
@@ -94,24 +142,30 @@ function JoinRoom() {
             void submit();
           }}
         >
-          <label
-            className="inputLabel"
-            htmlFor="join-name"
-          >
-            Your name
-          </label>
+          {!isLoggedIn && (
+            <>
+              <label
+                className="inputLabel"
+                htmlFor="join-name"
+              >
+                Your name
+              </label>
 
-          <input
-            id="join-name"
-            className="normalInput"
-            value={name}
-            onChange={(event) =>
-              setName(event.target.value)
-            }
-            placeholder="Your name"
-            maxLength={20}
-            autoFocus
-          />
+              <input
+                id="join-name"
+                className="normalInput"
+                value={guestName}
+                onChange={(event) =>
+                  setGuestName(
+                    event.target.value,
+                  )
+                }
+                placeholder="Your name"
+                maxLength={20}
+                autoFocus
+              />
+            </>
+          )}
 
           <label
             className="inputLabel"
@@ -126,11 +180,13 @@ function JoinRoom() {
             value={roomCode}
             onChange={(event) =>
               setRoomCode(
-                event.target.value.toUpperCase(),
+                event.target.value
+                  .toUpperCase(),
               )
             }
             placeholder="ABCD"
             maxLength={6}
+            autoFocus={isLoggedIn}
           />
 
           {error && (
@@ -143,9 +199,13 @@ function JoinRoom() {
             className="primaryButton formButton"
             type="submit"
             disabled={
-              !name.trim() ||
+              joining ||
+              authLoading ||
               !roomCode.trim() ||
-              joining
+              (!isLoggedIn &&
+                !guestName.trim()) ||
+              (isLoggedIn &&
+                !profileName)
             }
           >
             {!joining && (
@@ -157,6 +217,19 @@ function JoinRoom() {
               : "Join Room"}
           </button>
         </form>
+
+        {!isLoggedIn && (
+          <button
+            className="accountHintButton"
+            onClick={() =>
+              navigate("/login")
+            }
+            type="button"
+          >
+            <User size={15} />
+            Sign in to use your profile
+          </button>
+        )}
       </div>
     </div>
   );

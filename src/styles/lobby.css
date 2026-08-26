@@ -411,3 +411,77 @@
 .lobbyGameOption:disabled:hover {
   transform: none;
 }
+
+.accountIdentity {
+  margin: 24px 0 8px;
+  padding: 14px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  border: 1px solid #ffffff0d;
+  border-radius: 13px;
+
+  background: #18181f;
+
+  text-align: left;
+}
+
+.accountIdentityAvatar {
+  width: 42px;
+  height: 42px;
+
+  flex: 0 0 42px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #7c3aed;
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.accountIdentity strong,
+.accountIdentity span {
+  display: block;
+}
+
+.accountIdentity strong {
+  color: #f7f7fb;
+
+  font-size: 14px;
+}
+
+.accountIdentity span {
+  margin-top: 3px;
+
+  color: #777784;
+
+  font-size: 11px;
+}
+
+.accountHintButton {
+  margin-top: 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  border: 0;
+
+  background: transparent;
+  color: #a78bfa;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}

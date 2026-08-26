@@ -1,4 +1,7 @@
-import { ArrowLeft, LogIn } from "lucide-react";
+import {
+  ArrowLeft,
+  LogIn,
+} from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signIn } from "../services/authService";
@@ -7,15 +10,24 @@ import "../styles/auth.css";
 function Login() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] =
+    useState("");
+
+  const [password, setPassword] =
+    useState("");
+
   const [error, setError] =
     useState<string | null>(null);
+
   const [loading, setLoading] =
     useState(false);
 
   const submit = async () => {
-    if (!email.trim() || !password) {
+    if (
+      !username.trim() ||
+      !password ||
+      loading
+    ) {
       return;
     }
 
@@ -23,7 +35,10 @@ function Login() {
       setLoading(true);
       setError(null);
 
-      await signIn(email, password);
+      await signIn(
+        username,
+        password,
+      );
 
       navigate("/");
     } catch (caughtError) {
@@ -41,7 +56,9 @@ function Login() {
     <div className="page">
       <button
         className="backButton"
-        onClick={() => navigate("/")}
+        onClick={() =>
+          navigate("/")
+        }
       >
         <ArrowLeft size={18} />
         Home
@@ -55,8 +72,8 @@ function Login() {
         <h1>Sign in</h1>
 
         <p>
-          Sign in to keep your profile and stats
-          across devices.
+          Sign in with your Game Night
+          username and password.
         </p>
 
         <form
@@ -67,25 +84,32 @@ function Login() {
           }}
         >
           <label>
-            Email
+            Username
+
             <input
-              type="email"
-              value={email}
+              value={username}
               onChange={(event) =>
-                setEmail(event.target.value)
+                setUsername(
+                  event.target.value,
+                )
               }
-              placeholder="you@example.com"
-              autoComplete="email"
+              placeholder="Merlin"
+              autoComplete="username"
+              maxLength={20}
+              autoFocus
             />
           </label>
 
           <label>
             Password
+
             <input
               type="password"
               value={password}
               onChange={(event) =>
-                setPassword(event.target.value)
+                setPassword(
+                  event.target.value,
+                )
               }
               placeholder="Your password"
               autoComplete="current-password"
@@ -102,20 +126,27 @@ function Login() {
             className="primaryButton authSubmitButton"
             disabled={
               loading ||
-              !email.trim() ||
+              !username.trim() ||
               !password
             }
             type="submit"
           >
-            {!loading && <LogIn size={18} />}
+            {!loading && (
+              <LogIn size={18} />
+            )}
 
-            {loading ? "Signing in..." : "Sign in"}
+            {loading
+              ? "Signing in..."
+              : "Sign in"}
           </button>
         </form>
 
         <button
           className="authSwitchButton"
-          onClick={() => navigate("/register")}
+          onClick={() =>
+            navigate("/register")
+          }
+          type="button"
         >
           No account yet? Create one
         </button>

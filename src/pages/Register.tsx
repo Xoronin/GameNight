@@ -1,4 +1,7 @@
-import { ArrowLeft, UserPlus } from "lucide-react";
+import {
+  ArrowLeft,
+  UserPlus,
+} from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signUp } from "../services/authService";
@@ -9,23 +12,37 @@ function Register() {
 
   const [username, setUsername] =
     useState("");
-  const [email, setEmail] =
-    useState("");
+
   const [password, setPassword] =
     useState("");
+
+  const [confirmPassword, setConfirmPassword] =
+    useState("");
+
   const [error, setError] =
     useState<string | null>(null);
+
   const [loading, setLoading] =
-    useState(false);
-  const [success, setSuccess] =
     useState(false);
 
   const submit = async () => {
+    const cleanedUsername =
+      username.trim();
+
     if (
-      !username.trim() ||
-      !email.trim() ||
-      password.length < 6
+      !cleanedUsername ||
+      !password ||
+      !confirmPassword ||
+      loading
     ) {
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError(
+        "Passwords do not match.",
+      );
+
       return;
     }
 
@@ -34,12 +51,11 @@ function Register() {
       setError(null);
 
       await signUp(
-        email,
+        cleanedUsername,
         password,
-        username,
       );
 
-      setSuccess(true);
+      navigate("/");
     } catch (caughtError) {
       setError(
         caughtError instanceof Error
@@ -51,37 +67,17 @@ function Register() {
     }
   };
 
-  if (success) {
-    return (
-      <div className="page">
-        <div className="authCard">
-          <span className="eyebrow">
-            ACCOUNT CREATED
-          </span>
-
-          <h1>Check your email</h1>
-
-          <p>
-            Supabase may require email
-            confirmation before you can sign in.
-          </p>
-
-          <button
-            className="primaryButton authSubmitButton"
-            onClick={() => navigate("/login")}
-          >
-            Go to Sign in
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const passwordsMatch =
+    !confirmPassword ||
+    password === confirmPassword;
 
   return (
     <div className="page">
       <button
         className="backButton"
-        onClick={() => navigate("/")}
+        onClick={() =>
+          navigate("/")
+        }
       >
         <ArrowLeft size={18} />
         Home
@@ -95,8 +91,8 @@ function Register() {
         <h1>Join Game Night</h1>
 
         <p>
-          Your account keeps your name and future
-          game stats persistent.
+          Pick a unique username and
+          password. No email required.
         </p>
 
         <form
@@ -108,42 +104,58 @@ function Register() {
         >
           <label>
             Username
+
             <input
               value={username}
               onChange={(event) =>
-                setUsername(event.target.value)
+                setUsername(
+                  event.target.value,
+                )
               }
               placeholder="Merlin"
               maxLength={20}
               autoComplete="username"
-            />
-          </label>
-
-          <label>
-            Email
-            <input
-              type="email"
-              value={email}
-              onChange={(event) =>
-                setEmail(event.target.value)
-              }
-              placeholder="you@example.com"
-              autoComplete="email"
+              autoFocus
             />
           </label>
 
           <label>
             Password
+
             <input
               type="password"
               value={password}
               onChange={(event) =>
-                setPassword(event.target.value)
+                setPassword(
+                  event.target.value,
+                )
               }
               placeholder="At least 6 characters"
               autoComplete="new-password"
             />
           </label>
+
+          <label>
+            Confirm password
+
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(event) =>
+                setConfirmPassword(
+                  event.target.value,
+                )
+              }
+              placeholder="Repeat your password"
+              autoComplete="new-password"
+            />
+          </label>
+
+          {!passwordsMatch && (
+            <div className="formError">
+              Passwords do not match.
+            </div>
+          )}
 
           {error && (
             <div className="formError">
@@ -155,13 +167,16 @@ function Register() {
             className="primaryButton authSubmitButton"
             disabled={
               loading ||
-              !username.trim() ||
-              !email.trim() ||
-              password.length < 6
+              username.trim().length < 3 ||
+              password.length < 6 ||
+              confirmPassword.length < 6 ||
+              password !== confirmPassword
             }
             type="submit"
           >
-            {!loading && <UserPlus size={18} />}
+            {!loading && (
+              <UserPlus size={18} />
+            )}
 
             {loading
               ? "Creating account..."
@@ -171,7 +186,10 @@ function Register() {
 
         <button
           className="authSwitchButton"
-          onClick={() => navigate("/login")}
+          onClick={() =>
+            navigate("/login")
+          }
+          type="button"
         >
           Already have an account? Sign in
         </button>

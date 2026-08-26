@@ -1,6 +1,11 @@
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowLeft,
+  ChevronRight,
+  User,
+} from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import { createRoom } from "../services/roomService";
 import "../styles/lobby.css";
 import {
@@ -12,14 +17,39 @@ import {
 function CreateRoom() {
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [creating, setCreating] = useState(false);
+  const {
+    user,
+    profile,
+    loading: authLoading,
+  } = useAuth();
+
+  const [guestName, setGuestName] =
+    useState("");
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  const [creating, setCreating] =
+    useState(false);
+
+  const profileName =
+    profile?.displayName ||
+    profile?.username ||
+    user?.email?.split("@")[0] ||
+    "";
+
+  const isLoggedIn = !!user;
 
   const submit = async () => {
-    const cleanedName = name.trim();
+    const playerName = isLoggedIn
+      ? profileName
+      : guestName.trim();
 
-    if (!cleanedName || creating) {
+    if (
+      !playerName ||
+      creating ||
+      authLoading
+    ) {
       return;
     }
 
@@ -27,20 +57,30 @@ function CreateRoom() {
       setCreating(true);
       setError(null);
 
-      const player = createPlayer(cleanedName, true);
-      const roomCode = createRoomCode();
+      const player = createPlayer(
+        playerName,
+        true,
+        user?.id,
+      );
 
-      console.log("CreateRoom page: creating", roomCode);
+      const roomCode =
+        createRoomCode();
 
-      await createRoom(roomCode, player);
-
-      console.log("CreateRoom page: room successfully created");
+      await createRoom(
+        roomCode,
+        player,
+      );
 
       savePlayer(player);
 
-      navigate(`/lobby/${roomCode}`);
+      navigate(
+        `/lobby/${roomCode}`,
+      );
     } catch (caughtError) {
-      console.error("CREATE ROOM ERROR:", caughtError);
+      console.error(
+        "CREATE ROOM ERROR:",
+        caughtError,
+      );
 
       setError(
         caughtError instanceof Error
@@ -56,20 +96,57 @@ function CreateRoom() {
     <div className="page">
       <button
         className="backButton"
-        onClick={() => navigate("/")}
+        onClick={() =>
+          navigate("/")
+        }
       >
         <ArrowLeft size={18} />
         Home
       </button>
 
       <div className="centerCard">
-        <span className="eyebrow">CREATE ROOM</span>
+        <span className="eyebrow">
+          CREATE ROOM
+        </span>
 
-        <h1>Who's playing?</h1>
+        <h1>
+          {isLoggedIn
+            ? "Create a room"
+            : "Who's playing?"}
+        </h1>
 
-        <p>
-          Enter your name. You'll become the host of the new room.
-        </p>
+        {isLoggedIn ? (
+          <>
+            <p>
+              You'll create the room as
+              your Game Night profile.
+            </p>
+
+            <div className="accountIdentity">
+              <div className="accountIdentityAvatar">
+                {profileName
+                  .charAt(0)
+                  .toUpperCase()}
+              </div>
+
+              <div>
+                <strong>
+                  {profileName}
+                </strong>
+
+                <span>
+                  Signed in
+                </span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <p>
+            Enter your name. You'll
+            become the host of the new
+            room.
+          </p>
+        )}
 
         <form
           className="joinForm"
@@ -78,24 +155,30 @@ function CreateRoom() {
             void submit();
           }}
         >
-          <label
-            className="inputLabel"
-            htmlFor="player-name"
-          >
-            Your name
-          </label>
+          {!isLoggedIn && (
+            <>
+              <label
+                className="inputLabel"
+                htmlFor="player-name"
+              >
+                Your name
+              </label>
 
-          <input
-            id="player-name"
-            className="normalInput"
-            value={name}
-            onChange={(event) =>
-              setName(event.target.value)
-            }
-            placeholder="Your name"
-            maxLength={20}
-            autoFocus
-          />
+              <input
+                id="player-name"
+                className="normalInput"
+                value={guestName}
+                onChange={(event) =>
+                  setGuestName(
+                    event.target.value,
+                  )
+                }
+                placeholder="Your name"
+                maxLength={20}
+                autoFocus
+              />
+            </>
+          )}
 
           {error && (
             <div className="formError">
@@ -106,15 +189,39 @@ function CreateRoom() {
           <button
             className="primaryButton formButton"
             type="submit"
-            disabled={!name.trim() || creating}
+            disabled={
+              creating ||
+              authLoading ||
+              (!isLoggedIn &&
+                !guestName.trim()) ||
+              (isLoggedIn &&
+                !profileName)
+            }
           >
-            {creating ? "Creating..." : "Create Room"}
+            {creating
+              ? "Creating..."
+              : "Create Room"}
 
             {!creating && (
-              <ChevronRight size={19} />
+              <ChevronRight
+                size={19}
+              />
             )}
           </button>
         </form>
+
+        {!isLoggedIn && (
+          <button
+            className="accountHintButton"
+            onClick={() =>
+              navigate("/login")
+            }
+            type="button"
+          >
+            <User size={15} />
+            Sign in to keep your profile
+          </button>
+        )}
       </div>
     </div>
   );
