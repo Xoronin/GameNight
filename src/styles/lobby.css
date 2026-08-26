@@ -1,0 +1,390 @@
+.joinForm {
+    margin-top: 28px;
+    display: grid;
+    gap: 12px;
+}
+
+.inputLabel {
+    display: block;
+    margin-bottom: -4px;
+    color: #8f8f9e;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.joinForm input {
+    width: 100%;
+    min-height: 56px;
+    padding: 0 16px;
+    border: 1px solid #ffffff15;
+    border-radius: 12px;
+    background: #09090d;
+    color: #f7f7fb;
+    outline: none;
+}
+
+    .joinForm input.normalInput {
+        text-align: left;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .joinForm input.roomInput {
+        text-align: center;
+        text-transform: uppercase;
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+    }
+
+    .joinForm input:focus {
+        border-color: #8b5cf6;
+    }
+
+    .joinForm input::placeholder {
+        color: #555561;
+    }
+
+.formButton {
+    width: 100%;
+    margin-top: 8px;
+    justify-content: center;
+}
+
+.lobbyPage {
+    max-width: 1180px;
+}
+
+.lobbyTopBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.roomTopInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #71717d;
+    font-size: 12px;
+}
+
+    .roomTopInfo strong {
+        color: #d7d7df;
+        letter-spacing: 0.12em;
+    }
+
+.lobby {
+    max-width: 1000px;
+    margin: 70px auto 0;
+}
+
+.lobbyHeader {
+    text-align: center;
+}
+
+    .lobbyHeader h1 {
+        margin: 10px 0 18px;
+        font-size: 44px;
+    }
+
+    .lobbyHeader p {
+        margin: 0 0 20px;
+        color: #898996;
+    }
+
+.roomCodeButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border: 1px solid #ffffff14;
+    border-radius: 12px;
+    background: #ffffff08;
+    color: white;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    cursor: pointer;
+}
+
+.copyMessage {
+    display: block;
+    margin-top: 8px;
+    color: #4ade80;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.lobbyColumns {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 18px;
+    margin-top: 35px;
+}
+
+.lobbyPanel {
+    padding: 28px;
+    border: 1px solid #ffffff0d;
+    border-radius: 18px;
+    background: #111117;
+}
+
+.panelTitle h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 7px 0 0;
+    font-size: 21px;
+}
+
+.playerPanel {
+    min-height: 390px;
+}
+
+.playerList {
+    margin-top: 20px;
+}
+
+.playerRow {
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #ffffff0b;
+    border-radius: 12px;
+    background: #ffffff05;
+}
+
+.playerAvatar {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #7c3aed;
+    font-weight: 800;
+}
+
+.playerDetails {
+    min-width: 0;
+}
+
+    .playerDetails strong,
+    .playerDetails span {
+        display: block;
+    }
+
+    .playerDetails strong {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .playerDetails span {
+        margin-top: 2px;
+        color: #777784;
+        font-size: 12px;
+    }
+
+.hostBadge {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 9px;
+    border: 1px solid #a78bfa30;
+    border-radius: 999px;
+    background: #a78bfa12;
+    color: #a78bfa;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.waitingBox {
+    margin-top: 18px;
+    padding: 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border: 1px dashed #ffffff12;
+    border-radius: 12px;
+    color: #6f6f7c;
+}
+
+    .waitingBox > div {
+        min-width: 0;
+    }
+
+    .waitingBox strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #a4a4b1;
+        font-size: 13px;
+    }
+
+    .waitingBox span {
+        display: block;
+        color: #71717e;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+.gameSelectPanel {
+    min-width: 0;
+}
+
+.lobbyGameList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.lobbyGameOption {
+    appearance: none;
+    width: 100%;
+    min-height: 76px;
+    padding: 12px 14px;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) 32px;
+    align-items: center;
+    gap: 14px;
+    border: 1px solid #ffffff0d;
+    border-radius: 14px;
+    background: #18181f;
+    color: #f7f7fb;
+    text-align: left;
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+    .lobbyGameOption:hover {
+        background: #1d1d26;
+        border-color: #ffffff18;
+    }
+
+    .lobbyGameOption.selected {
+        background: #1c1728;
+        border-color: #7c3aed;
+        transform: translateX(3px);
+    }
+
+.lobbyGameIcon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: #ffffff08;
+}
+
+    .lobbyGameIcon svg {
+        width: 22px;
+        height: 22px;
+    }
+
+.lobbyGameText {
+    min-width: 0;
+}
+
+    .lobbyGameText strong {
+        display: block;
+        color: #f7f7fb;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .lobbyGameText span {
+        display: block;
+        margin-top: 5px;
+        color: #81818e;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+.selectedIndicator {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    justify-self: end;
+    border-radius: 50%;
+    background: #7c3aed;
+    color: white;
+}
+
+.gameChevron {
+    justify-self: end;
+    color: #52525e;
+}
+
+.lobbyGameOption.purple .lobbyGameIcon {
+    color: #a78bfa;
+}
+
+.lobbyGameOption.red .lobbyGameIcon {
+    color: #fb7185;
+}
+
+.lobbyGameOption.green .lobbyGameIcon {
+    color: #4ade80;
+}
+
+.lobbyGameOption.blue .lobbyGameIcon {
+    color: #60a5fa;
+}
+
+.lobbyGameOption.orange .lobbyGameIcon {
+    color: #fb923c;
+}
+
+.lobbyGameOption.pink .lobbyGameIcon {
+    color: #f472b6;
+}
+
+.startGameButton {
+    min-height: 56px;
+    font-size: 15px;
+}
+
+.waitingHost {
+    margin-top: 18px;
+    padding: 18px;
+    border: 1px solid #ffffff0d;
+    border-radius: 12px;
+    background: #111117;
+    color: #898996;
+    text-align: center;
+    font-size: 13px;
+}
+
+@media (max-width: 760px) {
+    .lobbyColumns {
+        grid-template-columns: 1fr;
+    }
+
+    .playerPanel {
+        min-height: auto;
+    }
+}
+
+@media (max-width: 560px) {
+    .lobby {
+        margin-top: 50px;
+    }
+
+    .lobbyHeader h1 {
+        font-size: 36px;
+    }
+
+    .lobbyTopBar {
+        align-items: flex-start;
+    }
+
+    .roomTopInfo {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 2px;
+    }
+}

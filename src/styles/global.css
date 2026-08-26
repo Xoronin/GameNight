@@ -1,0 +1,147 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+
+:root {
+    font-family: Inter, system-ui, sans-serif;
+    color: #f7f7fb;
+    background: #09090d;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    width: 100%;
+    min-width: 320px;
+    min-height: 100%;
+    margin: 0;
+}
+
+body {
+    min-height: 100vh;
+    background: radial-gradient(circle at 20% 0%, #21173a 0, transparent 30%), radial-gradient(circle at 85% 20%, #10223a 0, transparent 27%), #09090d;
+}
+
+#root {
+    min-height: 100vh;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    color: inherit;
+    font-family: inherit;
+}
+
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+        outline: 2px solid #8b5cf6;
+        outline-offset: 2px;
+    }
+
+.app {
+    width: 100%;
+    min-height: 100vh;
+}
+
+.page {
+    width: min(1000px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 32px 0 80px;
+}
+
+.backButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    background: transparent;
+    color: #9b9baa;
+    cursor: pointer;
+}
+
+.primaryButton,
+.secondaryButton {
+    min-height: 50px;
+    padding: 0 22px;
+    border-radius: 12px;
+    border: 0;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.primaryButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #7c3aed;
+}
+
+    .primaryButton:hover {
+        background: #8b5cf6;
+    }
+
+    .primaryButton:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+.secondaryButton {
+    border: 1px solid #ffffff17;
+    background: #ffffff08;
+}
+
+    .secondaryButton:hover {
+        background: #ffffff0d;
+    }
+
+.centerCard {
+    max-width: 560px;
+    margin: 100px auto 0;
+    padding: 36px;
+    border: 1px solid #ffffff0d;
+    border-radius: 20px;
+    background: #111117;
+    text-align: center;
+}
+
+    .centerCard h1 {
+        margin: 10px 0;
+        font-size: 40px;
+    }
+
+    .centerCard p {
+        color: #8f8f9e;
+        line-height: 1.6;
+    }
+
+.eyebrow {
+    color: #a78bfa;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+}
+
+@media (max-width: 560px) {
+    .centerCard {
+        margin-top: 60px;
+        padding: 26px 20px;
+    }
+
+        .centerCard h1 {
+            font-size: 34px;
+        }
+
+    .primaryButton {
+        justify-content: center;
+    }
+}
