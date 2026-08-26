@@ -1,19 +1,31 @@
-export type BluffPhase =
-    | "question"
-    | "vote"
-    | "reveal"
-    | "finished";
+export type BluffRoundStatus =
+  | "answering"
+  | "voting"
+  | "reveal"
+  | "finished";
 
-export type BluffAnswerOption = {
-    id: string;
-    text: string;
-    isCorrect: boolean;
-    author?: string;
+export type BluffRound = {
+  id: string;
+  roomId: string;
+  roundNumber: number;
+  questionId: string;
+  status: BluffRoundStatus;
+  createdAt: string;
 };
 
-export type BluffRoundResult = {
-    selectedAnswerId: string | null;
-    correctAnswerId: string;
-    wasCorrect: boolean;
-    pointsEarned: number;
+export type BluffAnswer = {
+  id: string;
+  roundId: string;
+  playerId: string | null;
+  text: string;
+  isCorrect: boolean;
+  createdAt: string;
+};
+
+export type BluffVote = {
+  id: string;
+  roundId: string;
+  playerId: string;
+  answerId: string;
+  createdAt: string;
 };

@@ -1,436 +1,1098 @@
 import {
-    ArrowRight,
-    Check,
-    CircleHelp,
-    Crown,
-    RotateCcw,
-    Sparkles,
-    Trophy,
-    X,
+  ArrowRight,
+  Check,
+  CircleHelp,
+  Crown,
+  LoaderCircle,
+  LogOut,
+  Sparkles,
+  Trophy,
+  Users,
+  X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import {
+  useMemo,
+  useState,
+} from "react";
+import { useNavigate } from "react-router-dom";
 import { bluffQuestions } from "../../data/bluffQuestions";
-import type {
-    BluffAnswerOption,
-    BluffPhase,
-    BluffRoundResult,
-} from "../../types/game";
-import { getPlayer } from "../../utils/gameUtils";
+import { useBluffRound } from "../../hooks/useBluffRound";
+import { useRoom } from "../../hooks/useRoom";
+import {
+  changeBluffRoundStatus,
+  createBluffRound,
+  finishBluffGame,
+  returnBluffRoomToLobby,
+  revealBluffRound,
+  submitBluffAnswer,
+  submitBluffVote,
+} from "../../services/bluffService";
 import "../../styles/bluff.css";
+import type {
+  BluffAnswer,
+  BluffVote,
+} from "../../types/game";
+import type { Player } from "../../types/player";
+import { getPlayer } from "../../utils/gameUtils";
 
-const simulatedFakeAnswers: Record<string, string[]> = {
-    q1: [
-        "Lexiverbophobia",
-        "Sesquipedalophobia",
-        "Logolongophobia",
-    ],
-    q2: [
-        "Evaporation",
-        "Leaf diffusion",
-        "Photosorption",
-    ],
-    q3: [
-        "Finland",
-        "Russia",
-        "Norway",
-    ],
-    q4: [
-        "Explorer Zero",
-        "Luna One",
-        "Vostok Prime",
-    ],
-    q5: [
-        "Valve",
-        "Nordic Games",
-        "Jagex",
-    ],
-    q6: [
-        "Adamantium",
-        "Titanium-X",
-        "Promethium",
-    ],
-    q7: [
-        "Chimpanzee",
-        "Raccoon",
-        "Red panda",
-    ],
-    q8: [
-        "Parsley",
-        "Spinach",
-        "Rocket",
-    ],
+type BluffGameProps = {
+  roomCode: string;
 };
 
-function shuffle<T>(items: T[]) {
-    return [...items].sort(() => Math.random() - 0.5);
+function hashString(value: string) {
+  let hash = 0;
+
+  for (
+    let index = 0;
+    index < value.length;
+    index++
+  ) {
+    hash =
+      (hash * 31 +
+        value.charCodeAt(index)) |
+      0;
+  }
+
+  return hash;
 }
 
-function BluffGame() {
-    const player = getPlayer();
+function calculateRoundPoints(
+  playerId: string,
+  answers: BluffAnswer[],
+  votes: BluffVote[],
+) {
+  let points = 0;
 
-    const [roundIndex, setRoundIndex] = useState(0);
-    const [phase, setPhase] = useState<BluffPhase>("question");
+  const correctAnswer =
+    answers.find(
+      (answer) => answer.isCorrect,
+    );
 
-    const [fakeAnswer, setFakeAnswer] = useState("");
-    const [options, setOptions] = useState<BluffAnswerOption[]>([]);
+  const playerVote =
+    votes.find(
+      (vote) =>
+        vote.playerId === playerId,
+    );
 
-    const [selectedAnswerId, setSelectedAnswerId] =
-        useState<string | null>(null);
+  if (
+    correctAnswer &&
+    playerVote?.answerId ===
+      correctAnswer.id
+  ) {
+    points += 1000;
+  }
 
-    const [score, setScore] = useState(0);
+  const playerFake =
+    answers.find(
+      (answer) =>
+        answer.playerId === playerId,
+    );
 
-    const [result, setResult] =
-        useState<BluffRoundResult | null>(null);
+  if (playerFake) {
+    const fooledCount =
+      votes.filter(
+        (vote) =>
+          vote.answerId ===
+            playerFake.id &&
+          vote.playerId !==
+            playerId,
+      ).length;
 
-    const currentQuestion = bluffQuestions[roundIndex];
+    points += fooledCount * 500;
+  }
 
-    const progress = useMemo(() => {
-        return `${roundIndex + 1} / ${bluffQuestions.length}`;
-    }, [roundIndex]);
+  return points;
+}
 
-    const submitFakeAnswer = () => {
-        const cleaned = fakeAnswer.trim();
+function BluffGame({
+  roomCode,
+}: BluffGameProps) {
+  const navigate = useNavigate();
 
-        if (!cleaned) {
-            return;
-        }
+  const [localPlayer] =
+    useState<Player | null>(
+      () => getPlayer(),
+    );
 
-        const fakePool =
-            simulatedFakeAnswers[currentQuestion.id] ?? [];
+  const [fakeAnswer, setFakeAnswer] =
+    useState("");
 
-        const answerOptions: BluffAnswerOption[] = [
-            {
-                id: "correct",
-                text: currentQuestion.answer,
-                isCorrect: true,
-            },
-            {
-                id: "player",
-                text: cleaned,
-                isCorrect: false,
-                author: player?.name ?? "You",
-            },
-            ...fakePool.map((answer, index) => ({
-                id: `fake-${index}`,
-                text: answer,
-                isCorrect: false,
-                author: `Player ${index + 2}`,
-            })),
-        ];
+  const [actionError, setActionError] =
+    useState<string | null>(null);
 
-        setOptions(shuffle(answerOptions));
-        setPhase("vote");
-    };
+  const [working, setWorking] =
+    useState(false);
 
-    const revealAnswer = () => {
-        if (!selectedAnswerId) {
-            return;
-        }
+  const {
+    room,
+    players,
+    loading: roomLoading,
+    error: roomError,
+  } = useRoom(roomCode);
 
-        const selected = options.find(
-            (option) => option.id === selectedAnswerId,
-        );
+  const {
+    round,
+    answers,
+    votes,
+    loading: roundLoading,
+    error: roundError,
+  } = useBluffRound(room?.id);
 
-        const correct = options.find(
-            (option) => option.isCorrect,
-        );
+  const isHost =
+    !!room &&
+    !!localPlayer &&
+    room.hostPlayerId ===
+      localPlayer.id;
 
-        if (!selected || !correct) {
-            return;
-        }
+  const question =
+    round
+      ? bluffQuestions.find(
+          (item) =>
+            item.id ===
+            round.questionId,
+        )
+      : null;
 
-        const wasCorrect = selected.isCorrect;
-        const pointsEarned = wasCorrect ? 1000 : 0;
+  const fakeAnswers =
+    answers.filter(
+      (answer) =>
+        !answer.isCorrect,
+    );
 
-        setScore((currentScore) => currentScore + pointsEarned);
+  const myAnswer =
+    localPlayer
+      ? fakeAnswers.find(
+          (answer) =>
+            answer.playerId ===
+            localPlayer.id,
+        )
+      : undefined;
 
-        setResult({
-            selectedAnswerId,
-            correctAnswerId: correct.id,
-            wasCorrect,
-            pointsEarned,
-        });
+  const myVote =
+    localPlayer
+      ? votes.find(
+          (vote) =>
+            vote.playerId ===
+            localPlayer.id,
+        )
+      : undefined;
 
-        setPhase("reveal");
-    };
+  const allPlayersAnswered =
+    players.length > 0 &&
+    fakeAnswers.length >=
+      players.length;
 
-    const nextRound = () => {
-        const isLastRound =
-            roundIndex >= bluffQuestions.length - 1;
+  const allPlayersVoted =
+    players.length > 0 &&
+    votes.length >= players.length;
 
-        if (isLastRound) {
-            setPhase("finished");
-            return;
-        }
+  const votingOptions =
+    useMemo(() => {
+      if (!round) {
+        return [];
+      }
 
-        setRoundIndex((current) => current + 1);
+      return [...answers].sort(
+        (a, b) =>
+          hashString(
+            `${round.id}:${a.id}`,
+          ) -
+          hashString(
+            `${round.id}:${b.id}`,
+          ),
+      );
+    }, [answers, round]);
 
-        setFakeAnswer("");
-        setOptions([]);
-        setSelectedAnswerId(null);
-        setResult(null);
-
-        setPhase("question");
-    };
-
-    const restartGame = () => {
-        setRoundIndex(0);
-        setPhase("question");
-        setFakeAnswer("");
-        setOptions([]);
-        setSelectedAnswerId(null);
-        setResult(null);
-        setScore(0);
-    };
-
-    if (phase === "finished") {
-        return (
-            <div className="bluffGame">
-                <section className="bluffFinished">
-                    <div className="bluffFinishedIcon">
-                        <Trophy size={40} />
-                    </div>
-
-                    <span className="eyebrow">GAME COMPLETE</span>
-
-                    <h1>Bluff finished</h1>
-
-                    <p>
-                        Nice work. Your final score is:
-                    </p>
-
-                    <div className="finalScore">
-                        {score.toLocaleString()}
-                        <span>points</span>
-                    </div>
-
-                    <button
-                        className="primaryButton bluffMainButton"
-                        onClick={restartGame}
-                    >
-                        <RotateCcw size={18} />
-                        Play Again
-                    </button>
-                </section>
-            </div>
-        );
+  const runAction = async (
+    action: () => Promise<void>,
+  ) => {
+    if (working) {
+      return;
     }
 
+    try {
+      setWorking(true);
+      setActionError(null);
+
+      await action();
+    } catch (caughtError) {
+      setActionError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Something went wrong.",
+      );
+    } finally {
+      setWorking(false);
+    }
+  };
+
+  const startFirstRound = async () => {
+    if (!room || !isHost) {
+      return;
+    }
+
+    const firstQuestion =
+      bluffQuestions[0];
+
+    await createBluffRound(
+      room.id,
+      1,
+      firstQuestion.id,
+      firstQuestion.answer,
+    );
+  };
+
+  const submitAnswer = async () => {
+    if (
+      !round ||
+      !localPlayer ||
+      !question
+    ) {
+      return;
+    }
+
+    const cleaned =
+      fakeAnswer.trim();
+
+    if (!cleaned) {
+      return;
+    }
+
+    if (
+      cleaned.toLowerCase() ===
+      question.answer.toLowerCase()
+    ) {
+      setActionError(
+        "Your fake answer cannot be the real answer.",
+      );
+
+      return;
+    }
+
+    await submitBluffAnswer(
+      round.id,
+      localPlayer.id,
+      cleaned,
+    );
+
+    setFakeAnswer("");
+  };
+
+  const openVoting = async () => {
+    if (
+      !round ||
+      !isHost ||
+      !allPlayersAnswered
+    ) {
+      return;
+    }
+
+    await changeBluffRoundStatus(
+      round.id,
+      "voting",
+    );
+  };
+
+  const vote = async (
+    answerId: string,
+  ) => {
+    if (
+      !round ||
+      !localPlayer ||
+      myVote
+    ) {
+      return;
+    }
+
+    const answer =
+      answers.find(
+        (item) =>
+          item.id === answerId,
+      );
+
+    if (
+      answer?.playerId ===
+      localPlayer.id
+    ) {
+      setActionError(
+        "You cannot vote for your own fake answer.",
+      );
+
+      return;
+    }
+
+    await submitBluffVote(
+      round.id,
+      localPlayer.id,
+      answerId,
+    );
+  };
+
+  const reveal = async () => {
+    if (
+      !round ||
+      !isHost ||
+      !allPlayersVoted
+    ) {
+      return;
+    }
+
+    await revealBluffRound(
+      round,
+      answers,
+      votes,
+    );
+  };
+
+  const nextRound = async () => {
+    if (
+      !room ||
+      !round ||
+      !isHost
+    ) {
+      return;
+    }
+
+    const nextRoundNumber =
+      round.roundNumber + 1;
+
+    if (
+      nextRoundNumber >
+      bluffQuestions.length
+    ) {
+      await finishBluffGame(
+        round.id,
+      );
+
+      return;
+    }
+
+    const nextQuestion =
+      bluffQuestions[
+        nextRoundNumber - 1
+      ];
+
+    await createBluffRound(
+      room.id,
+      nextRoundNumber,
+      nextQuestion.id,
+      nextQuestion.answer,
+    );
+  };
+
+  const backToLobby =
+    async () => {
+      if (!room || !isHost) {
+        return;
+      }
+
+      await returnBluffRoomToLobby(
+        room.id,
+      );
+  };
+
+  if (
+    room?.status === "lobby"
+  ) {
+    navigate(
+      `/lobby/${room.code}`,
+      {
+        replace: true,
+      },
+    );
+
+    return null;
+  }
+
+  if (!localPlayer) {
     return (
+      <div className="page">
+        <div className="centerCard">
+          <h1>No player found</h1>
+
+          <p>
+            Please join the room again.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    roomLoading ||
+    roundLoading
+  ) {
+    return (
+      <div className="page">
+        <div className="centerCard">
+          <LoaderCircle
+            size={28}
+          />
+
+          <h1>Loading Bluff...</h1>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    roomError ||
+    roundError ||
+    !room
+  ) {
+    return (
+      <div className="page">
+        <div className="centerCard">
+          <h1>
+            Could not load Bluff
+          </h1>
+
+          <p>
+            {roomError ??
+              roundError ??
+              "Room not found."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!round) {
+    return (
+      <div className="page gamePage">
+        <button
+          className="backButton"
+          onClick={() =>
+            navigate(
+              `/lobby/${room.code}`,
+            )
+          }
+        >
+          <LogOut size={18} />
+          Lobby
+        </button>
+
         <div className="bluffGame">
-            <header className="bluffGameHeader">
-                <div>
-                    <span className="eyebrow">BLUFF</span>
-
-                    <strong>
-                        Round {progress}
-                    </strong>
-                </div>
-
-                <div className="bluffScore">
-                    <Crown size={17} />
-                    {score.toLocaleString()}
-                </div>
-            </header>
-
-            <div className="bluffProgress">
-                <div
-                    className="bluffProgressFill"
-                    style={{
-                        width: `${((roundIndex + 1) /
-                                bluffQuestions.length) *
-                            100
-                            }%`,
-                    }}
-                />
+          <section className="bluffFinished">
+            <div className="bluffFinishedIcon">
+              <Sparkles size={38} />
             </div>
 
-            {phase === "question" && (
-                <section className="bluffPanel">
-                    <div className="bluffCategory">
-                        <CircleHelp size={16} />
-                        {currentQuestion.category}
-                    </div>
+            <span className="eyebrow">
+              BLUFF
+            </span>
 
-                    <h1>{currentQuestion.question}</h1>
+            <h1>
+              Ready for round 1?
+            </h1>
 
-                    <p className="bluffInstruction">
-                        Write a believable fake answer. The goal is
-                        to make the other players think your answer
-                        is the real one.
-                    </p>
+            <p>
+              Everyone will receive the
+              same question and invent a
+              believable fake answer.
+            </p>
 
-                    <textarea
-                        className="bluffAnswerInput"
-                        value={fakeAnswer}
-                        onChange={(event) =>
-                            setFakeAnswer(event.target.value)
-                        }
-                        placeholder="Enter your fake answer..."
-                        maxLength={80}
-                        autoFocus
+            {isHost ? (
+              <button
+                className="primaryButton bluffMainButton"
+                disabled={working}
+                onClick={() => {
+                  void runAction(
+                    startFirstRound,
+                  );
+                }}
+              >
+                Start First Round
+                <ArrowRight
+                  size={18}
+                />
+              </button>
+            ) : (
+              <div className="bluffWaiting">
+                Waiting for the host to
+                start the first round...
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    round.status === "finished"
+  ) {
+    const standings = [
+      ...players,
+    ].sort(
+      (a, b) =>
+        b.score - a.score,
+    );
+
+    return (
+      <div className="page gamePage">
+        <div className="bluffGame">
+          <section className="bluffFinished">
+            <div className="bluffFinishedIcon">
+              <Trophy size={40} />
+            </div>
+
+            <span className="eyebrow">
+              GAME COMPLETE
+            </span>
+
+            <h1>
+              Final scores
+            </h1>
+
+            <div className="bluffScoreboard">
+              {standings.map(
+                (
+                  player,
+                  index,
+                ) => (
+                  <div
+                    className="bluffScoreRow"
+                    key={player.id}
+                  >
+                    <span className="scoreRank">
+                      {index + 1}
+                    </span>
+
+                    <strong>
+                      {player.name}
+                    </strong>
+
+                    <span className="scorePoints">
+                      {player.score.toLocaleString()}
+                    </span>
+                  </div>
+                ),
+              )}
+            </div>
+
+            {isHost ? (
+              <button
+                className="primaryButton bluffMainButton"
+                disabled={working}
+                onClick={() => {
+                  void runAction(
+                    backToLobby,
+                  );
+                }}
+              >
+                Back to Lobby
+                <ArrowRight
+                  size={18}
+                />
+              </button>
+            ) : (
+              <div className="bluffWaiting">
+                Waiting for the host...
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
+    );
+  }
+
+  if (!question) {
+    return (
+      <div className="page">
+        <div className="centerCard">
+          <h1>
+            Question missing
+          </h1>
+        </div>
+      </div>
+    );
+  }
+
+  const myRoundPoints =
+    calculateRoundPoints(
+      localPlayer.id,
+      answers,
+      votes,
+    );
+
+  return (
+    <div className="page gamePage">
+      <div className="bluffGame">
+        <header className="bluffGameHeader">
+          <div>
+            <span className="eyebrow">
+              BLUFF
+            </span>
+
+            <strong>
+              Round{" "}
+              {round.roundNumber} /{" "}
+              {
+                bluffQuestions.length
+              }
+            </strong>
+          </div>
+
+          <div className="bluffScore">
+            <Crown size={17} />
+
+            {(
+              players.find(
+                (player) =>
+                  player.id ===
+                  localPlayer.id,
+              )?.score ?? 0
+            ).toLocaleString()}
+          </div>
+        </header>
+
+        <div className="bluffProgress">
+          <div
+            className="bluffProgressFill"
+            style={{
+              width: `${
+                (round.roundNumber /
+                  bluffQuestions.length) *
+                100
+              }%`,
+            }}
+          />
+        </div>
+
+        {actionError && (
+          <div className="bluffError">
+            {actionError}
+          </div>
+        )}
+
+        {round.status ===
+          "answering" && (
+          <section className="bluffPanel">
+            <div className="bluffCategory">
+              <CircleHelp
+                size={16}
+              />
+
+              {question.category}
+            </div>
+
+            <h1>
+              {question.question}
+            </h1>
+
+            {!myAnswer ? (
+              <>
+                <p className="bluffInstruction">
+                  Write a believable
+                  fake answer. Try to
+                  fool the other
+                  players.
+                </p>
+
+                <textarea
+                  className="bluffAnswerInput"
+                  value={fakeAnswer}
+                  onChange={(
+                    event,
+                  ) =>
+                    setFakeAnswer(
+                      event.target
+                        .value,
+                    )
+                  }
+                  placeholder="Enter your fake answer..."
+                  maxLength={80}
+                  autoFocus
+                />
+
+                <div className="bluffInputFooter">
+                  <span>
+                    {
+                      fakeAnswer.length
+                    }{" "}
+                    / 80
+                  </span>
+
+                  <button
+                    className="primaryButton bluffMainButton"
+                    disabled={
+                      !fakeAnswer.trim() ||
+                      working
+                    }
+                    onClick={() => {
+                      void runAction(
+                        submitAnswer,
+                      );
+                    }}
+                  >
+                    Submit Answer
+                    <ArrowRight
+                      size={18}
                     />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="bluffWaiting">
+                <Check size={22} />
 
-                    <div className="bluffInputFooter">
-                        <span>
-                            {fakeAnswer.length} / 80
+                <div>
+                  <strong>
+                    Answer submitted
+                  </strong>
+
+                  <span>
+                    {
+                      fakeAnswers.length
+                    }{" "}
+                    /{" "}
+                    {players.length}{" "}
+                    players ready
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {isHost &&
+              allPlayersAnswered && (
+                <button
+                  className="primaryButton bluffMainButton hostActionButton"
+                  disabled={working}
+                  onClick={() => {
+                    void runAction(
+                      openVoting,
+                    );
+                  }}
+                >
+                  Open Voting
+                  <ArrowRight
+                    size={18}
+                  />
+                </button>
+              )}
+          </section>
+        )}
+
+        {round.status ===
+          "voting" && (
+          <section className="bluffPanel">
+            <div className="bluffCategory">
+              <Sparkles
+                size={16}
+              />
+              Find the truth
+            </div>
+
+            <h1>
+              Which answer is real?
+            </h1>
+
+            <p className="bluffInstruction">
+              Choose carefully. You
+              cannot vote for your own
+              fake answer.
+            </p>
+
+            {!myVote ? (
+              <div className="bluffOptions">
+                {votingOptions.map(
+                  (
+                    answer,
+                    index,
+                  ) => {
+                    const isOwn =
+                      answer.playerId ===
+                      localPlayer.id;
+
+                    return (
+                      <button
+                        key={
+                          answer.id
+                        }
+                        type="button"
+                        className="bluffOption"
+                        disabled={
+                          isOwn ||
+                          working
+                        }
+                        onClick={() => {
+                          void runAction(
+                            () =>
+                              vote(
+                                answer.id,
+                              ),
+                          );
+                        }}
+                      >
+                        <span className="bluffOptionLetter">
+                          {String.fromCharCode(
+                            65 +
+                              index,
+                          )}
                         </span>
 
-                        <button
-                            className="primaryButton bluffMainButton"
-                            onClick={submitFakeAnswer}
-                            disabled={!fakeAnswer.trim()}
-                        >
-                            Submit Answer
-                            <ArrowRight size={18} />
-                        </button>
-                    </div>
-                </section>
-            )}
+                        <span className="bluffOptionText">
+                          {
+                            answer.text
+                          }
 
-            {phase === "vote" && (
-                <section className="bluffPanel">
-                    <div className="bluffCategory">
-                        <Sparkles size={16} />
-                        Find the truth
-                    </div>
+                          {isOwn && (
+                            <small>
+                              Your
+                              answer
+                            </small>
+                          )}
+                        </span>
 
-                    <h1>
-                        Which answer is correct?
-                    </h1>
-
-                    <p className="bluffInstruction">
-                        Your fake answer is mixed with the real answer
-                        and answers from other players.
-                    </p>
-
-                    <div className="bluffOptions">
-                        {options.map((option, index) => (
-                            <button
-                                key={option.id}
-                                type="button"
-                                className={`bluffOption ${selectedAnswerId === option.id
-                                        ? "selected"
-                                        : ""
-                                    }`}
-                                onClick={() =>
-                                    setSelectedAnswerId(option.id)
-                                }
-                            >
-                                <span className="bluffOptionLetter">
-                                    {String.fromCharCode(65 + index)}
-                                </span>
-
-                                <span className="bluffOptionText">
-                                    {option.text}
-                                </span>
-
-                                {selectedAnswerId === option.id && (
-                                    <Check size={18} />
-                                )}
-                            </button>
-                        ))}
-                    </div>
-
-                    <button
-                        className="primaryButton bluffMainButton"
-                        disabled={!selectedAnswerId}
-                        onClick={revealAnswer}
-                    >
-                        Lock In Answer
-                        <ArrowRight size={18} />
-                    </button>
-                </section>
-            )}
-
-            {phase === "reveal" && result && (
-                <section className="bluffPanel">
-                    <div
-                        className={`bluffResultBanner ${result.wasCorrect
-                                ? "correct"
-                                : "wrong"
-                            }`}
-                    >
-                        {result.wasCorrect ? (
-                            <Check size={24} />
-                        ) : (
-                            <X size={24} />
+                        {isOwn && (
+                          <X
+                            size={17}
+                          />
                         )}
+                      </button>
+                    );
+                  },
+                )}
+              </div>
+            ) : (
+              <div className="bluffWaiting">
+                <Check size={22} />
 
-                        <div>
-                            <strong>
-                                {result.wasCorrect
-                                    ? "Correct!"
-                                    : "Not quite"}
-                            </strong>
+                <div>
+                  <strong>
+                    Vote locked in
+                  </strong>
 
-                            <span>
-                                {result.wasCorrect
-                                    ? `+${result.pointsEarned} points`
-                                    : "No points this round"}
-                            </span>
-                        </div>
-                    </div>
-
-                    <h1>Round reveal</h1>
-
-                    <div className="bluffRevealList">
-                        {options.map((option) => {
-                            const isSelected =
-                                option.id === result.selectedAnswerId;
-
-                            return (
-                                <div
-                                    key={option.id}
-                                    className={`bluffRevealAnswer ${option.isCorrect
-                                            ? "correct"
-                                            : ""
-                                        } ${isSelected
-                                            ? "chosen"
-                                            : ""
-                                        }`}
-                                >
-                                    <div>
-                                        <strong>
-                                            {option.text}
-                                        </strong>
-
-                                        <span>
-                                            {option.isCorrect
-                                                ? "Real answer"
-                                                : option.author ??
-                                                "Fake answer"}
-                                        </span>
-                                    </div>
-
-                                    {option.isCorrect && (
-                                        <Check size={20} />
-                                    )}
-
-                                    {!option.isCorrect &&
-                                        isSelected && (
-                                            <X size={20} />
-                                        )}
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    <button
-                        className="primaryButton bluffMainButton"
-                        onClick={nextRound}
-                    >
-                        {roundIndex ===
-                            bluffQuestions.length - 1
-                            ? "See Final Score"
-                            : "Next Round"}
-
-                        <ArrowRight size={18} />
-                    </button>
-                </section>
+                  <span>
+                    {votes.length} /{" "}
+                    {players.length}{" "}
+                    players voted
+                  </span>
+                </div>
+              </div>
             )}
-        </div>
-    );
+
+            {isHost &&
+              allPlayersVoted && (
+                <button
+                  className="primaryButton bluffMainButton hostActionButton"
+                  disabled={working}
+                  onClick={() => {
+                    void runAction(
+                      reveal,
+                    );
+                  }}
+                >
+                  Reveal Answers
+                  <ArrowRight
+                    size={18}
+                  />
+                </button>
+              )}
+          </section>
+        )}
+
+        {round.status ===
+          "reveal" && (
+          <section className="bluffPanel">
+            <div
+              className={`bluffResultBanner ${
+                myRoundPoints > 0
+                  ? "correct"
+                  : "wrong"
+              }`}
+            >
+              {myRoundPoints >
+              0 ? (
+                <Check size={24} />
+              ) : (
+                <X size={24} />
+              )}
+
+              <div>
+                <strong>
+                  {myRoundPoints >
+                  0
+                    ? `+${myRoundPoints} points`
+                    : "No points this round"}
+                </strong>
+
+                <span>
+                  Correct guess:
+                  +1000 · Fool a
+                  player: +500
+                </span>
+              </div>
+            </div>
+
+            <h1>
+              Round reveal
+            </h1>
+
+            <div className="bluffRevealList">
+              {votingOptions.map(
+                (answer) => {
+                  const author =
+                    answer.playerId
+                      ? players.find(
+                          (
+                            player,
+                          ) =>
+                            player.id ===
+                            answer.playerId,
+                        )
+                      : null;
+
+                  const answerVotes =
+                    votes.filter(
+                      (vote) =>
+                        vote.answerId ===
+                        answer.id,
+                    );
+
+                  return (
+                    <div
+                      key={
+                        answer.id
+                      }
+                      className={`bluffRevealAnswer ${
+                        answer.isCorrect
+                          ? "correct"
+                          : ""
+                      }`}
+                    >
+                      <div>
+                        <strong>
+                          {
+                            answer.text
+                          }
+                        </strong>
+
+                        <span>
+                          {answer.isCorrect
+                            ? "Real answer"
+                            : `Written by ${
+                                author?.name ??
+                                "Unknown"
+                              }`}
+                        </span>
+
+                        {answerVotes.length >
+                          0 && (
+                          <span className="bluffVoters">
+                            <Users
+                              size={
+                                12
+                              }
+                            />
+
+                            {answerVotes
+                              .map(
+                                (
+                                  vote,
+                                ) =>
+                                  players.find(
+                                    (
+                                      player,
+                                    ) =>
+                                      player.id ===
+                                      vote.playerId,
+                                  )
+                                    ?.name ??
+                                  "?",
+                              )
+                              .join(
+                                ", ",
+                              )}
+                          </span>
+                        )}
+                      </div>
+
+                      {answer.isCorrect && (
+                        <Check
+                          size={20}
+                        />
+                      )}
+                    </div>
+                  );
+                },
+              )}
+            </div>
+
+            <div className="bluffRoundScores">
+              {players
+                .map(
+                  (player) => ({
+                    ...player,
+                    roundPoints:
+                      calculateRoundPoints(
+                        player.id,
+                        answers,
+                        votes,
+                      ),
+                  }),
+                )
+                .sort(
+                  (a, b) =>
+                    b.roundPoints -
+                    a.roundPoints,
+                )
+                .map(
+                  (player) => (
+                    <div
+                      key={
+                        player.id
+                      }
+                      className="bluffRoundScoreRow"
+                    >
+                      <span>
+                        {
+                          player.name
+                        }
+                      </span>
+
+                      <strong>
+                        +
+                        {
+                          player.roundPoints
+                        }
+                      </strong>
+                    </div>
+                  ),
+                )}
+            </div>
+
+            {isHost ? (
+              <button
+                className="primaryButton bluffMainButton"
+                disabled={working}
+                onClick={() => {
+                  void runAction(
+                    nextRound,
+                  );
+                }}
+              >
+                {round.roundNumber >=
+                bluffQuestions.length
+                  ? "Finish Game"
+                  : "Next Round"}
+
+                <ArrowRight
+                  size={18}
+                />
+              </button>
+            ) : (
+              <div className="bluffWaiting">
+                Waiting for the host
+                to continue...
+              </div>
+            )}
+          </section>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default BluffGame;

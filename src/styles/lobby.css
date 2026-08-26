@@ -388,3 +388,26 @@
         gap: 2px;
     }
 }
+
+.formError {
+  padding: 11px 13px;
+
+  border: 1px solid #fb718530;
+  border-radius: 10px;
+
+  background: #fb718510;
+  color: #fb7185;
+
+  font-size: 12px;
+  line-height: 1.4;
+
+  text-align: left;
+}
+
+.lobbyGameOption:disabled {
+  cursor: default;
+}
+
+.lobbyGameOption:disabled:hover {
+  transform: none;
+}

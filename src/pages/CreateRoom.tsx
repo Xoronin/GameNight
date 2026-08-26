@@ -1,80 +1,123 @@
-import { useState } from "react";
 import { ArrowLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-    createPlayer,
-    createRoomCode,
-    savePlayer,
-} from "../utils/gameUtils";
+import { createRoom } from "../services/roomService";
 import "../styles/lobby.css";
+import {
+  createPlayer,
+  createRoomCode,
+  savePlayer,
+} from "../utils/gameUtils";
 
 function CreateRoom() {
-    const navigate = useNavigate();
-    const [name, setName] = useState("");
+  const navigate = useNavigate();
 
-    const submit = () => {
-        const cleanedName = name.trim();
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
 
-        if (!cleanedName) {
-            return;
-        }
+  const submit = async () => {
+    const cleanedName = name.trim();
 
-        const player = createPlayer(cleanedName, true);
-        const roomCode = createRoomCode();
+    if (!cleanedName || creating) {
+      return;
+    }
 
-        savePlayer(player);
-        navigate(`/lobby/${roomCode}`);
-    };
+    try {
+      setCreating(true);
+      setError(null);
 
-    return (
-        <div className="page">
-            <button className="backButton" onClick={() => navigate("/")}>
-                <ArrowLeft size={18} />
-                Home
-            </button>
+      const player = createPlayer(cleanedName, true);
+      const roomCode = createRoomCode();
 
-            <div className="centerCard">
-                <span className="eyebrow">CREATE ROOM</span>
+      console.log("CreateRoom page: creating", roomCode);
 
-                <h1>Who's playing?</h1>
+      await createRoom(roomCode, player);
 
-                <p>
-                    Enter your name. You'll become the host of the new room.
-                </p>
+      console.log("CreateRoom page: room successfully created");
 
-                <form
-                    className="joinForm"
-                    onSubmit={(event) => {
-                        event.preventDefault();
-                        submit();
-                    }}
-                >
-                    <label className="inputLabel" htmlFor="player-name">
-                        Your name
-                    </label>
+      savePlayer(player);
 
-                    <input
-                        id="player-name"
-                        className="normalInput"
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                        placeholder="Merlin"
-                        maxLength={20}
-                        autoFocus
-                    />
+      navigate(`/lobby/${roomCode}`);
+    } catch (caughtError) {
+      console.error("CREATE ROOM ERROR:", caughtError);
 
-                    <button
-                        className="primaryButton formButton"
-                        type="submit"
-                        disabled={!name.trim()}
-                    >
-                        Create Room
-                        <ChevronRight size={19} />
-                    </button>
-                </form>
+      setError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Could not create room.",
+      );
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  return (
+    <div className="page">
+      <button
+        className="backButton"
+        onClick={() => navigate("/")}
+      >
+        <ArrowLeft size={18} />
+        Home
+      </button>
+
+      <div className="centerCard">
+        <span className="eyebrow">CREATE ROOM</span>
+
+        <h1>Who's playing?</h1>
+
+        <p>
+          Enter your name. You'll become the host of the new room.
+        </p>
+
+        <form
+          className="joinForm"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void submit();
+          }}
+        >
+          <label
+            className="inputLabel"
+            htmlFor="player-name"
+          >
+            Your name
+          </label>
+
+          <input
+            id="player-name"
+            className="normalInput"
+            value={name}
+            onChange={(event) =>
+              setName(event.target.value)
+            }
+            placeholder="Your name"
+            maxLength={20}
+            autoFocus
+          />
+
+          {error && (
+            <div className="formError">
+              {error}
             </div>
-        </div>
-    );
+          )}
+
+          <button
+            className="primaryButton formButton"
+            type="submit"
+            disabled={!name.trim() || creating}
+          >
+            {creating ? "Creating..." : "Create Room"}
+
+            {!creating && (
+              <ChevronRight size={19} />
+            )}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 export default CreateRoom;
