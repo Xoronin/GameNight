@@ -2,6 +2,7 @@ export type Player = {
   id: string;
   name: string;
   isHost: boolean;
+  profileId?: string | null;
 };
 
 export type RoomPlayer = Player & {

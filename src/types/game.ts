@@ -29,3 +29,26 @@ export type BluffVote = {
   answerId: string;
   createdAt: string;
 };
+
+export type CategoriesRoundStatus =
+  | "answering"
+  | "reveal"
+  | "finished";
+
+export type CategoriesRound = {
+  id: string;
+  roomId: string;
+  roundNumber: number;
+  letter: string;
+  status: CategoriesRoundStatus;
+  createdAt: string;
+};
+
+export type CategoriesAnswer = {
+  id: string;
+  roundId: string;
+  playerId: string;
+  categoryKey: string;
+  answer: string;
+  createdAt: string;
+};

@@ -5,12 +5,13 @@ const PLAYER_KEY = "game-night-player";
 export function createPlayer(
   name: string,
   isHost: boolean,
-  persistentId?: string,
+  profileId?: string,
 ): Player {
   return {
-    id: persistentId ?? crypto.randomUUID(),
+    id: crypto.randomUUID(),
     name: name.trim(),
     isHost,
+    profileId: profileId ?? null,
   };
 }
 

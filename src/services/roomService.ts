@@ -14,6 +14,7 @@ type RoomRow = {
 type PlayerRow = {
   id: string;
   room_id: string;
+  profile_id: string | null;
   name: string;
   is_host: boolean;
   score: number;
@@ -35,6 +36,7 @@ function mapPlayer(row: PlayerRow): RoomPlayer {
   return {
     id: row.id,
     roomId: row.room_id,
+    profileId: row.profile_id,
     name: row.name,
     isHost: row.is_host,
     score: row.score,
@@ -78,6 +80,7 @@ export async function createRoom(
     .insert({
       id: player.id,
       room_id: room.id,
+      profile_id: player.profileId ?? null,
       name: player.name,
       is_host: true,
       score: 0,
@@ -173,6 +176,7 @@ export async function joinRoom(
     .insert({
       id: player.id,
       room_id: room.id,
+      profile_id: player.profileId ?? null,
       name: player.name,
       is_host: false,
       score: 0,
