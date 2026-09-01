@@ -7,6 +7,7 @@ export type BluffRoundStatus =
 export type BluffRound = {
   id: string;
   roomId: string;
+  sessionId: string;
   roundNumber: number;
   questionId: string;
   status: BluffRoundStatus;

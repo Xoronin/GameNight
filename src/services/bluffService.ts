@@ -6,9 +6,18 @@ import type {
   BluffVote,
 } from "../types/game";
 
+export type BluffSessionRow = {
+  id: string;
+  room_id: string;
+  status: "playing" | "finished";
+  created_at: string;
+  finished_at: string | null;
+};
+
 type BluffRoundRow = {
   id: string;
   room_id: string;
+  session_id: string;
   round_number: number;
   question_id: string;
   status: BluffRoundStatus;
@@ -32,10 +41,13 @@ type BluffVoteRow = {
   created_at: string;
 };
 
-function mapRound(row: BluffRoundRow): BluffRound {
+function mapRound(
+  row: BluffRoundRow,
+): BluffRound {
   return {
     id: row.id,
     roomId: row.room_id,
+    sessionId: row.session_id,
     roundNumber: row.round_number,
     questionId: row.question_id,
     status: row.status,
@@ -43,7 +55,9 @@ function mapRound(row: BluffRoundRow): BluffRound {
   };
 }
 
-function mapAnswer(row: BluffAnswerRow): BluffAnswer {
+function mapAnswer(
+  row: BluffAnswerRow,
+): BluffAnswer {
   return {
     id: row.id,
     roundId: row.round_id,
@@ -54,7 +68,9 @@ function mapAnswer(row: BluffAnswerRow): BluffAnswer {
   };
 }
 
-function mapVote(row: BluffVoteRow): BluffVote {
+function mapVote(
+  row: BluffVoteRow,
+): BluffVote {
   return {
     id: row.id,
     roundId: row.round_id,
@@ -64,13 +80,130 @@ function mapVote(row: BluffVoteRow): BluffVote {
   };
 }
 
-export async function getLatestBluffRound(
+/*
+ * ----------------------------------------------------------------
+ * BLUFF SESSION
+ * ----------------------------------------------------------------
+ */
+
+export async function createBluffSession(
   roomId: string,
-): Promise<BluffRound | null> {
-  const { data, error } = await supabase
-    .from("bluff_rounds")
+) {
+  /*
+   * Finish any old session that may still
+   * incorrectly be marked as playing.
+   *
+   * This makes starting a rematch safer.
+   */
+  const {
+    error: finishOldError,
+  } = await supabase
+    .from("bluff_sessions")
+    .update({
+      status: "finished",
+      finished_at:
+        new Date().toISOString(),
+    })
+    .eq("room_id", roomId)
+    .eq("status", "playing");
+
+  if (finishOldError) {
+    throw new Error(
+      `Could not close previous Bluff session: ${finishOldError.message}`,
+    );
+  }
+
+  const {
+    data,
+    error,
+  } = await supabase
+    .from("bluff_sessions")
+    .insert({
+      room_id: roomId,
+      status: "playing",
+    })
+    .select("*")
+    .single();
+
+  if (error) {
+    throw new Error(
+      `Could not create Bluff session: ${error.message}`,
+    );
+  }
+
+  return data as BluffSessionRow;
+}
+
+export async function getActiveBluffSession(
+  roomId: string,
+): Promise<BluffSessionRow | null> {
+  const {
+    data,
+    error,
+  } = await supabase
+    .from("bluff_sessions")
     .select("*")
     .eq("room_id", roomId)
+    .eq("status", "playing")
+    .order("created_at", {
+      ascending: false,
+    })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(
+      `Could not load Bluff session: ${error.message}`,
+    );
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  return data as BluffSessionRow;
+}
+
+export async function finishBluffSession(
+  sessionId: string,
+) {
+  const {
+    error,
+  } = await supabase
+    .from("bluff_sessions")
+    .update({
+      status: "finished",
+      finished_at:
+        new Date().toISOString(),
+    })
+    .eq("id", sessionId);
+
+  if (error) {
+    throw new Error(
+      `Could not finish Bluff session: ${error.message}`,
+    );
+  }
+}
+
+/*
+ * ----------------------------------------------------------------
+ * BLUFF ROUND
+ * ----------------------------------------------------------------
+ */
+
+export async function getLatestBluffRound(
+  sessionId: string,
+): Promise<BluffRound | null> {
+  const {
+    data,
+    error,
+  } = await supabase
+    .from("bluff_rounds")
+    .select("*")
+    .eq(
+      "session_id",
+      sessionId,
+    )
     .order("round_number", {
       ascending: false,
     })
@@ -87,73 +220,62 @@ export async function getLatestBluffRound(
     return null;
   }
 
-  return mapRound(data as BluffRoundRow);
-}
-
-export async function getBluffAnswers(
-  roundId: string,
-): Promise<BluffAnswer[]> {
-  const { data, error } = await supabase
-    .from("bluff_answers")
-    .select("*")
-    .eq("round_id", roundId)
-    .order("created_at", {
-      ascending: true,
-    });
-
-  if (error) {
-    throw new Error(
-      `Could not load Bluff answers: ${error.message}`,
-    );
-  }
-
-  return (data as BluffAnswerRow[]).map(mapAnswer);
-}
-
-export async function getBluffVotes(
-  roundId: string,
-): Promise<BluffVote[]> {
-  const { data, error } = await supabase
-    .from("bluff_votes")
-    .select("*")
-    .eq("round_id", roundId)
-    .order("created_at", {
-      ascending: true,
-    });
-
-  if (error) {
-    throw new Error(
-      `Could not load Bluff votes: ${error.message}`,
-    );
-  }
-
-  return (data as BluffVoteRow[]).map(mapVote);
+  return mapRound(
+    data as BluffRoundRow,
+  );
 }
 
 export async function createBluffRound(
+  sessionId: string,
   roomId: string,
   roundNumber: number,
   questionId: string,
   correctAnswer: string,
 ): Promise<BluffRound> {
-  const { data: existingRound } = await supabase
+  const {
+    data: existingRound,
+    error: existingError,
+  } = await supabase
     .from("bluff_rounds")
     .select("*")
-    .eq("room_id", roomId)
-    .eq("round_number", roundNumber)
+    .eq(
+      "session_id",
+      sessionId,
+    )
+    .eq(
+      "round_number",
+      roundNumber,
+    )
     .maybeSingle();
 
-  if (existingRound) {
-    return mapRound(existingRound as BluffRoundRow);
+  if (existingError) {
+    throw new Error(
+      `Could not check Bluff round: ${existingError.message}`,
+    );
   }
 
-  const { data, error } = await supabase
+  if (existingRound) {
+    return mapRound(
+      existingRound as BluffRoundRow,
+    );
+  }
+
+  const {
+    data,
+    error,
+  } = await supabase
     .from("bluff_rounds")
     .insert({
-      room_id: roomId,
-      round_number: roundNumber,
-      question_id: questionId,
-      status: "answering",
+      session_id:
+        sessionId,
+      room_id:
+        roomId,
+      round_number:
+        roundNumber,
+      question_id:
+        questionId,
+      status:
+        "answering",
     })
     .select("*")
     .single();
@@ -164,18 +286,36 @@ export async function createBluffRound(
     );
   }
 
-  const round = mapRound(data as BluffRoundRow);
+  const round =
+    mapRound(
+      data as BluffRoundRow,
+    );
 
-  const { error: answerError } = await supabase
+  const {
+    error: answerError,
+  } = await supabase
     .from("bluff_answers")
     .insert({
-      round_id: round.id,
-      player_id: null,
-      text: correctAnswer,
-      is_correct: true,
+      round_id:
+        round.id,
+      player_id:
+        null,
+      text:
+        correctAnswer,
+      is_correct:
+        true,
     });
 
   if (answerError) {
+    /*
+     * Clean up the round if the correct
+     * answer could not be created.
+     */
+    await supabase
+      .from("bluff_rounds")
+      .delete()
+      .eq("id", round.id);
+
     throw new Error(
       `Could not add real answer: ${answerError.message}`,
     );
@@ -184,51 +324,13 @@ export async function createBluffRound(
   return round;
 }
 
-export async function submitBluffAnswer(
-  roundId: string,
-  playerId: string,
-  text: string,
-) {
-  const cleaned = text.trim();
-
-  if (!cleaned) {
-    throw new Error("Please enter an answer.");
-  }
-
-  const { data: existing } = await supabase
-    .from("bluff_answers")
-    .select("id")
-    .eq("round_id", roundId)
-    .eq("player_id", playerId)
-    .maybeSingle();
-
-  if (existing) {
-    throw new Error(
-      "You already submitted an answer this round.",
-    );
-  }
-
-  const { error } = await supabase
-    .from("bluff_answers")
-    .insert({
-      round_id: roundId,
-      player_id: playerId,
-      text: cleaned,
-      is_correct: false,
-    });
-
-  if (error) {
-    throw new Error(
-      `Could not submit answer: ${error.message}`,
-    );
-  }
-}
-
 export async function changeBluffRoundStatus(
   roundId: string,
   status: BluffRoundStatus,
 ) {
-  const { error } = await supabase
+  const {
+    error,
+  } = await supabase
     .from("bluff_rounds")
     .update({
       status,
@@ -242,17 +344,164 @@ export async function changeBluffRoundStatus(
   }
 }
 
+/*
+ * ----------------------------------------------------------------
+ * ANSWERS
+ * ----------------------------------------------------------------
+ */
+
+export async function getBluffAnswers(
+  roundId: string,
+): Promise<BluffAnswer[]> {
+  const {
+    data,
+    error,
+  } = await supabase
+    .from("bluff_answers")
+    .select("*")
+    .eq(
+      "round_id",
+      roundId,
+    )
+    .order("created_at", {
+      ascending: true,
+    });
+
+  if (error) {
+    throw new Error(
+      `Could not load Bluff answers: ${error.message}`,
+    );
+  }
+
+  return (
+    data as BluffAnswerRow[]
+  ).map(mapAnswer);
+}
+
+export async function submitBluffAnswer(
+  roundId: string,
+  playerId: string,
+  text: string,
+) {
+  const cleaned =
+    text.trim();
+
+  if (!cleaned) {
+    throw new Error(
+      "Please enter an answer.",
+    );
+  }
+
+  const {
+    data: existing,
+    error: existingError,
+  } = await supabase
+    .from("bluff_answers")
+    .select("id")
+    .eq(
+      "round_id",
+      roundId,
+    )
+    .eq(
+      "player_id",
+      playerId,
+    )
+    .maybeSingle();
+
+  if (existingError) {
+    throw new Error(
+      `Could not check existing answer: ${existingError.message}`,
+    );
+  }
+
+  if (existing) {
+    throw new Error(
+      "You already submitted an answer this round.",
+    );
+  }
+
+  const {
+    error,
+  } = await supabase
+    .from("bluff_answers")
+    .insert({
+      round_id:
+        roundId,
+      player_id:
+        playerId,
+      text:
+        cleaned,
+      is_correct:
+        false,
+    });
+
+  if (error) {
+    throw new Error(
+      `Could not submit answer: ${error.message}`,
+    );
+  }
+}
+
+/*
+ * ----------------------------------------------------------------
+ * VOTES
+ * ----------------------------------------------------------------
+ */
+
+export async function getBluffVotes(
+  roundId: string,
+): Promise<BluffVote[]> {
+  const {
+    data,
+    error,
+  } = await supabase
+    .from("bluff_votes")
+    .select("*")
+    .eq(
+      "round_id",
+      roundId,
+    )
+    .order("created_at", {
+      ascending: true,
+    });
+
+  if (error) {
+    throw new Error(
+      `Could not load Bluff votes: ${error.message}`,
+    );
+  }
+
+  return (
+    data as BluffVoteRow[]
+  ).map(mapVote);
+}
+
 export async function submitBluffVote(
   roundId: string,
   playerId: string,
   answerId: string,
 ) {
-  const { data: existing } = await supabase
+  const {
+    data: existing,
+    error: existingError,
+  } = await supabase
     .from("bluff_votes")
     .select("id")
-    .eq("round_id", roundId)
-    .eq("player_id", playerId)
+    .eq(
+      "round_id",
+      roundId,
+    )
+    .eq(
+      "player_id",
+      playerId,
+    )
     .maybeSingle();
+
+  if (existingError) {
+    throw new Error(
+      `Could not check existing vote: ${existingError.message}`,
+    );
+  }
 
   if (existing) {
     throw new Error(
@@ -260,12 +509,17 @@ export async function submitBluffVote(
     );
   }
 
-  const { error } = await supabase
+  const {
+    error,
+  } = await supabase
     .from("bluff_votes")
     .insert({
-      round_id: roundId,
-      player_id: playerId,
-      answer_id: answerId,
+      round_id:
+        roundId,
+      player_id:
+        playerId,
+      answer_id:
+        answerId,
     });
 
   if (error) {
@@ -275,75 +529,146 @@ export async function submitBluffVote(
   }
 }
 
+/*
+ * ----------------------------------------------------------------
+ * SCORING / REVEAL
+ * ----------------------------------------------------------------
+ */
+
 export async function revealBluffRound(
   round: BluffRound,
   answers: BluffAnswer[],
   votes: BluffVote[],
 ) {
-  if (round.status !== "voting") {
+  if (
+    round.status !==
+    "voting"
+  ) {
     return;
   }
 
-  const correctAnswer = answers.find(
-    (answer) => answer.isCorrect,
-  );
+  const correctAnswer =
+    answers.find(
+      (answer) =>
+        answer.isCorrect,
+    );
 
   if (!correctAnswer) {
-    throw new Error("Real answer is missing.");
+    throw new Error(
+      "Real answer is missing.",
+    );
   }
 
-  const scoreChanges = new Map<string, number>();
+  const scoreChanges =
+    new Map<
+      string,
+      number
+    >();
 
-  for (const vote of votes) {
-    if (vote.answerId === correctAnswer.id) {
+  /*
+   * +1000 for choosing the real answer.
+   */
+  for (
+    const vote of votes
+  ) {
+    if (
+      vote.answerId ===
+      correctAnswer.id
+    ) {
       scoreChanges.set(
         vote.playerId,
-        (scoreChanges.get(vote.playerId) ?? 0) + 1000,
+        (
+          scoreChanges.get(
+            vote.playerId,
+          ) ?? 0
+        ) + 1000,
       );
     }
   }
 
-  for (const answer of answers) {
-    if (answer.isCorrect || !answer.playerId) {
+  /*
+   * +500 for every other player
+   * fooled by your fake answer.
+   */
+  for (
+    const answer of answers
+  ) {
+    if (
+      answer.isCorrect ||
+      !answer.playerId
+    ) {
       continue;
     }
 
-    const fooledPlayers = votes.filter(
-      (vote) =>
-        vote.answerId === answer.id &&
-        vote.playerId !== answer.playerId,
-    );
+    const fooledPlayers =
+      votes.filter(
+        (vote) =>
+          vote.answerId ===
+            answer.id &&
+          vote.playerId !==
+            answer.playerId,
+      );
 
-    if (fooledPlayers.length > 0) {
+    if (
+      fooledPlayers.length >
+      0
+    ) {
       scoreChanges.set(
         answer.playerId,
-        (scoreChanges.get(answer.playerId) ?? 0) +
-          fooledPlayers.length * 500,
+        (
+          scoreChanges.get(
+            answer.playerId,
+          ) ?? 0
+        ) +
+          fooledPlayers.length *
+            500,
       );
     }
   }
 
-  for (const [playerId, points] of scoreChanges) {
-    const { data: player, error: playerError } =
-      await supabase
-        .from("players")
-        .select("score")
-        .eq("id", playerId)
-        .single();
+  for (
+    const [
+      playerId,
+      points,
+    ] of scoreChanges
+  ) {
+    const {
+      data: player,
+      error: playerError,
+    } = await supabase
+      .from("players")
+      .select("score")
+      .eq(
+        "id",
+        playerId,
+      )
+      .single();
 
     if (playerError) {
-      throw playerError;
+      throw new Error(
+        `Could not load player score: ${playerError.message}`,
+      );
     }
 
-    const { error: updateError } = await supabase
+    const {
+      error: updateError,
+    } = await supabase
       .from("players")
       .update({
-        score: (player.score ?? 0) + points,
+        score:
+          (player.score ??
+            0) +
+          points,
       })
-      .eq("id", playerId);
+      .eq(
+        "id",
+        playerId,
+      );
 
     if (updateError) {
-      throw updateError;
+      throw new Error(
+        `Could not update player score: ${updateError.message}`,
+      );
     }
   }
 
@@ -353,23 +678,39 @@ export async function revealBluffRound(
   );
 }
 
+/*
+ * ----------------------------------------------------------------
+ * GAME END
+ * ----------------------------------------------------------------
+ */
+
 export async function finishBluffGame(
   roundId: string,
+  sessionId?: string,
 ) {
   await changeBluffRoundStatus(
     roundId,
     "finished",
   );
+
+  if (sessionId) {
+    await finishBluffSession(
+      sessionId,
+    );
+  }
 }
 
 export async function returnBluffRoomToLobby(
   roomId: string,
 ) {
-  const { error } = await supabase
+  const {
+    error,
+  } = await supabase
     .from("rooms")
     .update({
       status: "lobby",
-      selected_game: "bluff",
+      selected_game:
+        "bluff",
     })
     .eq("id", roomId);
 
@@ -378,4 +719,40 @@ export async function returnBluffRoomToLobby(
       `Could not return to lobby: ${error.message}`,
     );
   }
+}
+
+/*
+ * ----------------------------------------------------------------
+ * RANDOM QUESTION SUPPORT
+ * ----------------------------------------------------------------
+ */
+
+export async function getBluffUsedQuestionIds(
+  sessionId: string,
+): Promise<string[]> {
+  const {
+    data,
+    error,
+  } = await supabase
+    .from("bluff_rounds")
+    .select("question_id")
+    .eq(
+      "session_id",
+      sessionId,
+    );
+
+  if (error) {
+    throw new Error(
+      `Could not load used Bluff questions: ${error.message}`,
+    );
+  }
+
+  return (
+    data ?? []
+  )
+    .map(
+      (row) =>
+        row.question_id as string,
+    )
+    .filter(Boolean);
 }

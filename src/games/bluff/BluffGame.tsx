@@ -15,14 +15,18 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { bluffQuestions } from "../../data/bluffQuestions";
+import {
+  useBluffQuestions,
+} from "../../hooks/useBluffQuestions";
 import { useBluffRound } from "../../hooks/useBluffRound";
 import { translate } from "../../i18n/i18n";
 import { useRoom } from "../../hooks/useRoom";
 import {
   changeBluffRoundStatus,
   createBluffRound,
+  createBluffSession,
   finishBluffGame,
+  getBluffUsedQuestionIds,
   returnBluffRoomToLobby,
   revealBluffRound,
   submitBluffAnswer,
@@ -35,6 +39,8 @@ import type {
 } from "../../types/game";
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
+
+const BLUFF_ROUNDS_PER_GAME = 8;
 
 type BluffGameProps = {
   roomCode: string;
@@ -124,6 +130,32 @@ function calculateRoundPoints(
   ).total;
 }
 
+function pickRandomQuestion<
+  T extends { id: string },
+>(
+  questions: T[],
+  excludedIds: string[],
+) {
+  const available =
+    questions.filter(
+      (question) =>
+        !excludedIds.includes(
+          question.id,
+        ),
+    );
+
+  if (available.length === 0) {
+    return null;
+  }
+
+  return available[
+    Math.floor(
+      Math.random() *
+        available.length,
+    )
+  ];
+}
+
 function BluffGame({
   roomCode,
 }: BluffGameProps) {
@@ -134,14 +166,22 @@ function BluffGame({
       () => getPlayer(),
     );
 
-  const [fakeAnswer, setFakeAnswer] =
-    useState("");
+  const [
+    fakeAnswer,
+    setFakeAnswer,
+  ] = useState("");
 
-  const [actionError, setActionError] =
-    useState<string | null>(null);
+  const [
+    actionError,
+    setActionError,
+  ] = useState<string | null>(
+    null,
+  );
 
-  const [working, setWorking] =
-    useState(false);
+  const [
+    working,
+    setWorking,
+  ] = useState(false);
 
   const {
     room,
@@ -151,6 +191,7 @@ function BluffGame({
   } = useRoom(roomCode);
 
   const {
+    session,
     round,
     answers,
     votes,
@@ -159,6 +200,15 @@ function BluffGame({
   } = useBluffRound(
     room?.id,
   );
+
+  const {
+    questions:
+      bluffQuestions,
+    loading:
+      questionsLoading,
+    error:
+      questionsError,
+  } = useBluffQuestions();
 
   const gameLanguage =
     room?.gameLanguage ?? "en";
@@ -193,10 +243,12 @@ function BluffGame({
             question.category[
               gameLanguage
             ],
+
           question:
             question.question[
               gameLanguage
             ],
+
           answer:
             question.answer[
               gameLanguage
@@ -290,10 +342,37 @@ function BluffGame({
         return;
       }
 
+      /*
+       * A completely new Bluff game needs
+       * its own session.
+       */
+      const activeSession =
+        session ??
+        await createBluffSession(
+          room.id,
+        );
+
+      const usedIds =
+        await getBluffUsedQuestionIds(
+          activeSession.id,
+        );
+
       const firstQuestion =
-        bluffQuestions[0];
+        pickRandomQuestion(
+          bluffQuestions,
+          usedIds,
+        );
+
+      if (!firstQuestion) {
+        throw new Error(
+          gameT(
+            "bluff.questionMissing",
+          ),
+        );
+      }
 
       await createBluffRound(
+        activeSession.id,
         room.id,
         1,
         firstQuestion.id,
@@ -423,6 +502,7 @@ function BluffGame({
       if (
         !room ||
         !round ||
+        !session ||
         !isHost
       ) {
         return;
@@ -433,21 +513,37 @@ function BluffGame({
 
       if (
         nextRoundNumber >
-        bluffQuestions.length
+        BLUFF_ROUNDS_PER_GAME
       ) {
         await finishBluffGame(
           round.id,
+          session.id,
         );
 
         return;
       }
 
+      const usedIds =
+        await getBluffUsedQuestionIds(
+          session.id,
+        );
+
       const nextQuestion =
-        bluffQuestions[
-          nextRoundNumber - 1
-        ];
+        pickRandomQuestion(
+          bluffQuestions,
+          usedIds,
+        );
+
+      if (!nextQuestion) {
+        throw new Error(
+          gameT(
+            "bluff.questionMissing",
+          ),
+        );
+      }
 
       await createBluffRound(
+        session.id,
         room.id,
         nextRoundNumber,
         nextQuestion.id,
@@ -472,7 +568,8 @@ function BluffGame({
     };
 
   if (
-    room?.status === "lobby"
+    room?.status ===
+    "lobby"
   ) {
     navigate(
       `/lobby/${room.code}`,
@@ -506,7 +603,8 @@ function BluffGame({
 
   if (
     roomLoading ||
-    roundLoading
+    roundLoading ||
+    questionsLoading
   ) {
     return (
       <div className="page">
@@ -528,6 +626,7 @@ function BluffGame({
   if (
     roomError ||
     roundError ||
+    questionsError ||
     !room
   ) {
     return (
@@ -542,9 +641,32 @@ function BluffGame({
           <p>
             {roomError ??
               roundError ??
+              questionsError ??
               gameT(
                 "lobby.roomNotFound",
               )}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    bluffQuestions.length === 0
+  ) {
+    return (
+      <div className="page">
+        <div className="centerCard">
+          <h1>
+            {gameT(
+              "bluff.questionMissing",
+            )}
+          </h1>
+
+          <p>
+            {gameT(
+              "bluff.noQuestions",
+            )}
           </p>
         </div>
       </div>
@@ -556,6 +678,7 @@ function BluffGame({
       <div className="page gamePage">
         <button
           className="backButton"
+          type="button"
           onClick={() =>
             navigate(
               `/lobby/${room.code}`,
@@ -598,6 +721,7 @@ function BluffGame({
             {isHost ? (
               <button
                 className="primaryButton bluffMainButton"
+                type="button"
                 disabled={
                   working
                 }
@@ -694,6 +818,7 @@ function BluffGame({
             {isHost ? (
               <button
                 className="primaryButton bluffMainButton"
+                type="button"
                 disabled={
                   working
                 }
@@ -766,7 +891,7 @@ function BluffGame({
               )}{" "}
               {round.roundNumber} /{" "}
               {
-                bluffQuestions.length
+                BLUFF_ROUNDS_PER_GAME
               }
             </strong>
           </div>
@@ -792,7 +917,7 @@ function BluffGame({
             style={{
               width: `${
                 (round.roundNumber /
-                  bluffQuestions.length) *
+                  BLUFF_ROUNDS_PER_GAME) *
                 100
               }%`,
             }}
@@ -862,6 +987,7 @@ function BluffGame({
 
                   <button
                     className="primaryButton bluffMainButton"
+                    type="button"
                     disabled={
                       !fakeAnswer.trim() ||
                       working
@@ -915,6 +1041,7 @@ function BluffGame({
               allPlayersAnswered && (
                 <button
                   className="primaryButton bluffMainButton hostActionButton"
+                  type="button"
                   disabled={
                     working
                   }
@@ -1053,6 +1180,7 @@ function BluffGame({
               allPlayersVoted && (
                 <button
                   className="primaryButton bluffMainButton hostActionButton"
+                  type="button"
                   disabled={
                     working
                   }
@@ -1282,6 +1410,7 @@ function BluffGame({
             {isHost ? (
               <button
                 className="primaryButton bluffMainButton"
+                type="button"
                 disabled={
                   working
                 }
@@ -1292,7 +1421,7 @@ function BluffGame({
                 }}
               >
                 {round.roundNumber >=
-                bluffQuestions.length
+                BLUFF_ROUNDS_PER_GAME
                   ? gameT(
                       "bluff.finishGame",
                     )

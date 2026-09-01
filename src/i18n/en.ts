@@ -199,6 +199,7 @@ const en = {
     roundReveal: "Round reveal",
     points: "points",
     wrongAnswer: "Wrong answer",
+    noQuestions: "There are currently no active Bluff questions.",
   },
 
   categories: {

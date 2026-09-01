@@ -200,6 +200,7 @@ const de = {
     roundReveal: "Rundenauswertung",
     points: "Punkte",
     wrongAnswer: "Falsche Antwort",
+    noQuestions: "Aktuell sind keine aktiven Bluff-Fragen verfügbar.",
   },
 
   categories: {
