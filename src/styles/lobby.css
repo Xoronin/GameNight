@@ -485,3 +485,53 @@
 
   cursor: pointer;
 }
+.gameLanguageSelector {
+  margin-top: 18px;
+  padding: 14px;
+
+  border: 1px solid #ffffff0d;
+  border-radius: 12px;
+
+  background: #18181f;
+}
+
+.gameLanguageSelector > span {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #8f8f9e;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.gameLanguageButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+}
+
+.gameLanguageButtons button {
+  min-height: 42px;
+
+  border: 1px solid #ffffff10;
+  border-radius: 10px;
+
+  background: #111117;
+  color: #9999a5;
+
+  cursor: pointer;
+}
+
+.gameLanguageButtons button.active {
+  border-color: #7c3aed;
+
+  background: #1c1728;
+  color: #ffffff;
+}
+
+.gameLanguageButtons button:disabled {
+  cursor: default;
+}

@@ -7,4 +7,5 @@ export type Room = {
   selectedGame: string;
   status: RoomStatus;
   createdAt: string;
+  gameLanguage: "en" | "de";
 };

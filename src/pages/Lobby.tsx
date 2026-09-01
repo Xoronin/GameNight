@@ -17,6 +17,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+import { useLanguage } from "../hooks/useLanguage";
 import { useRoom } from "../hooks/useRoom";
 import {
   leaveRoom,
@@ -29,53 +30,57 @@ import {
   clearPlayer,
   getPlayer,
 } from "../utils/gameUtils";
+import { updateGameLanguage } from "../services/roomService";
 
 const games = [
   {
     id: "bluff",
-    name: "Bluff",
-    description:
-      "Write fake answers and fool your friends.",
+    nameKey: "games.bluff.name",
+    descriptionKey:
+      "games.bluff.description",
     icon: <MessageSquareQuote />,
     className: "purple",
   },
   {
     id: "minefield",
-    name: "Minefield",
-    description:
-      "Find the correct answers without getting eliminated.",
+    nameKey: "games.minefield.name",
+    descriptionKey:
+      "games.minefield.description",
     icon: <Bomb />,
     className: "red",
   },
   {
     id: "higher-lower",
-    name: "Higher / Lower",
-    description:
-      "Compare facts and keep your streak alive.",
+    nameKey:
+      "games.higherLower.name",
+    descriptionKey:
+      "games.higherLower.description",
     icon: <TrendingUp />,
     className: "green",
   },
   {
     id: "trivia",
-    name: "Trivia",
-    description:
-      "Compete across different quiz categories.",
+    nameKey: "games.trivia.name",
+    descriptionKey:
+      "games.trivia.description",
     icon: <Brain />,
     className: "blue",
   },
   {
     id: "categories",
-    name: "Categories",
-    description:
-      "Our version of Stadt, Land, Fluss.",
+    nameKey:
+      "games.categories.name",
+    descriptionKey:
+      "games.categories.description",
     icon: <ListChecks />,
     className: "orange",
   },
   {
     id: "draw-guess",
-    name: "Draw & Guess",
-    description:
-      "Draw secret words while your friends guess.",
+    nameKey:
+      "games.drawGuess.name",
+    descriptionKey:
+      "games.drawGuess.description",
     icon: <Brush />,
     className: "pink",
   },
@@ -84,12 +89,15 @@ const games = [
 function Lobby() {
   const navigate = useNavigate();
   const { roomCode } = useParams();
+  const { t } = useLanguage();
 
-  const [localPlayer] = useState<Player | null>(
-    () => getPlayer(),
-  );
+  const [localPlayer] =
+    useState<Player | null>(
+      () => getPlayer(),
+    );
 
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] =
+    useState(false);
 
   const {
     room,
@@ -147,7 +155,8 @@ function Lobby() {
     }
 
     const isHost =
-      room.hostPlayerId === localPlayer.id;
+      room.hostPlayerId ===
+      localPlayer.id;
 
     if (!isHost) {
       return;
@@ -166,32 +175,39 @@ function Lobby() {
     }
   };
 
-  const handleLeaveRoom = async () => {
-    try {
-      if (localPlayer) {
-        await leaveRoom(
-          localPlayer.id,
+  const handleLeaveRoom =
+    async () => {
+      try {
+        if (localPlayer) {
+          await leaveRoom(
+            localPlayer.id,
+          );
+        }
+      } catch (caughtError) {
+        console.error(
+          "Could not leave room:",
+          caughtError,
         );
       }
-    } catch (caughtError) {
-      console.error(
-        "Could not leave room:",
-        caughtError,
-      );
-    }
 
-    clearPlayer();
-    navigate("/");
-  };
+      clearPlayer();
+      navigate("/");
+    };
 
   if (!localPlayer) {
     return (
       <div className="page">
         <div className="centerCard">
-          <h1>No player found</h1>
+          <h1>
+            {t(
+              "lobby.noPlayerTitle",
+            )}
+          </h1>
 
           <p>
-            Please create or join a room first.
+            {t(
+              "lobby.noPlayerDescription",
+            )}
           </p>
 
           <button
@@ -200,7 +216,7 @@ function Lobby() {
               navigate("/")
             }
           >
-            Back Home
+            {t("common.home")}
           </button>
         </div>
       </div>
@@ -212,10 +228,12 @@ function Lobby() {
       <div className="page">
         <div className="centerCard">
           <span className="eyebrow">
-            GAME LOBBY
+            {t("lobby.badge")}
           </span>
 
-          <h1>Loading room...</h1>
+          <h1>
+            {t("lobby.loadingRoom")}
+          </h1>
         </div>
       </div>
     );
@@ -226,14 +244,18 @@ function Lobby() {
       <div className="page">
         <div className="centerCard">
           <span className="eyebrow">
-            ROOM ERROR
+            {t("lobby.roomError")}
           </span>
 
-          <h1>Room not found</h1>
+          <h1>
+            {t("lobby.roomNotFound")}
+          </h1>
 
           <p>
             {error ??
-              "This room no longer exists."}
+              t(
+                "lobby.roomGone",
+              )}
           </p>
 
           <button
@@ -242,7 +264,7 @@ function Lobby() {
               navigate("/")
             }
           >
-            Back Home
+            {t("common.home")}
           </button>
         </div>
       </div>
@@ -253,23 +275,31 @@ function Lobby() {
     room.hostPlayerId ===
     localPlayer.id;
 
-  const handleStartGame = async () => {
-    if (!isHost) {
-      return;
-    }
-
-    try {
-      await startGame(
-        room.id,
+  const selectedGame =
+    games.find(
+      (game) =>
+        game.id ===
         room.selectedGame,
-      );
-    } catch (caughtError) {
-      console.error(
-        "Could not start game:",
-        caughtError,
-      );
-    }
-  };
+    );
+
+  const handleStartGame =
+    async () => {
+      if (!isHost) {
+        return;
+      }
+
+      try {
+        await startGame(
+          room.id,
+          room.selectedGame,
+        );
+      } catch (caughtError) {
+        console.error(
+          "Could not start game:",
+          caughtError,
+        );
+      }
+    };
 
   return (
     <div className="page lobbyPage">
@@ -281,11 +311,11 @@ function Lobby() {
           }}
         >
           <LogOut size={18} />
-          Leave room
+          {t("lobby.leaveRoom")}
         </button>
 
         <div className="roomTopInfo">
-          Room
+          {t("common.room")}
           <strong>
             {room.code}
           </strong>
@@ -295,13 +325,15 @@ function Lobby() {
       <div className="lobby">
         <div className="lobbyHeader">
           <span className="eyebrow">
-            GAME LOBBY
+            {t("lobby.badge")}
           </span>
 
-          <h1>Ready to play?</h1>
+          <h1>
+            {t("lobby.ready")}
+          </h1>
 
           <p>
-            Share this room code with your friends.
+            {t("lobby.shareCode")}
           </p>
 
           <button
@@ -322,7 +354,7 @@ function Lobby() {
 
           {copied && (
             <span className="copyMessage">
-              Copied!
+              {t("lobby.copied")}
             </span>
           )}
         </div>
@@ -332,7 +364,9 @@ function Lobby() {
             <div className="panelTitle">
               <div>
                 <span className="eyebrow">
-                  PLAYERS
+                  {t(
+                    "common.players",
+                  ).toUpperCase()}
                 </span>
 
                 <h2>
@@ -340,8 +374,12 @@ function Lobby() {
 
                   {players.length}{" "}
                   {players.length === 1
-                    ? "Player"
-                    : "Players"}
+                    ? t(
+                        "common.player",
+                      )
+                    : t(
+                        "common.players",
+                      )}
                 </h2>
               </div>
             </div>
@@ -364,20 +402,28 @@ function Lobby() {
                         {player.name}
                         {player.id ===
                           localPlayer.id &&
-                          " (You)"}
+                          ` (${t(
+                            "common.you",
+                          )})`}
                       </strong>
 
                       <span>
                         {player.isHost
-                          ? "Host"
-                          : "Player"}
+                          ? t(
+                              "common.host",
+                            )
+                          : t(
+                              "common.player",
+                            )}
                       </span>
                     </div>
 
                     {player.isHost && (
                       <span className="hostBadge">
                         <Crown size={14} />
-                        Host
+                        {t(
+                          "common.host",
+                        )}
                       </span>
                     )}
                   </div>
@@ -391,14 +437,19 @@ function Lobby() {
               <div>
                 <strong>
                   {players.length <= 1
-                    ? "Waiting for friends"
-                    : "Players are joining"}
+                    ? t(
+                        "lobby.waitingFriends",
+                      )
+                    : t(
+                        "lobby.playersJoining",
+                      )}
                 </strong>
 
                 <span>
-                  Anyone with room code{" "}
-                  {room.code} can join this
-                  lobby.
+                  {t(
+                    "lobby.anyoneWithCode",
+                  )}{" "}
+                  {room.code}
                 </span>
               </div>
             </div>
@@ -413,9 +464,57 @@ function Lobby() {
 
                 <h2>
                   {isHost
-                    ? "Choose a game"
-                    : "Selected game"}
+                    ? t(
+                        "lobby.chooseGame",
+                      )
+                    : t(
+                        "lobby.selectedGame",
+                      )}
                 </h2>
+              </div>
+            </div>
+
+            <div className="gameLanguageSelector">
+              <span>
+                {t("lobby.gameLanguage")}
+              </span>
+
+              <div className="gameLanguageButtons">
+                <button
+                  type="button"
+                  className={
+                    room.gameLanguage === "de"
+                      ? "active"
+                      : ""
+                  }
+                  disabled={!isHost}
+                  onClick={() => {
+                    void updateGameLanguage(
+                      room.id,
+                      "de",
+                    );
+                  }}
+                >
+                  🇩🇪 {t("common.german")}
+                </button>
+
+                <button
+                  type="button"
+                  className={
+                    room.gameLanguage === "en"
+                      ? "active"
+                      : ""
+                  }
+                  disabled={!isHost}
+                  onClick={() => {
+                    void updateGameLanguage(
+                      room.id,
+                      "en",
+                    );
+                  }}
+                >
+                  🇬🇧 {t("common.english")}
+                </button>
               </div>
             </div>
 
@@ -446,13 +545,15 @@ function Lobby() {
 
                     <div className="lobbyGameText">
                       <strong>
-                        {game.name}
+                        {t(
+                          game.nameKey,
+                        )}
                       </strong>
 
                       <span>
-                        {
-                          game.description
-                        }
+                        {t(
+                          game.descriptionKey,
+                        )}
                       </span>
                     </div>
 
@@ -483,14 +584,12 @@ function Lobby() {
               void handleStartGame();
             }}
           >
-            Start{" "}
-            {
-              games.find(
-                (game) =>
-                  game.id ===
-                  room.selectedGame,
-              )?.name
-            }
+            {t("lobby.start")}{" "}
+            {selectedGame
+              ? t(
+                  selectedGame.nameKey,
+                )
+              : ""}
 
             <ChevronRight
               size={20}
@@ -498,7 +597,9 @@ function Lobby() {
           </button>
         ) : (
           <div className="waitingHost">
-            Waiting for the host to start the game...
+            {t(
+              "lobby.waitingHost",
+            )}
           </div>
         )}
       </div>

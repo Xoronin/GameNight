@@ -4,11 +4,13 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../hooks/useLanguage";
 import { signIn } from "../services/authService";
 import "../styles/auth.css";
 
 function Login() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [username, setUsername] =
     useState("");
@@ -45,7 +47,7 @@ function Login() {
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : "Could not sign in.",
+          : t("auth.signInError"),
       );
     } finally {
       setLoading(false);
@@ -56,24 +58,21 @@ function Login() {
     <div className="page">
       <button
         className="backButton"
-        onClick={() =>
-          navigate("/")
-        }
+        onClick={() => navigate("/")}
       >
         <ArrowLeft size={18} />
-        Home
+        {t("common.home")}
       </button>
 
       <div className="authCard">
         <span className="eyebrow">
-          WELCOME BACK
+          {t("auth.welcomeBack")}
         </span>
 
-        <h1>Sign in</h1>
+        <h1>{t("auth.signIn")}</h1>
 
         <p>
-          Sign in with your Game Night
-          username and password.
+          {t("auth.signInDescription")}
         </p>
 
         <form
@@ -84,7 +83,7 @@ function Login() {
           }}
         >
           <label>
-            Username
+            {t("auth.username")}
 
             <input
               value={username}
@@ -101,7 +100,7 @@ function Login() {
           </label>
 
           <label>
-            Password
+            {t("auth.password")}
 
             <input
               type="password"
@@ -111,7 +110,9 @@ function Login() {
                   event.target.value,
                 )
               }
-              placeholder="Your password"
+              placeholder={t(
+                "auth.passwordPlaceholder",
+              )}
               autoComplete="current-password"
             />
           </label>
@@ -136,8 +137,8 @@ function Login() {
             )}
 
             {loading
-              ? "Signing in..."
-              : "Sign in"}
+              ? t("auth.signingIn")
+              : t("auth.signIn")}
           </button>
         </form>
 
@@ -148,7 +149,7 @@ function Login() {
           }
           type="button"
         >
-          No account yet? Create one
+          {t("auth.noAccount")}
         </button>
       </div>
     </div>

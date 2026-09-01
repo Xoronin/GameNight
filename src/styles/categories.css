@@ -1,0 +1,255 @@
+.categoriesGame {
+  max-width: 850px;
+  margin: 50px auto 0;
+}
+
+.categoriesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+.categoriesHeader strong {
+  display: block;
+
+  margin-top: 5px;
+
+  font-size: 18px;
+}
+
+.letterBadge {
+  width: 54px;
+  height: 54px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 15px;
+
+  background: #fb923c18;
+  color: #fb923c;
+
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.categoriesStart,
+.categoriesPanel {
+  margin-top: 25px;
+  padding: 36px;
+
+  border: 1px solid #ffffff0d;
+  border-radius: 22px;
+
+  background: #111117;
+}
+
+.categoriesStart {
+  text-align: center;
+}
+
+.categoriesStartIcon {
+  width: 82px;
+  height: 82px;
+
+  margin: 0 auto 25px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 22px;
+
+  background: #fb923c12;
+  color: #fb923c;
+}
+
+.categoriesStart h1,
+.categoriesPanel h1 {
+  margin: 12px 0;
+
+  font-size: 40px;
+}
+
+.categoriesStart p,
+.categoriesPanel > p {
+  color: #898996;
+  line-height: 1.6;
+}
+
+.categoriesPanel h1 span {
+  color: #fb923c;
+}
+
+.categoryInputs {
+  margin: 28px 0;
+
+  display: grid;
+  gap: 12px;
+}
+
+.categoryInputs label {
+  display: grid;
+  grid-template-columns:
+    150px minmax(0, 1fr);
+  align-items: center;
+
+  gap: 14px;
+
+  text-align: left;
+}
+
+.categoryInputs label > span {
+  color: #aaaab5;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.categoryInputs input {
+  min-height: 50px;
+
+  padding: 0 14px;
+
+  border: 1px solid #ffffff12;
+  border-radius: 11px;
+
+  background: #09090d;
+  color: #f7f7fb;
+
+  outline: none;
+}
+
+.categoryInputs input:focus {
+  border-color: #fb923c;
+}
+
+.categoriesMainButton {
+  justify-content: center;
+}
+
+.categoriesWaiting {
+  margin-top: 24px;
+  padding: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  border: 1px solid #ffffff0d;
+  border-radius: 13px;
+
+  background: #18181f;
+  color: #898996;
+}
+
+.categoriesWaiting strong,
+.categoriesWaiting span {
+  display: block;
+}
+
+.categoriesWaiting strong {
+  color: #d4d4dc;
+}
+
+.categoriesWaiting span {
+  margin-top: 3px;
+
+  font-size: 12px;
+}
+
+.categoriesReveal {
+  margin-top: 28px;
+
+  display: grid;
+  gap: 18px;
+}
+
+.categoryRevealBlock {
+  overflow: hidden;
+
+  border: 1px solid #ffffff0d;
+  border-radius: 14px;
+
+  background: #18181f;
+}
+
+.categoryRevealBlock h2 {
+  margin: 0;
+  padding: 13px 15px;
+
+  border-bottom: 1px solid #ffffff0d;
+
+  color: #fb923c;
+
+  font-size: 14px;
+}
+
+.categoryRevealRow {
+  padding: 12px 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  border-bottom: 1px solid #ffffff08;
+}
+
+.categoryRevealRow:last-child {
+  border-bottom: 0;
+}
+
+.categoryRevealRow span {
+  color: #858591;
+
+  font-size: 12px;
+}
+
+.categoryRevealRow strong {
+  font-size: 14px;
+}
+
+.categoriesActions {
+  margin-top: 26px;
+
+  display: flex;
+  justify-content: flex-end;
+
+  gap: 10px;
+}
+
+@media (max-width: 560px) {
+  .categoriesGame {
+    margin-top: 35px;
+  }
+
+  .categoriesStart,
+  .categoriesPanel {
+    padding: 24px 18px;
+  }
+
+  .categoriesStart h1,
+  .categoriesPanel h1 {
+    font-size: 31px;
+  }
+
+  .categoryInputs label {
+    grid-template-columns: 1fr;
+
+    gap: 6px;
+  }
+
+  .categoriesActions {
+    flex-direction: column;
+  }
+
+  .categoriesActions button {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -6,6 +6,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useLanguage } from "../hooks/useLanguage";
 import { joinRoom } from "../services/roomService";
 import "../styles/lobby.css";
 import {
@@ -15,6 +16,7 @@ import {
 
 function JoinRoom() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     user,
@@ -83,7 +85,7 @@ function JoinRoom() {
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : "Could not join room.",
+          : t("joinRoom.error"),
       );
     } finally {
       setJoining(false);
@@ -94,20 +96,18 @@ function JoinRoom() {
     <div className="page">
       <button
         className="backButton"
-        onClick={() =>
-          navigate("/")
-        }
+        onClick={() => navigate("/")}
       >
         <ArrowLeft size={18} />
-        Home
+        {t("common.home")}
       </button>
 
       <div className="centerCard">
         <span className="eyebrow">
-          JOIN A GAME
+          {t("joinRoom.badge")}
         </span>
 
-        <h1>Join a room</h1>
+        <h1>{t("joinRoom.title")}</h1>
 
         {isLoggedIn ? (
           <div className="accountIdentity">
@@ -123,15 +123,17 @@ function JoinRoom() {
               </strong>
 
               <span>
-                Joining with your profile
+                {t(
+                  "joinRoom.joiningWithProfile",
+                )}
               </span>
             </div>
           </div>
         ) : (
           <p>
-            Enter your name and the room
-            code shown on the host's
-            screen.
+            {t(
+              "joinRoom.description",
+            )}
           </p>
         )}
 
@@ -148,7 +150,7 @@ function JoinRoom() {
                 className="inputLabel"
                 htmlFor="join-name"
               >
-                Your name
+                {t("createRoom.yourName")}
               </label>
 
               <input
@@ -160,7 +162,9 @@ function JoinRoom() {
                     event.target.value,
                   )
                 }
-                placeholder="Your name"
+                placeholder={t(
+                  "createRoom.yourName",
+                )}
                 maxLength={20}
                 autoFocus
               />
@@ -171,7 +175,7 @@ function JoinRoom() {
             className="inputLabel"
             htmlFor="room-code"
           >
-            Room code
+            {t("joinRoom.roomCode")}
           </label>
 
           <input
@@ -213,8 +217,8 @@ function JoinRoom() {
             )}
 
             {joining
-              ? "Joining..."
-              : "Join Room"}
+              ? t("joinRoom.joining")
+              : t("joinRoom.join")}
           </button>
         </form>
 
@@ -227,7 +231,9 @@ function JoinRoom() {
             type="button"
           >
             <User size={15} />
-            Sign in to use your profile
+            {t(
+              "joinRoom.signInHint",
+            )}
           </button>
         )}
       </div>

@@ -6,6 +6,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useLanguage } from "../hooks/useLanguage";
 import { createRoom } from "../services/roomService";
 import "../styles/lobby.css";
 import {
@@ -16,6 +17,7 @@ import {
 
 function CreateRoom() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     user,
@@ -85,7 +87,7 @@ function CreateRoom() {
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : "Could not create room.",
+          : t("createRoom.error"),
       );
     } finally {
       setCreating(false);
@@ -96,30 +98,33 @@ function CreateRoom() {
     <div className="page">
       <button
         className="backButton"
-        onClick={() =>
-          navigate("/")
-        }
+        onClick={() => navigate("/")}
       >
         <ArrowLeft size={18} />
-        Home
+        {t("common.home")}
       </button>
 
       <div className="centerCard">
         <span className="eyebrow">
-          CREATE ROOM
+          {t("createRoom.badge")}
         </span>
 
         <h1>
           {isLoggedIn
-            ? "Create a room"
-            : "Who's playing?"}
+            ? t(
+                "createRoom.titleLoggedIn",
+              )
+            : t(
+                "createRoom.titleGuest",
+              )}
         </h1>
 
         {isLoggedIn ? (
           <>
             <p>
-              You'll create the room as
-              your Game Night profile.
+              {t(
+                "createRoom.loggedInDescription",
+              )}
             </p>
 
             <div className="accountIdentity">
@@ -135,16 +140,18 @@ function CreateRoom() {
                 </strong>
 
                 <span>
-                  Signed in
+                  {t(
+                    "createRoom.signedIn",
+                  )}
                 </span>
               </div>
             </div>
           </>
         ) : (
           <p>
-            Enter your name. You'll
-            become the host of the new
-            room.
+            {t(
+              "createRoom.guestDescription",
+            )}
           </p>
         )}
 
@@ -161,7 +168,7 @@ function CreateRoom() {
                 className="inputLabel"
                 htmlFor="player-name"
               >
-                Your name
+                {t("createRoom.yourName")}
               </label>
 
               <input
@@ -173,7 +180,9 @@ function CreateRoom() {
                     event.target.value,
                   )
                 }
-                placeholder="Your name"
+                placeholder={t(
+                  "createRoom.yourName",
+                )}
                 maxLength={20}
                 autoFocus
               />
@@ -199,8 +208,12 @@ function CreateRoom() {
             }
           >
             {creating
-              ? "Creating..."
-              : "Create Room"}
+              ? t(
+                  "createRoom.creating",
+                )
+              : t(
+                  "createRoom.create",
+                )}
 
             {!creating && (
               <ChevronRight
@@ -219,7 +232,9 @@ function CreateRoom() {
             type="button"
           >
             <User size={15} />
-            Sign in to keep your profile
+            {t(
+              "createRoom.signInHint",
+            )}
           </button>
         )}
       </div>

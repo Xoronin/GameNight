@@ -289,3 +289,9 @@ footer {
         gap: 8px;
     }
 }
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

@@ -9,6 +9,7 @@ type RoomRow = {
   selected_game: string;
   status: RoomStatus;
   created_at: string;
+  game_language: "en" | "de";
 };
 
 type PlayerRow = {
@@ -29,6 +30,7 @@ function mapRoom(row: RoomRow): Room {
     selectedGame: row.selected_game,
     status: row.status,
     createdAt: row.created_at,
+    gameLanguage: row.game_language,
   };
 }
 
@@ -56,8 +58,10 @@ export async function createRoom(
     .from("rooms")
     .insert({
       code: cleanedCode,
+      host_player_id: null,
       selected_game: "bluff",
       status: "lobby",
+      game_language: "en",
     })
     .select("*")
     .single();
@@ -111,7 +115,20 @@ export async function createRoom(
     .single();
 
   if (updateError) {
-    console.error("Host assignment failed:", updateError);
+    console.error(
+      "Host assignment failed:",
+      updateError,
+    );
+
+    await supabase
+      .from("players")
+      .delete()
+      .eq("id", player.id);
+
+    await supabase
+      .from("rooms")
+      .delete()
+      .eq("id", room.id);
 
     throw new Error(
       `Could not assign room host: ${updateError.message}`,
@@ -261,6 +278,24 @@ export async function leaveRoom(
   if (error) {
     throw new Error(
       `Could not leave room: ${error.message}`,
+    );
+  }
+}
+
+export async function updateGameLanguage(
+  roomId: string,
+  gameLanguage: "en" | "de",
+) {
+  const { error } = await supabase
+    .from("rooms")
+    .update({
+      game_language: gameLanguage,
+    })
+    .eq("id", roomId);
+
+  if (error) {
+    throw new Error(
+      `Could not update game language: ${error.message}`,
     );
   }
 }

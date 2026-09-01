@@ -5,20 +5,31 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import BluffGame from "../games/bluff/BluffGame";
+import CategoriesGame from "../games/categories/CategoriesGame";
+import { useLanguage } from "../hooks/useLanguage";
 
-const gameNames: Record<string, string> = {
-  bluff: "Bluff",
-  minefield: "Minefield",
-  "higher-lower": "Higher / Lower",
-  trivia: "Trivia",
-  categories: "Categories",
-  "draw-guess": "Draw & Guess",
+const gameNameKeys: Record<
+  string,
+  string
+> = {
+  bluff: "games.bluff.name",
+  minefield:
+    "games.minefield.name",
+  "higher-lower":
+    "games.higherLower.name",
+  trivia: "games.trivia.name",
+  categories:
+    "games.categories.name",
+  "draw-guess":
+    "games.drawGuess.name",
 };
 
 function GamePage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
-  const { gameId } = useParams();
+  const { gameId } =
+    useParams();
 
   const [searchParams] =
     useSearchParams();
@@ -26,28 +37,21 @@ function GamePage() {
   const roomCode =
     searchParams.get("room");
 
-  if (gameId === "bluff") {
+  if (gameId === "categories") {
     if (!roomCode) {
       return (
         <div className="page">
-          <button
-            className="backButton"
-            onClick={() => navigate("/")}
-          >
-            <ArrowLeft size={18} />
-            Home
-          </button>
-
           <div className="centerCard">
-            <span className="eyebrow">
-              BLUFF
-            </span>
-
-            <h1>No room selected</h1>
+            <h1>
+              {t(
+                "gamePage.noRoomSelected",
+              )}
+            </h1>
 
             <p>
-              Bluff is now a multiplayer game.
-              Create or join a room first.
+              {t(
+                "gamePage.joinRoomFirst",
+              )}
             </p>
 
             <button
@@ -56,7 +60,58 @@ function GamePage() {
                 navigate("/")
               }
             >
-              Back Home
+              {t("common.home")}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <CategoriesGame
+        roomCode={roomCode}
+      />
+    );
+  }
+
+  if (gameId === "bluff") {
+    if (!roomCode) {
+      return (
+        <div className="page">
+          <button
+            className="backButton"
+            onClick={() =>
+              navigate("/")
+            }
+          >
+            <ArrowLeft size={18} />
+            {t("common.home")}
+          </button>
+
+          <div className="centerCard">
+            <span className="eyebrow">
+              BLUFF
+            </span>
+
+            <h1>
+              {t(
+                "gamePage.noRoomSelected",
+              )}
+            </h1>
+
+            <p>
+              {t(
+                "gamePage.bluffNeedsRoom",
+              )}
+            </p>
+
+            <button
+              className="primaryButton formButton"
+              onClick={() =>
+                navigate("/")
+              }
+            >
+              {t("common.home")}
             </button>
           </div>
         </div>
@@ -70,18 +125,28 @@ function GamePage() {
     );
   }
 
+  const gameNameKey =
+    gameNameKeys[
+      gameId ?? ""
+    ];
+
   const gameName =
-    gameNames[gameId ?? ""] ??
-    "Unknown Game";
+    gameNameKey
+      ? t(gameNameKey)
+      : t(
+          "gamePage.unknownGame",
+        );
 
   return (
     <div className="page">
       <button
         className="backButton"
-        onClick={() => navigate(-1)}
+        onClick={() =>
+          navigate(-1)
+        }
       >
         <ArrowLeft size={18} />
-        Back
+        {t("common.back")}
       </button>
 
       <div className="centerCard">
@@ -92,8 +157,9 @@ function GamePage() {
         <h1>{gameName}</h1>
 
         <p>
-          This game will be implemented
-          after Bluff.
+          {t(
+            "gamePage.notImplemented",
+          )}
         </p>
       </div>
     </div>

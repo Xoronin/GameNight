@@ -4,11 +4,13 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../hooks/useLanguage";
 import { signUp } from "../services/authService";
 import "../styles/auth.css";
 
 function Register() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [username, setUsername] =
     useState("");
@@ -40,7 +42,7 @@ function Register() {
 
     if (password !== confirmPassword) {
       setError(
-        "Passwords do not match.",
+        t("auth.passwordsDontMatch"),
       );
 
       return;
@@ -60,7 +62,7 @@ function Register() {
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : "Could not create account.",
+          : t("auth.createAccountError"),
       );
     } finally {
       setLoading(false);
@@ -75,24 +77,23 @@ function Register() {
     <div className="page">
       <button
         className="backButton"
-        onClick={() =>
-          navigate("/")
-        }
+        onClick={() => navigate("/")}
       >
         <ArrowLeft size={18} />
-        Home
+        {t("common.home")}
       </button>
 
       <div className="authCard">
         <span className="eyebrow">
-          CREATE ACCOUNT
+          {t("auth.createAccountBadge")}
         </span>
 
-        <h1>Join Game Night</h1>
+        <h1>
+          {t("auth.createAccountTitle")}
+        </h1>
 
         <p>
-          Pick a unique username and
-          password. No email required.
+          {t("auth.createAccountDescription")}
         </p>
 
         <form
@@ -103,7 +104,7 @@ function Register() {
           }}
         >
           <label>
-            Username
+            {t("auth.username")}
 
             <input
               value={username}
@@ -120,7 +121,7 @@ function Register() {
           </label>
 
           <label>
-            Password
+            {t("auth.password")}
 
             <input
               type="password"
@@ -130,13 +131,15 @@ function Register() {
                   event.target.value,
                 )
               }
-              placeholder="At least 6 characters"
+              placeholder={t(
+                "auth.newPasswordPlaceholder",
+              )}
               autoComplete="new-password"
             />
           </label>
 
           <label>
-            Confirm password
+            {t("auth.confirmPassword")}
 
             <input
               type="password"
@@ -146,14 +149,16 @@ function Register() {
                   event.target.value,
                 )
               }
-              placeholder="Repeat your password"
+              placeholder={t(
+                "auth.repeatPasswordPlaceholder",
+              )}
               autoComplete="new-password"
             />
           </label>
 
           {!passwordsMatch && (
             <div className="formError">
-              Passwords do not match.
+              {t("auth.passwordsDontMatch")}
             </div>
           )}
 
@@ -179,8 +184,8 @@ function Register() {
             )}
 
             {loading
-              ? "Creating account..."
-              : "Create Account"}
+              ? t("auth.creatingAccount")
+              : t("auth.createAccount")}
           </button>
         </form>
 
@@ -191,7 +196,7 @@ function Register() {
           }
           type="button"
         >
-          Already have an account? Sign in
+          {t("auth.alreadyAccount")}
         </button>
       </div>
     </div>
