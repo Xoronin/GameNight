@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import BluffGame from "../games/bluff/BluffGame";
 import CategoriesGame from "../games/categories/CategoriesGame";
+import MinefieldGame from "../games/minefield/MinefieldGame";
 import { useLanguage } from "../hooks/useLanguage";
 
 const gameNameKeys: Record<
@@ -37,10 +38,32 @@ function GamePage() {
   const roomCode =
     searchParams.get("room");
 
-  if (gameId === "categories") {
+  const multiplayerGames =
+    ["bluff", "categories", "minefield"];
+
+  if (
+    gameId &&
+    multiplayerGames.includes(
+      gameId,
+    )
+  ) {
     if (!roomCode) {
       return (
         <div className="page">
+          <button
+            className="backButton"
+            type="button"
+            onClick={() =>
+              navigate("/")
+            }
+          >
+            <ArrowLeft
+              size={18}
+            />
+
+            {t("common.home")}
+          </button>
+
           <div className="centerCard">
             <h1>
               {t(
@@ -56,6 +79,7 @@ function GamePage() {
 
             <button
               className="primaryButton formButton"
+              type="button"
               onClick={() =>
                 navigate("/")
               }
@@ -67,62 +91,37 @@ function GamePage() {
       );
     }
 
-    return (
-      <CategoriesGame
-        roomCode={roomCode}
-      />
-    );
-  }
-
-  if (gameId === "bluff") {
-    if (!roomCode) {
+    if (
+      gameId === "bluff"
+    ) {
       return (
-        <div className="page">
-          <button
-            className="backButton"
-            onClick={() =>
-              navigate("/")
-            }
-          >
-            <ArrowLeft size={18} />
-            {t("common.home")}
-          </button>
-
-          <div className="centerCard">
-            <span className="eyebrow">
-              BLUFF
-            </span>
-
-            <h1>
-              {t(
-                "gamePage.noRoomSelected",
-              )}
-            </h1>
-
-            <p>
-              {t(
-                "gamePage.bluffNeedsRoom",
-              )}
-            </p>
-
-            <button
-              className="primaryButton formButton"
-              onClick={() =>
-                navigate("/")
-              }
-            >
-              {t("common.home")}
-            </button>
-          </div>
-        </div>
+        <BluffGame
+          roomCode={roomCode}
+        />
       );
     }
 
-    return (
-      <BluffGame
-        roomCode={roomCode}
-      />
-    );
+    if (
+      gameId ===
+      "categories"
+    ) {
+      return (
+        <CategoriesGame
+          roomCode={roomCode}
+        />
+      );
+    }
+
+    if (
+      gameId ===
+      "minefield"
+    ) {
+      return (
+        <MinefieldGame
+          roomCode={roomCode}
+        />
+      );
+    }
   }
 
   const gameNameKey =
@@ -141,11 +140,15 @@ function GamePage() {
     <div className="page">
       <button
         className="backButton"
+        type="button"
         onClick={() =>
           navigate(-1)
         }
       >
-        <ArrowLeft size={18} />
+        <ArrowLeft
+          size={18}
+        />
+
         {t("common.back")}
       </button>
 
@@ -154,7 +157,9 @@ function GamePage() {
           GAME
         </span>
 
-        <h1>{gameName}</h1>
+        <h1>
+          {gameName}
+        </h1>
 
         <p>
           {t(

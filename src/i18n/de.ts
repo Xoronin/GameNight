@@ -238,6 +238,31 @@ const de = {
       profession: "Beruf",
     },
   },
+
+  minefield: {
+    startTitle: "Finde die richtigen Antworten",
+    startDescription:
+      "Wähle Antworten aus, die zur Kategorie passen. Eine falsche Antwort ist eine Mine.",
+    difficulty: "Schwierigkeit",
+    difficultyMixed: "Gemischt",
+    difficultyEasy: "Einfach",
+    difficultyMedium: "Mittel",
+    difficultyHard: "Schwer",
+    yourTurn: "Dein Zug — wähle eine Kachel",
+    waitingFor: "Warte auf",
+    correctAnswersFound: "korrekte Antworten gefunden",
+    minefieldCleared: "Minenfeld geklärt!",
+    roundComplete: "Runde beendet",
+    allAnswersRevealed: "Alle Antworten sind jetzt sichtbar.",
+    nextRound: "Nächste Runde",
+    finishGame: "Spiel beenden",
+    waitingForHost: "Warte darauf, dass der Host fortfährt...",
+    loading: "Minenfeld wird geladen...",
+    loadError: "Minenfeld konnte nicht geladen werden",
+    joinAgain: "Tritt dem Raum erneut bei.",
+    questionMissing: "Frage fehlt",
+  },
+
   gamePage: {
     noRoomSelected: "Kein Raum ausgewählt",
     joinRoomFirst:
