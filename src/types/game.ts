@@ -42,6 +42,7 @@ export type CategoriesRound = {
   letter: string;
   status: CategoriesRoundStatus;
   createdAt: string;
+  scoresApplied: boolean;
 };
 
 export type CategoriesAnswer = {

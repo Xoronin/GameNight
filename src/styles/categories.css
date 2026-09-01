@@ -253,3 +253,216 @@
     justify-content: center;
   }
 }
+.categoriesReveal {
+  display: grid;
+  gap: 18px;
+  margin-top: 26px;
+}
+
+.categoryRevealBlock {
+  overflow: hidden;
+
+  border: 1px solid #ffffff10;
+  border-radius: 16px;
+
+  background: #15151c;
+}
+
+.categoryRevealBlock h2 {
+  margin: 0;
+  padding: 15px 18px;
+
+  border-bottom: 1px solid #ffffff0d;
+
+  background: #ffffff04;
+
+  color: #f7f7fb;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.categoryRevealRow {
+  min-height: 64px;
+  padding: 13px 18px;
+
+  display: grid;
+  grid-template-columns: minmax(110px, 0.4fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+
+  border-bottom: 1px solid #ffffff08;
+}
+
+.categoryRevealRow:last-child {
+  border-bottom: 0;
+}
+
+.categoryRevealRow > span {
+  overflow: hidden;
+
+  color: #858593;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.categoryRevealAnswer {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.categoryRevealAnswer > strong {
+  overflow-wrap: anywhere;
+
+  color: #f7f7fb;
+
+  font-size: 15px;
+}
+
+.validationValid,
+.validationInvalid,
+.validationUnknown {
+  flex-shrink: 0;
+
+  padding: 6px 9px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.validationValid {
+  border: 1px solid #4ade8035;
+
+  background: #4ade8010;
+  color: #4ade80;
+}
+
+.validationInvalid {
+  border: 1px solid #fb718535;
+
+  background: #fb718510;
+  color: #fb7185;
+}
+
+.validationUnknown {
+  border: 1px solid #fbbf2435;
+
+  background: #fbbf2410;
+  color: #fbbf24;
+}
+
+.validationReview {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reviewButtons {
+  display: flex;
+  gap: 6px;
+}
+
+.reviewButtons button {
+  min-height: 30px;
+  padding: 0 10px;
+
+  border-radius: 8px;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.reviewAccept {
+  border: 1px solid #4ade8035;
+
+  background: #4ade8010;
+  color: #4ade80;
+}
+
+.reviewAccept:hover {
+  background: #4ade801c;
+}
+
+.reviewReject {
+  border: 1px solid #fb718535;
+
+  background: #fb718510;
+  color: #fb7185;
+}
+
+.reviewReject:hover {
+  background: #fb71851c;
+}
+
+.reviewButtons button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.categoryRevealRow.valid {
+  background:
+    linear-gradient(
+      90deg,
+      #4ade8005,
+      transparent 35%
+    );
+}
+
+.categoryRevealRow.invalid {
+  background:
+    linear-gradient(
+      90deg,
+      #fb718505,
+      transparent 35%
+    );
+}
+
+.categoryRevealRow.unknown {
+  background:
+    linear-gradient(
+      90deg,
+      #fbbf2405,
+      transparent 35%
+    );
+}
+
+@media (max-width: 650px) {
+  .categoryRevealRow {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .categoryRevealAnswer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .validationReview {
+    width: 100%;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .reviewButtons {
+    width: 100%;
+  }
+
+  .reviewButtons button {
+    flex: 1;
+  }
+}

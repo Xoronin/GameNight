@@ -12,6 +12,7 @@ type CategoriesRoundRow = {
   letter: string;
   status: CategoriesRoundStatus;
   created_at: string;
+  scores_applied: boolean;
 };
 
 type CategoriesAnswerRow = {
@@ -49,6 +50,8 @@ function mapRound(
     letter: row.letter,
     status: row.status,
     createdAt: row.created_at,
+    scoresApplied:
+      row.scores_applied,
   };
 }
 
@@ -242,6 +245,51 @@ export async function returnCategoriesToLobby(
   if (error) {
     throw new Error(
       `Could not return to lobby: ${error.message}`,
+    );
+  }
+}
+
+export async function reviewCategoriesAnswer(
+  answerId: string,
+  accepted: boolean,
+  points: number,
+) {
+  const { error } = await supabase
+    .from("categories_answers")
+    .update({
+      validation_status:
+        accepted ? "valid" : "invalid",
+      validation_source: "manual",
+      validation_reason:
+        accepted
+          ? "Accepted by host"
+          : "Rejected by host",
+      points:
+        accepted ? points : 0,
+    })
+    .eq("id", answerId);
+
+  if (error) {
+    throw new Error(
+      `Could not review answer: ${error.message}`,
+    );
+  }
+}
+
+export async function finalizeCategoriesRound(
+  roundId: string,
+) {
+  const { error } =
+    await supabase.rpc(
+      "finalize_categories_round",
+      {
+        p_round_id: roundId,
+      },
+    );
+
+  if (error) {
+    throw new Error(
+      `Could not finalize Categories round: ${error.message}`,
     );
   }
 }

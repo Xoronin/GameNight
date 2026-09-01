@@ -80,14 +80,23 @@ export async function validateCategoriesRound(
     }
 
     const result =
-      await validateCategoryAnswer({
-        category:
-          answer.categoryKey,
-        letter,
-        answer:
-          answer.answer,
-        language,
-      });
+        await validateCategoryAnswer({
+            category:
+            answer.categoryKey,
+            letter,
+            answer:
+            answer.answer,
+            language,
+        });
+
+        console.log(
+        "Validation result:",
+        {
+            answer: answer.answer,
+            category: answer.categoryKey,
+            result,
+        },
+    );
 
     let points = 0;
 
@@ -108,33 +117,35 @@ export async function validateCategoriesRound(
     }
 
     const {
-      error,
-    } = await supabase
-      .from(
-        "categories_answers",
-      )
-      .update({
-        validation_status:
-          result.status,
+        data: updatedAnswer,
+        error,
+        } = await supabase
+        .from("categories_answers")
+        .update({
+            validation_status:
+            result.status,
+            validation_source:
+            result.source,
+            validation_reason:
+            result.reason,
+            points,
+        })
+        .eq("id", answer.id)
+        .select(
+            "id, validation_status, validation_source, validation_reason, points",
+        )
+        .single();
 
-        validation_source:
-          result.source,
+        if (error) {
+        throw new Error(
+            `Could not save validation: ${error.message}`,
+        );
+        }
 
-        validation_reason:
-          result.reason,
-
-        points,
-      })
-      .eq(
-        "id",
-        answer.id,
-      );
-
-    if (error) {
-      throw new Error(
-        `Could not save validation: ${error.message}`,
-      );
-    }
+        console.log(
+        "Validation saved:",
+        updatedAnswer,
+    );
 
     /*
      * Be gentle with the public

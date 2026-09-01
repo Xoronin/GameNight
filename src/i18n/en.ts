@@ -224,7 +224,9 @@ const en = {
     "Waiting for the host...",
     round: "Round",
     review: "Review",
-    
+    accept: "Accept",
+    reject: "Reject",
+
     labels: {
       city: "City",
       country: "Country",

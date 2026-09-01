@@ -224,7 +224,9 @@ const de = {
     waitingHost:
     "Warte auf den Host...",
     round: "Runde",
-    review: "Review",
+    review: "Prüfen",
+    accept: "Akzeptieren",
+    reject: "Ablehnen",
 
     labels: {
       city: "Stadt",

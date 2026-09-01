@@ -19,7 +19,9 @@ import { translate } from "../../i18n/i18n";
 import { useRoom } from "../../hooks/useRoom";
 import {
   createCategoriesRound,
+  finalizeCategoriesRound,
   returnCategoriesToLobby,
+  reviewCategoriesAnswer,
   setCategoriesRoundStatus,
   submitCategoriesAnswers,
 } from "../../services/categoriesService";
@@ -80,10 +82,13 @@ function CategoriesGame({
     room?.id,
   );
 
-  /*
-   * The complete game UI uses the
-   * room language.
-   */
+  const hasPendingReviews =
+  answers.some(
+    (answer) =>
+      answer.validationStatus ===
+      "unknown",
+  );
+
   const gameLanguage =
     room?.gameLanguage ?? "en";
 
@@ -178,6 +183,30 @@ function CategoriesGame({
       setValues({});
     };
 
+  const continueToNextRound =
+    async () => {
+      if (
+        !round ||
+        !room ||
+        !isHost ||
+        hasPendingReviews
+      ) {
+        return;
+      }
+
+      await finalizeCategoriesRound(
+        round.id,
+      );
+
+      await createCategoriesRound(
+        room.id,
+        round.roundNumber + 1,
+        pickLetter(),
+      );
+
+      setValues({});
+    };
+
   const submit =
     async () => {
       if (
@@ -221,13 +250,57 @@ function CategoriesGame({
     async () => {
       if (
         !room ||
-        !isHost
+        !round ||
+        !isHost ||
+        hasPendingReviews
       ) {
         return;
       }
 
+      await finalizeCategoriesRound(
+        round.id,
+      );
+
       await returnCategoriesToLobby(
         room.id,
+      );
+    };
+    
+  const manualReview =
+    async (
+      answerId: string,
+      accepted: boolean,
+      answerText: string,
+      categoryKey: string,
+    ) => {
+      const normalized =
+        answerText
+          .trim()
+          .toLocaleLowerCase(
+            gameLanguage,
+          );
+
+      const duplicateCount =
+        answers.filter(
+          (item) =>
+            item.categoryKey ===
+              categoryKey &&
+            item.answer
+              .trim()
+              .toLocaleLowerCase(
+                gameLanguage,
+              ) === normalized,
+        ).length;
+
+      const points =
+        duplicateCount > 1
+          ? 5
+          : 10;
+
+      await reviewCategoriesAnswer(
+        answerId,
+        accepted,
+        points,
       );
     };
 
@@ -293,9 +366,6 @@ function CategoriesGame({
     return null;
   }
 
-  /*
-   * WAITING FOR FIRST ROUND
-   */
   if (!round) {
     return (
       <div className="page gamePage">
@@ -358,9 +428,6 @@ function CategoriesGame({
     );
   }
 
-  /*
-   * ANSWERING
-   */
   if (
     round.status ===
     "answering"
@@ -550,9 +617,6 @@ function CategoriesGame({
     );
   }
 
-  /*
-   * REVEAL
-   */
   const grouped =
     classicCategories.map(
       (category) => ({
@@ -572,6 +636,10 @@ function CategoriesGame({
 
               return {
                 player,
+
+                answerId:
+                  answer?.id ??
+                  null,
 
                 answer:
                   answer?.answer ??
@@ -620,6 +688,12 @@ function CategoriesGame({
           </div>
         </header>
 
+        {actionError && (
+          <div className="formError">
+            {actionError}
+          </div>
+        )}
+
         <section className="categoriesPanel">
           <h1>
             {gameT(
@@ -645,6 +719,7 @@ function CategoriesGame({
                   {category.answers.map(
                     ({
                       player,
+                      answerId,
                       answer,
                       status,
                       reason,
@@ -686,18 +761,73 @@ function CategoriesGame({
 
                           {status ===
                             "unknown" && (
-                            <span
-                              className="validationUnknown"
-                              title={
-                                reason ??
-                                ""
-                              }
-                            >
-                              ?{" "}
-                              {gameT(
-                                "categories.review",
-                              )}
-                            </span>
+                            <div className="validationReview">
+                              <span
+                                className="validationUnknown"
+                                title={
+                                  reason ??
+                                  ""
+                                }
+                              >
+                                ?{" "}
+                                {gameT(
+                                  "categories.review",
+                                )}
+                              </span>
+
+                              {isHost &&
+                                answerId && (
+                                  <div className="reviewButtons">
+                                    <button
+                                      type="button"
+                                      className="reviewAccept"
+                                      disabled={
+                                        working
+                                      }
+                                      onClick={() => {
+                                        void runAction(
+                                          () =>
+                                            manualReview(
+                                              answerId,
+                                              true,
+                                              answer,
+                                              category.key,
+                                            ),
+                                        );
+                                      }}
+                                    >
+                                      ✓{" "}
+                                      {gameT(
+                                        "categories.accept",
+                                      )}
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      className="reviewReject"
+                                      disabled={
+                                        working
+                                      }
+                                      onClick={() => {
+                                        void runAction(
+                                          () =>
+                                            manualReview(
+                                              answerId,
+                                              false,
+                                              answer,
+                                              category.key,
+                                            ),
+                                        );
+                                      }}
+                                    >
+                                      ✕{" "}
+                                      {gameT(
+                                        "categories.reject",
+                                      )}
+                                    </button>
+                                  </div>
+                                )}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -729,11 +859,12 @@ function CategoriesGame({
               <button
                 className="primaryButton categoriesMainButton"
                 disabled={
-                  working
+                  working ||
+                  hasPendingReviews
                 }
                 onClick={() => {
                   void runAction(
-                    startRound,
+                    continueToNextRound,
                   );
                 }}
               >
