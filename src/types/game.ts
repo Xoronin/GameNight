@@ -104,3 +104,44 @@ export type MinefieldQuestion = {
   correctAnswers: string[];
   wrongAnswers: string[];
 };
+
+export type HigherLowerRoundStatus =
+  | "guessing"
+  | "reveal"
+  | "finished";
+
+export type HigherLowerSessionStatus =
+  | "playing"
+  | "finished";
+
+export type HigherLowerItem = {
+  id: string;
+  label: string;
+  category: string | null;
+  unit: string | null;
+  value: number;
+  difficulty:
+    | "easy"
+    | "medium"
+    | "hard";
+};
+
+export type HigherLowerRound = {
+  id: string;
+  roomId: string;
+  sessionId: string;
+  roundNumber: number;
+  currentItemId: string;
+  nextItemId: string;
+  status: HigherLowerRoundStatus;
+  createdAt: string;
+};
+
+export type HigherLowerGuess = {
+  id: string;
+  roundId: string;
+  playerId: string;
+  guess: "higher" | "lower";
+  isCorrect: boolean | null;
+  createdAt: string;
+};

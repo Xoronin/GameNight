@@ -1,0 +1,376 @@
+.higherLowerGame {
+  width: min(100%, 980px);
+  margin: 0 auto;
+  padding: 24px 0 60px;
+}
+
+.higherLowerStart,
+.higherLowerPanel {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(16, 16, 24, 0.82);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
+}
+
+.higherLowerStart {
+  max-width: 620px;
+  margin: 40px auto 0;
+  text-align: center;
+}
+
+.higherLowerStart h1,
+.higherLowerPanel h1 {
+  margin: 10px 0 12px;
+}
+
+.higherLowerStart p {
+  opacity: 0.72;
+  line-height: 1.6;
+}
+
+.higherLowerHeroIcon {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 22px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.higherLowerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.higherLowerHeader > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.higherLowerScore {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border-radius: 999px;
+  background: rgba(250, 204, 21, 0.1);
+}
+
+.higherLowerProgress {
+  height: 5px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  margin-bottom: 24px;
+}
+
+.higherLowerProgress > div {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    #22c55e,
+    #14b8a6
+  );
+  transition: width 0.3s ease;
+}
+
+.higherLowerError {
+  padding: 12px 15px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+}
+
+.higherLowerCompare {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 18px;
+}
+
+.higherLowerCard {
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 22px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 190px;
+  justify-content: center;
+}
+
+.higherLowerBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.higherLowerLabel {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-top: 4px;
+}
+
+.higherLowerCard h2 {
+  margin: 2px 0;
+  font-size: 1.1rem;
+  line-height: 1.35;
+}
+
+.higherLowerValue {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+.higherLowerValue span {
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0.65;
+}
+
+.higherLowerHidden {
+  opacity: 0.4;
+  letter-spacing: 0.1em;
+}
+
+.higherLowerVs {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.higherLowerGuessButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 26px;
+}
+
+.higherLowerGuessButton {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.055);
+  color: inherit;
+  padding: 20px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.higherLowerGuessButton:not(:disabled):hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.higherLowerGuessButton:disabled {
+  cursor: default;
+}
+
+.higherLowerGuessButton.selected {
+  background: rgba(34, 197, 94, 0.14);
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.higherLowerLocked {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  padding: 12px;
+  margin-top: 16px;
+  border-radius: 12px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.higherLowerFound {
+  text-align: center;
+  opacity: 0.72;
+  font-size: 0.9rem;
+  margin-top: 14px;
+}
+
+.higherLowerResults {
+  display: grid;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.higherLowerResultRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.higherLowerResultRow.correct {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.28);
+}
+
+.higherLowerResultGuess {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.85;
+}
+
+.higherLowerMainButton {
+  margin-top: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.higherLowerWaiting {
+  margin-top: 22px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  opacity: 0.75;
+  text-align: center;
+}
+
+.higherLowerScoreboard {
+  margin-top: 24px;
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.higherLowerScoreRow {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.higherLowerDifficulty {
+  display: grid;
+  gap: 8px;
+  max-width: 280px;
+  margin: 24px auto 0;
+  text-align: left;
+}
+
+.higherLowerDifficulty label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.higherLowerDifficulty select {
+  appearance: none;
+  width: 100%;
+  padding: 13px 42px 13px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.03)
+    );
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.03)
+    ),
+    linear-gradient(
+      135deg,
+      transparent 50%,
+      rgba(255, 255, 255, 0.7) 50%
+    );
+  background-position:
+    center,
+    calc(100% - 18px) center;
+  background-repeat: no-repeat;
+  background-size: auto, 10px 10px;
+  color: #f5f5f5;
+  font: inherit;
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.higherLowerDifficulty select:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+}
+
+.higherLowerDifficulty select:focus {
+  outline: none;
+  border-color: rgba(34, 197, 94, 0.9);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+}
+
+@media (max-width: 720px) {
+  .higherLowerGame {
+    padding-top: 12px;
+  }
+
+  .higherLowerPanel,
+  .higherLowerStart {
+    padding: 22px 16px;
+  }
+
+  .higherLowerCompare {
+    grid-template-columns: 1fr;
+  }
+
+  .higherLowerVs {
+    margin: 0 auto;
+    transform: rotate(90deg);
+  }
+
+  .higherLowerGuessButtons {
+    grid-template-columns: 1fr;
+  }
+}

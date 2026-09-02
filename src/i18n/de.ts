@@ -263,6 +263,37 @@ const de = {
     questionMissing: "Frage fehlt",
   },
 
+  higherLower: {
+    loading: "Höher / Tiefer wird geladen...",
+    loadError: "Höher / Tiefer konnte nicht geladen werden",
+    noPlayerTitle: "Kein Spieler gefunden",
+    joinAgain: "Tritt dem Raum erneut bei.",
+    startTitle: "Höher oder tiefer?",
+    startDescription:
+      "Vergleiche Fakten und Zahlen. Rate, ob der nächste Wert höher oder tiefer ist.",
+    difficulty: "Schwierigkeit",
+    difficultyMixed: "Gemischt",
+    difficultyEasy: "Einfach",
+    difficultyMedium: "Mittel",
+    difficultyHard: "Schwer",
+    current: "Aktuell",
+    next: "Nächstes",
+    guessHigher: "Höher",
+    guessLower: "Tiefer",
+    guessLocked: "Antwort abgegeben",
+    playersGuessed: "Spieler haben getippt",
+    reveal: "Auflösen",
+    itemsMissing: "Einträge fehlen",
+    itemsExhausted:
+      "Keine weiteren Einträge für dieses Spiel verfügbar.",
+    nextRound: "Nächste Runde",
+    finishGame: "Spiel beenden",
+    gameComplete: "SPIEL BEENDET",
+    finalScores: "Endstand",
+    backToLobby: "Zurück zur Lobby",
+    waitingForHost: "Warte auf den Host...",
+  },
+
   gamePage: {
     noRoomSelected: "Kein Raum ausgewählt",
     joinRoomFirst:
