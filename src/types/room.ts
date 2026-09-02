@@ -1,3 +1,5 @@
+import type { GameSettings } from "../data/gameTimers";
+
 export type RoomStatus = "lobby" | "playing" | "finished";
 
 export type Room = {
@@ -8,4 +10,5 @@ export type Room = {
   status: RoomStatus;
   createdAt: string;
   gameLanguage: "en" | "de";
+  gameSettings: GameSettings;
 };

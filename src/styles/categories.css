@@ -19,6 +19,12 @@
   font-size: 18px;
 }
 
+.categoriesHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .letterBadge {
   width: 54px;
   height: 54px;

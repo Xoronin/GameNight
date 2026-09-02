@@ -9,6 +9,7 @@ import CategoriesGame from "../games/categories/CategoriesGame";
 import DrawingGame from "../games/draw-guess/DrawingGame";
 import HigherLowerGame from "../games/higher-lower/HigherLowerGame";
 import MinefieldGame from "../games/minefield/MinefieldGame";
+import TriviaGame from "../games/trivia/TriviaGame";
 import { useLanguage } from "../hooks/useLanguage";
 
 const gameNameKeys: Record<
@@ -41,7 +42,7 @@ function GamePage() {
     searchParams.get("room");
 
   const multiplayerGames =
-    ["bluff", "categories", "minefield", "draw-guess", "higher-lower"];
+    ["bluff", "categories", "minefield", "draw-guess", "higher-lower", "trivia"];
 
   if (
     gameId &&
@@ -142,6 +143,16 @@ function GamePage() {
     ) {
       return (
         <HigherLowerGame
+          roomCode={roomCode}
+        />
+      );
+    }
+
+    if (
+      gameId === "trivia"
+    ) {
+      return (
+        <TriviaGame
           roomCode={roomCode}
         />
       );

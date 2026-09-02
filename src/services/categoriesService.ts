@@ -13,6 +13,7 @@ type CategoriesRoundRow = {
   status: CategoriesRoundStatus;
   created_at: string;
   scores_applied: boolean;
+  ends_at: string;
 };
 
 type CategoriesAnswerRow = {
@@ -52,6 +53,7 @@ function mapRound(
     createdAt: row.created_at,
     scoresApplied:
       row.scores_applied,
+    endsAt: row.ends_at,
   };
 }
 
@@ -126,6 +128,7 @@ export async function createCategoriesRound(
   roomId: string,
   roundNumber: number,
   letter: string,
+  timerSeconds: number,
 ) {
   const { data: existing } = await supabase
     .from("categories_rounds")
@@ -147,6 +150,11 @@ export async function createCategoriesRound(
       round_number: roundNumber,
       letter,
       status: "answering",
+      ends_at:
+        new Date(
+          Date.now() +
+            timerSeconds * 1000,
+        ).toISOString(),
     })
     .select("*")
     .single();

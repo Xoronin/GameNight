@@ -1,11 +1,11 @@
-.minefieldGame {
-  width: min(100%, 980px);
+.triviaGame {
+  width: min(100%, 900px);
   margin: 0 auto;
   padding: 24px 0 60px;
 }
 
-.minefieldStart,
-.minefieldPanel {
+.triviaStart,
+.triviaPanel {
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(16, 16, 24, 0.82);
   border-radius: 24px;
@@ -13,53 +13,54 @@
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
 }
 
-.minefieldStart {
+.triviaStart {
   max-width: 620px;
   margin: 40px auto 0;
   text-align: center;
 }
 
-.minefieldStart h1,
-.minefieldPanel h1 {
-  margin: 10px 0 12px;
+.triviaStart h1,
+.triviaPanel h1 {
+  margin: 10px 0 22px;
 }
 
-.minefieldStart p {
+.triviaStart p {
   opacity: 0.72;
   line-height: 1.6;
 }
 
-.minefieldHeroIcon {
+.triviaHeroIcon {
   width: 76px;
   height: 76px;
   margin: 0 auto 22px;
   border-radius: 22px;
   display: grid;
   place-items: center;
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #60a5fa;
 }
 
-.minefieldHeader {
+.triviaHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
 }
 
-.minefieldHeader > div:first-child {
+.triviaHeader > div:first-child {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.minefieldHeaderRight {
+.triviaHeaderRight {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.minefieldScore {
+.triviaScore {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -68,7 +69,7 @@
   background: rgba(250, 204, 21, 0.1);
 }
 
-.minefieldProgress {
+.triviaProgress {
   height: 5px;
   border-radius: 999px;
   overflow: hidden;
@@ -76,62 +77,37 @@
   margin-bottom: 24px;
 }
 
-.minefieldProgress > div {
+.triviaProgress > div {
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(
     90deg,
-    #ef4444,
-    #f97316
+    #3b82f6,
+    #60a5fa
   );
   transition: width 0.3s ease;
 }
 
-.minefieldCategory {
+.triviaCategory {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   padding: 7px 11px;
   border-radius: 999px;
   font-size: 0.82rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  margin-bottom: 10px;
 }
 
-.minefieldTurn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 7px;
-  padding: 12px;
-  margin: 24px 0 10px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.minefieldMyTurn {
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.2);
-}
-
-.minefieldFound {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 7px;
-  opacity: 0.72;
-  font-size: 0.9rem;
-  margin-bottom: 22px;
-}
-
-.minefieldGrid {
+.triviaOptions {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-.minefieldTile {
-  min-height: 100px;
+.triviaOption {
+  min-height: 76px;
   border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.055);
@@ -139,67 +115,128 @@
   padding: 16px;
   cursor: pointer;
   font: inherit;
-  font-weight: 650;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 9px;
+  gap: 12px;
+  text-align: left;
   transition:
     transform 0.15s ease,
     border-color 0.15s ease,
     background 0.15s ease;
 }
 
-.minefieldTile:not(:disabled):hover {
+.triviaOption:not(:disabled):hover {
   transform: translateY(-2px);
   border-color: rgba(255, 255, 255, 0.28);
   background: rgba(255, 255, 255, 0.09);
 }
 
-.minefieldTile:disabled {
+.triviaOption:disabled {
   cursor: default;
 }
 
-.minefieldTile.safe {
+.triviaOptionLetter {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.triviaOptionText {
+  flex: 1;
+}
+
+.triviaOption.selected {
+  background: rgba(59, 130, 246, 0.14);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.triviaOption.correct {
   background: rgba(34, 197, 94, 0.13);
   border-color: rgba(34, 197, 94, 0.35);
 }
 
-.minefieldTile.mine {
+.triviaOption.incorrect {
   background: rgba(239, 68, 68, 0.14);
   border-color: rgba(239, 68, 68, 0.4);
 }
 
-.minefieldRoundResult {
+.triviaLocked {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 14px;
-  margin-top: 24px;
-  padding: 18px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.055);
+  gap: 7px;
+  padding: 12px;
+  margin: 22px 0 0;
+  border-radius: 12px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
-.minefieldRoundResult > div:last-child {
+.triviaFound {
+  text-align: center;
+  opacity: 0.72;
+  font-size: 0.9rem;
+  margin-top: 14px;
+}
+
+.triviaResultBanner {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  padding: 14px;
+  margin: 22px 0 0;
+  border-radius: 12px;
+  font-weight: 700;
 }
 
-.minefieldRoundResult span {
-  opacity: 0.65;
+.triviaResultBanner.correct {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.28);
 }
 
-.minefieldResultIcon {
-  width: 46px;
-  height: 46px;
-  border-radius: 14px;
+.triviaResultBanner.incorrect {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+}
+
+.triviaResults {
   display: grid;
-  place-items: center;
-  background: rgba(255, 255, 255, 0.07);
+  gap: 8px;
+  margin-top: 18px;
 }
 
-.minefieldMainButton {
+.triviaResultRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.triviaResultRow.correct {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.28);
+}
+
+.triviaResultPoints {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.85;
+  font-weight: 700;
+}
+
+.triviaMainButton {
   margin-top: 24px;
   display: inline-flex;
   align-items: center;
@@ -207,15 +244,16 @@
   gap: 8px;
 }
 
-.minefieldWaiting {
+.triviaWaiting {
   margin-top: 22px;
   padding: 14px;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.05);
   opacity: 0.75;
+  text-align: center;
 }
 
-.minefieldError {
+.triviaError {
   padding: 12px 15px;
   margin-bottom: 16px;
   border-radius: 12px;
@@ -223,14 +261,14 @@
   border: 1px solid rgba(239, 68, 68, 0.22);
 }
 
-.minefieldScoreboard {
+.triviaScoreboard {
   margin-top: 24px;
   display: grid;
   gap: 8px;
   text-align: left;
 }
 
-.minefieldScoreRow {
+.triviaScoreRow {
   display: grid;
   grid-template-columns: 34px 1fr auto;
   align-items: center;
@@ -240,27 +278,7 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
-@media (max-width: 720px) {
-  .minefieldGame {
-    padding-top: 12px;
-  }
-
-  .minefieldPanel,
-  .minefieldStart {
-    padding: 22px 16px;
-  }
-
-  .minefieldGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .minefieldTile {
-    min-height: 90px;
-    padding: 12px;
-  }
-}
-
-.minefieldDifficulty {
+.triviaDifficulty {
   display: grid;
   gap: 8px;
   max-width: 280px;
@@ -268,7 +286,7 @@
   text-align: left;
 }
 
-.minefieldDifficulty label {
+.triviaDifficulty label {
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -276,7 +294,7 @@
   opacity: 0.72;
 }
 
-.minefieldDifficulty select {
+.triviaDifficulty select {
   appearance: none;
   width: 100%;
   padding: 13px 42px 13px 14px;
@@ -315,13 +333,28 @@
     box-shadow 0.2s ease;
 }
 
-.minefieldDifficulty select:hover {
+.triviaDifficulty select:hover {
   border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.12);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
 }
 
-.minefieldDifficulty select:focus {
+.triviaDifficulty select:focus {
   outline: none;
-  border-color: rgba(168, 85, 247, 0.9);
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.18);
+  border-color: rgba(59, 130, 246, 0.9);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+@media (max-width: 720px) {
+  .triviaGame {
+    padding-top: 12px;
+  }
+
+  .triviaPanel,
+  .triviaStart {
+    padding: 22px 16px;
+  }
+
+  .triviaOptions {
+    grid-template-columns: 1fr;
+  }
 }

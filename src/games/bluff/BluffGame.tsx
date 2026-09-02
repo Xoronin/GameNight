@@ -11,10 +11,13 @@ import {
   X,
 } from "lucide-react";
 import {
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import { getGameTimerSeconds } from "../../data/gameTimers";
 import {
   useBluffQuestions,
 } from "../../hooks/useBluffQuestions";
@@ -182,6 +185,16 @@ function BluffGame({
     working,
     setWorking,
   ] = useState(false);
+
+  const [
+    secondsLeft,
+    setSecondsLeft,
+  ] = useState(0);
+
+  const triggeredRoundIdRef =
+    useRef<string | null>(
+      null,
+    );
 
   const {
     room,
@@ -379,6 +392,10 @@ function BluffGame({
         firstQuestion.answer[
           gameLanguage
         ],
+        getGameTimerSeconds(
+          room.gameSettings,
+          "bluff",
+        ),
       );
     };
 
@@ -550,6 +567,10 @@ function BluffGame({
         nextQuestion.answer[
           gameLanguage
         ],
+        getGameTimerSeconds(
+          room.gameSettings,
+          "bluff",
+        ),
       );
     };
 
@@ -566,6 +587,64 @@ function BluffGame({
         room.id,
       );
     };
+
+  useEffect(() => {
+    if (
+      !round ||
+      round.status !==
+        "answering"
+    ) {
+      return;
+    }
+
+    const updateTimer =
+      () => {
+        const remaining =
+          Math.max(
+            0,
+            Math.ceil(
+              (new Date(
+                round.endsAt,
+              ).getTime() -
+                Date.now()) /
+                1000,
+            ),
+          );
+
+        setSecondsLeft(
+          remaining,
+        );
+
+        if (
+          remaining === 0 &&
+          isHost &&
+          triggeredRoundIdRef.current !==
+            round.id
+        ) {
+          triggeredRoundIdRef.current =
+            round.id;
+
+          void changeBluffRoundStatus(
+            round.id,
+            "voting",
+          );
+        }
+      };
+
+    updateTimer();
+
+    const timer =
+      window.setInterval(
+        updateTimer,
+        500,
+      );
+
+    return () => {
+      window.clearInterval(
+        timer,
+      );
+    };
+  }, [round, isHost]);
 
   if (
     room?.status ===
@@ -896,18 +975,34 @@ function BluffGame({
             </strong>
           </div>
 
-          <div className="bluffScore">
-            <Crown
-              size={17}
-            />
+          <div className="bluffHeaderRight">
+            {round.status ===
+              "answering" && (
+              <div
+                className={`gameTimerBadge ${
+                  secondsLeft <=
+                  10
+                    ? "gameTimerBadgeLow"
+                    : ""
+                }`}
+              >
+                {secondsLeft}s
+              </div>
+            )}
 
-            {(
-              players.find(
-                (player) =>
-                  player.id ===
-                  localPlayer.id,
-              )?.score ?? 0
-            ).toLocaleString()}
+            <div className="bluffScore">
+              <Crown
+                size={17}
+              />
+
+              {(
+                players.find(
+                  (player) =>
+                    player.id ===
+                    localPlayer.id,
+                )?.score ?? 0
+              ).toLocaleString()}
+            </div>
           </div>
         </header>
 

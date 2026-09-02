@@ -15,6 +15,7 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import { getGameTimerSeconds } from "../../data/gameTimers";
 import { useDrawingRound } from "../../hooks/useDrawingRound";
 import { translate } from "../../i18n/i18n";
 import { useRoom } from "../../hooks/useRoom";
@@ -303,6 +304,10 @@ function DrawingGame({
         room.id,
         roundNumber,
         players,
+        getGameTimerSeconds(
+          room.gameSettings,
+          "draw-guess",
+        ),
       );
     };
 

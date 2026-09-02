@@ -6,7 +6,10 @@ import {
   Users,
 } from "lucide-react";
 import {
+  useCallback,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +17,7 @@ import {
   categoryLetters,
   classicCategories,
 } from "../../data/categoryPacks";
+import { getGameTimerSeconds } from "../../data/gameTimers";
 import { useCategoriesRound } from "../../hooks/useCategoriesRound";
 import { translate } from "../../i18n/i18n";
 import { useRoom } from "../../hooks/useRoom";
@@ -65,6 +69,16 @@ function CategoriesGame({
     actionError,
     setActionError,
   ] = useState<string | null>(null);
+
+  const [
+    secondsLeft,
+    setSecondsLeft,
+  ] = useState(0);
+
+  const triggeredRoundIdRef =
+    useRef<string | null>(
+      null,
+    );
 
   const {
     room,
@@ -178,6 +192,10 @@ function CategoriesGame({
         room.id,
         nextRoundNumber,
         pickLetter(),
+        getGameTimerSeconds(
+          room.gameSettings,
+          "categories",
+        ),
       );
 
       setValues({});
@@ -202,6 +220,10 @@ function CategoriesGame({
         room.id,
         round.roundNumber + 1,
         pickLetter(),
+        getGameTimerSeconds(
+          room.gameSettings,
+          "categories",
+        ),
       );
 
       setValues({});
@@ -223,13 +245,16 @@ function CategoriesGame({
       );
     };
 
-  const reveal =
-    async () => {
+  const reveal = useCallback(
+    async (
+      force = false,
+    ) => {
       if (
         !round ||
         !room ||
         !isHost ||
-        !allSubmitted
+        (!force &&
+          !allSubmitted)
       ) {
         return;
       }
@@ -244,7 +269,15 @@ function CategoriesGame({
         round.id,
         "reveal",
       );
-    };
+    },
+    [
+      round,
+      room,
+      isHost,
+      allSubmitted,
+      answers,
+    ],
+  );
 
   const backToLobby =
     async () => {
@@ -303,6 +336,61 @@ function CategoriesGame({
         points,
       );
     };
+
+  useEffect(() => {
+    if (
+      !round ||
+      round.status !==
+        "answering"
+    ) {
+      return;
+    }
+
+    const updateTimer =
+      () => {
+        const remaining =
+          Math.max(
+            0,
+            Math.ceil(
+              (new Date(
+                round.endsAt,
+              ).getTime() -
+                Date.now()) /
+                1000,
+            ),
+          );
+
+        setSecondsLeft(
+          remaining,
+        );
+
+        if (
+          remaining === 0 &&
+          isHost &&
+          triggeredRoundIdRef.current !==
+            round.id
+        ) {
+          triggeredRoundIdRef.current =
+            round.id;
+
+          void reveal(true);
+        }
+      };
+
+    updateTimer();
+
+    const timer =
+      window.setInterval(
+        updateTimer,
+        500,
+      );
+
+    return () => {
+      window.clearInterval(
+        timer,
+      );
+    };
+  }, [round, isHost, reveal]);
 
   if (
     roomLoading ||
@@ -453,8 +541,21 @@ function CategoriesGame({
               </strong>
             </div>
 
-            <div className="letterBadge">
-              {round.letter}
+            <div className="categoriesHeaderRight">
+              <div
+                className={`gameTimerBadge ${
+                  secondsLeft <=
+                  10
+                    ? "gameTimerBadgeLow"
+                    : ""
+                }`}
+              >
+                {secondsLeft}s
+              </div>
+
+              <div className="letterBadge">
+                {round.letter}
+              </div>
             </div>
           </header>
 

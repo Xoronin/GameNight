@@ -40,6 +40,7 @@ type RoundRow = {
   next_item_id: string;
   status: HigherLowerRoundStatus;
   created_at: string;
+  ends_at: string;
 };
 
 type GuessRow = {
@@ -98,6 +99,7 @@ function mapRound(
     nextItemId: row.next_item_id,
     status: row.status,
     createdAt: row.created_at,
+    endsAt: row.ends_at,
   };
 }
 
@@ -530,6 +532,7 @@ export async function createHigherLowerRound(
   excludedItemIds: string[],
   language: "en" | "de",
   difficulty: HigherLowerDifficulty,
+  timerSeconds: number,
 ): Promise<{
   currentItem: HigherLowerItem;
   nextItem: HigherLowerItem;
@@ -747,6 +750,12 @@ export async function createHigherLowerRound(
         next_item_id:
           nextItemRow.id,
         status: "guessing",
+        ends_at:
+          new Date(
+            Date.now() +
+              timerSeconds *
+                1000,
+          ).toISOString(),
       });
 
   if (roundError) {

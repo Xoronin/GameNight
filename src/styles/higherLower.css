@@ -53,6 +53,12 @@
   gap: 4px;
 }
 
+.higherLowerHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .higherLowerScore {
   display: flex;
   align-items: center;

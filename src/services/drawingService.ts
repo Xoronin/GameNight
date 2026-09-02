@@ -12,8 +12,6 @@ import type {
   RoomPlayer,
 } from "../types/player";
 
-const ROUND_SECONDS = 90;
-
 type DrawingSessionRow = {
   id: string;
   room_id: string;
@@ -346,6 +344,7 @@ export async function createDrawingRound(
   roomId: string,
   roundNumber: number,
   players: RoomPlayer[],
+  timerSeconds: number,
 ): Promise<DrawingRound> {
   if (
     players.length < 2
@@ -403,7 +402,7 @@ export async function createDrawingRound(
   const endsAt =
     new Date(
       startedAt.getTime() +
-        ROUND_SECONDS *
+        timerSeconds *
           1000,
     );
 

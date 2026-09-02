@@ -9,8 +9,14 @@ import {
   Trophy,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
+import { getGameTimerSeconds } from "../../data/gameTimers";
 import { translate } from "../../i18n/i18n";
 import { useRoom } from "../../hooks/useRoom";
 import { useMinefieldRound } from "../../hooks/useMinefieldRound";
@@ -20,6 +26,7 @@ import {
   createMinefieldRound,
   finishMinefieldGame,
   getMinefieldUsedQuestionIds,
+  passMinefieldTurn,
   pickMinefieldTile,
   returnMinefieldRoomToLobby,
 } from "../../services/minefieldService";
@@ -63,6 +70,16 @@ function MinefieldGame({
     ] =
     useState<MinefieldDifficulty>(
         "mixed",
+    );
+
+  const [
+    secondsLeft,
+    setSecondsLeft,
+  ] = useState(0);
+
+  const triggeredTurnRef =
+    useRef<string | null>(
+      null,
     );
 
   const {
@@ -193,6 +210,10 @@ function MinefieldGame({
         usedIds,
         room.gameLanguage,
         activeSession.difficulty,
+        getGameTimerSeconds(
+          room.gameSettings,
+          "minefield",
+        ),
         );
     };
 
@@ -215,6 +236,10 @@ function MinefieldGame({
         tile,
         players,
         localPlayer.id,
+        getGameTimerSeconds(
+          room?.gameSettings,
+          "minefield",
+        ),
       );
     };
 
@@ -260,6 +285,76 @@ function MinefieldGame({
         room.id,
       );
     };
+
+  useEffect(() => {
+    if (
+      !round ||
+      round.status !==
+        "playing" ||
+      !round.turnEndsAt
+    ) {
+      return;
+    }
+
+    const turnKey = `${round.id}:${round.currentPlayerId}`;
+
+    const updateTimer =
+      () => {
+        const remaining =
+          Math.max(
+            0,
+            Math.ceil(
+              (new Date(
+                round.turnEndsAt as string,
+              ).getTime() -
+                Date.now()) /
+                1000,
+            ),
+          );
+
+        setSecondsLeft(
+          remaining,
+        );
+
+        if (
+          remaining === 0 &&
+          isHost &&
+          triggeredTurnRef.current !==
+            turnKey
+        ) {
+          triggeredTurnRef.current =
+            turnKey;
+
+          void passMinefieldTurn(
+            round,
+            players,
+            getGameTimerSeconds(
+              room?.gameSettings,
+              "minefield",
+            ),
+          );
+        }
+      };
+
+    updateTimer();
+
+    const timer =
+      window.setInterval(
+        updateTimer,
+        500,
+      );
+
+    return () => {
+      window.clearInterval(
+        timer,
+      );
+    };
+  }, [
+    round,
+    isHost,
+    players,
+    room?.gameSettings,
+  ]);
 
   if (
     room?.status === "lobby"
@@ -520,16 +615,31 @@ function MinefieldGame({
             </strong>
           </div>
 
-          <div className="minefieldScore">
-            <Crown size={17} />
+          <div className="minefieldHeaderRight">
+            {!roundComplete && (
+              <div
+                className={`gameTimerBadge ${
+                  secondsLeft <=
+                  10
+                    ? "gameTimerBadgeLow"
+                    : ""
+                }`}
+              >
+                {secondsLeft}s
+              </div>
+            )}
 
-            {(
-              players.find(
-                (player) =>
-                  player.id ===
-                  localPlayer.id,
-              )?.score ?? 0
-            ).toLocaleString()}
+            <div className="minefieldScore">
+              <Crown size={17} />
+
+              {(
+                players.find(
+                  (player) =>
+                    player.id ===
+                    localPlayer.id,
+                )?.score ?? 0
+              ).toLocaleString()}
+            </div>
           </div>
         </header>
 

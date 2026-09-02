@@ -148,6 +148,8 @@ const en = {
     roomError: "ROOM ERROR",
     roomNotFound: "Room not found",
     roomGone: "This room no longer exists.",
+    gameSettings: "Game settings",
+    seconds: "seconds",
   },
 
   bluff: {
@@ -200,6 +202,7 @@ const en = {
     points: "points",
     wrongAnswer: "Wrong answer",
     noQuestions: "There are currently no active Bluff questions.",
+    timerLabel: "Answer time",
   },
 
   categories: {
@@ -227,6 +230,7 @@ const en = {
     review: "Review",
     accept: "Accept",
     reject: "Reject",
+    timerLabel: "Answer time",
 
     labels: {
       city: "City",
@@ -261,6 +265,7 @@ const en = {
     joinAgain: "Join the room again.",
     noPlayerTitle: "No player found",
     questionMissing: "Question missing",
+    timerLabel: "Turn time",
   },
 
   higherLower: {
@@ -292,6 +297,37 @@ const en = {
     finalScores: "Final scores",
     backToLobby: "Back to lobby",
     waitingForHost: "Waiting for the host to continue...",
+    timerLabel: "Guess time",
+  },
+
+  trivia: {
+    loading: "Loading Trivia...",
+    loadError: "Could not load Trivia",
+    noPlayerTitle: "No player found",
+    joinAgain: "Join the room again.",
+    startTitle: "Quiz time!",
+    startDescription:
+      "Answer multiple-choice questions across different categories. Fastest correct answers score the most.",
+    difficulty: "Difficulty",
+    difficultyMixed: "Mixed",
+    difficultyEasy: "Easy",
+    difficultyMedium: "Medium",
+    difficultyHard: "Hard",
+    answerLocked: "Answer locked in",
+    playersAnswered: "players answered",
+    reveal: "Reveal",
+    correct: "Correct!",
+    incorrect: "Incorrect",
+    questionMissing: "Question missing",
+    questionsExhausted:
+      "No more questions available for this game.",
+    nextRound: "Next round",
+    finishGame: "Finish game",
+    gameComplete: "GAME COMPLETE",
+    finalScores: "Final scores",
+    backToLobby: "Back to lobby",
+    waitingForHost: "Waiting for the host to continue...",
+    timerLabel: "Answer time",
   },
 
   drawing: {
@@ -314,6 +350,7 @@ const en = {
     finalScores: "Final scores",
     backToLobby: "Back to lobby",
     waitingContinue: "Waiting for the host to continue...",
+    timerLabel: "Drawing time",
   },
 
   gamePage: {

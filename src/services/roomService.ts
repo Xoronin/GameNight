@@ -1,4 +1,5 @@
 import { supabase } from "../lib/supabase";
+import type { GameSettings } from "../data/gameTimers";
 import type { Player, RoomPlayer } from "../types/player";
 import type { Room, RoomStatus } from "../types/room";
 
@@ -10,6 +11,7 @@ type RoomRow = {
   status: RoomStatus;
   created_at: string;
   game_language: "en" | "de";
+  game_settings: GameSettings;
 };
 
 type PlayerRow = {
@@ -31,6 +33,7 @@ function mapRoom(row: RoomRow): Room {
     status: row.status,
     createdAt: row.created_at,
     gameLanguage: row.game_language,
+    gameSettings: row.game_settings ?? {},
   };
 }
 
@@ -278,6 +281,24 @@ export async function leaveRoom(
   if (error) {
     throw new Error(
       `Could not leave room: ${error.message}`,
+    );
+  }
+}
+
+export async function updateGameSettings(
+  roomId: string,
+  gameSettings: GameSettings,
+) {
+  const { error } = await supabase
+    .from("rooms")
+    .update({
+      game_settings: gameSettings,
+    })
+    .eq("id", roomId);
+
+  if (error) {
+    throw new Error(
+      `Could not update game settings: ${error.message}`,
     );
   }
 }

@@ -20,6 +20,12 @@
   font-size: 18px;
 }
 
+.bluffHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .bluffScore {
   display: flex;
   align-items: center;

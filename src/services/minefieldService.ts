@@ -42,6 +42,7 @@ type RoundRow = {
   current_player_id: string | null;
   status: MinefieldRoundStatus;
   created_at: string;
+  turn_ends_at: string | null;
 };
 
 type TileRow = {
@@ -103,6 +104,7 @@ function mapRound(
       row.current_player_id,
     status: row.status,
     createdAt: row.created_at,
+    turnEndsAt: row.turn_ends_at,
   };
 }
 
@@ -569,6 +571,7 @@ export async function createMinefieldRound(
   excludedQuestionIds: string[],
   language: "en" | "de",
   difficulty: MinefieldDifficulty,
+  timerSeconds: number,
 ): Promise<MinefieldQuestion | null> {
   if (players.length === 0) {
     throw new Error(
@@ -698,6 +701,11 @@ export async function createMinefieldRound(
       current_player_id:
         startingPlayer.id,
       status: "playing",
+      turn_ends_at:
+        new Date(
+          Date.now() +
+            timerSeconds * 1000,
+        ).toISOString(),
     })
     .select("*")
     .single();
@@ -779,6 +787,7 @@ export async function pickMinefieldTile(
   tile: MinefieldTile,
   players: RoomPlayer[],
   playerId: string,
+  timerSeconds: number,
 ) {
   if (
     round.status !==
@@ -921,6 +930,11 @@ export async function pickMinefieldTile(
     .update({
       current_player_id:
         nextPlayer.id,
+      turn_ends_at:
+        new Date(
+          Date.now() +
+            timerSeconds * 1000,
+        ).toISOString(),
     })
     .eq("id", round.id)
     .eq(
@@ -931,6 +945,68 @@ export async function pickMinefieldTile(
   if (turnError) {
     throw new Error(
       `Could not change turn: ${turnError.message}`,
+    );
+  }
+}
+
+export async function passMinefieldTurn(
+  round: MinefieldRound,
+  players: RoomPlayer[],
+  timerSeconds: number,
+) {
+  if (
+    round.status !==
+    "playing" ||
+    !round.currentPlayerId
+  ) {
+    return;
+  }
+
+  const nextPlayer =
+    getNextPlayer(
+      players,
+      round.currentPlayerId,
+    );
+
+  if (!nextPlayer) {
+    return;
+  }
+
+  /*
+   * Guarded by the previous
+   * current_player_id so a
+   * concurrent tile pick can't
+   * be clobbered by a stale
+   * timeout.
+   */
+  const { error } =
+    await supabase
+      .from(
+        "minefield_rounds",
+      )
+      .update({
+        current_player_id:
+          nextPlayer.id,
+        turn_ends_at:
+          new Date(
+            Date.now() +
+              timerSeconds *
+                1000,
+          ).toISOString(),
+      })
+      .eq("id", round.id)
+      .eq(
+        "status",
+        "playing",
+      )
+      .eq(
+        "current_player_id",
+        round.currentPlayerId,
+      );
+
+  if (error) {
+    throw new Error(
+      `Could not pass turn: ${error.message}`,
     );
   }
 }

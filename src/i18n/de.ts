@@ -148,6 +148,8 @@ const de = {
     roomError: "RAUMFEHLER",
     roomNotFound: "Raum nicht gefunden",
     roomGone: "Dieser Raum existiert nicht mehr.",
+    gameSettings: "Spieleinstellungen",
+    seconds: "Sekunden",
   },
 
   bluff: {
@@ -201,6 +203,7 @@ const de = {
     points: "Punkte",
     wrongAnswer: "Falsche Antwort",
     noQuestions: "Aktuell sind keine aktiven Bluff-Fragen verfügbar.",
+    timerLabel: "Antwortzeit",
   },
 
   categories: {
@@ -228,6 +231,7 @@ const de = {
     review: "Prüfen",
     accept: "Akzeptieren",
     reject: "Ablehnen",
+    timerLabel: "Antwortzeit",
 
     labels: {
       city: "Stadt",
@@ -261,6 +265,7 @@ const de = {
     loadError: "Minenfeld konnte nicht geladen werden",
     joinAgain: "Tritt dem Raum erneut bei.",
     questionMissing: "Frage fehlt",
+    timerLabel: "Zugzeit",
   },
 
   higherLower: {
@@ -292,6 +297,37 @@ const de = {
     finalScores: "Endstand",
     backToLobby: "Zurück zur Lobby",
     waitingForHost: "Warte auf den Host...",
+    timerLabel: "Tippzeit",
+  },
+
+  trivia: {
+    loading: "Quiz wird geladen...",
+    loadError: "Quiz konnte nicht geladen werden",
+    noPlayerTitle: "Kein Spieler gefunden",
+    joinAgain: "Tritt dem Raum erneut bei.",
+    startTitle: "Quizzeit!",
+    startDescription:
+      "Beantworte Multiple-Choice-Fragen aus verschiedenen Kategorien. Schnelle richtige Antworten bringen mehr Punkte.",
+    difficulty: "Schwierigkeit",
+    difficultyMixed: "Gemischt",
+    difficultyEasy: "Einfach",
+    difficultyMedium: "Mittel",
+    difficultyHard: "Schwer",
+    answerLocked: "Antwort abgegeben",
+    playersAnswered: "Spieler haben geantwortet",
+    reveal: "Auflösen",
+    correct: "Richtig!",
+    incorrect: "Falsch",
+    questionMissing: "Frage fehlt",
+    questionsExhausted:
+      "Keine weiteren Fragen für dieses Spiel verfügbar.",
+    nextRound: "Nächste Runde",
+    finishGame: "Spiel beenden",
+    gameComplete: "SPIEL BEENDET",
+    finalScores: "Endstand",
+    backToLobby: "Zurück zur Lobby",
+    waitingForHost: "Warte darauf, dass der Host fortfährt...",
+    timerLabel: "Antwortzeit",
   },
 
   drawing: {
@@ -314,6 +350,7 @@ const de = {
     finalScores: "Endstand",
     backToLobby: "Zurück zur Lobby",
     waitingContinue: "Warte darauf, dass der Host fortfährt...",
+    timerLabel: "Zeichenzeit",
   },
 
   gamePage: {

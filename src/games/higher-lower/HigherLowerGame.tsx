@@ -9,8 +9,15 @@ import {
   Trophy,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
+import { getGameTimerSeconds } from "../../data/gameTimers";
 import { translate } from "../../i18n/i18n";
 import { useRoom } from "../../hooks/useRoom";
 import { useHigherLowerRound } from "../../hooks/useHigherLowerRound";
@@ -54,6 +61,16 @@ function HigherLowerGame({
   const [difficulty, setDifficulty] =
     useState<HigherLowerDifficulty>(
       "mixed",
+    );
+
+  const [
+    secondsLeft,
+    setSecondsLeft,
+  ] = useState(0);
+
+  const triggeredRoundIdRef =
+    useRef<string | null>(
+      null,
     );
 
   const {
@@ -167,6 +184,10 @@ function HigherLowerGame({
         usedIds,
         room.gameLanguage,
         activeSession.difficulty,
+        getGameTimerSeconds(
+          room.gameSettings,
+          "higher-lower",
+        ),
       );
 
     if (!result) {
@@ -194,24 +215,37 @@ function HigherLowerGame({
     );
   };
 
-  const reveal = async () => {
-    if (
-      !round ||
-      !isHost ||
-      !currentItem ||
-      !nextItem ||
-      !allPlayersGuessed
-    ) {
-      return;
-    }
+  const reveal = useCallback(
+    async (
+      force = false,
+    ) => {
+      if (
+        !round ||
+        !isHost ||
+        !currentItem ||
+        !nextItem ||
+        (!force &&
+          !allPlayersGuessed)
+      ) {
+        return;
+      }
 
-    await revealHigherLowerRound(
+      await revealHigherLowerRound(
+        round,
+        currentItem,
+        nextItem,
+        guesses,
+      );
+    },
+    [
       round,
+      isHost,
       currentItem,
       nextItem,
+      allPlayersGuessed,
       guesses,
-    );
-  };
+    ],
+  );
 
   const nextRound = async () => {
     if (!round || !isHost) {
@@ -249,6 +283,53 @@ function HigherLowerGame({
       room.id,
     );
   };
+
+  useEffect(() => {
+    if (
+      !round ||
+      round.status !== "guessing"
+    ) {
+      return;
+    }
+
+    const updateTimer = () => {
+      const remaining = Math.max(
+        0,
+        Math.ceil(
+          (new Date(
+            round.endsAt,
+          ).getTime() -
+            Date.now()) /
+            1000,
+        ),
+      );
+
+      setSecondsLeft(remaining);
+
+      if (
+        remaining === 0 &&
+        isHost &&
+        triggeredRoundIdRef.current !==
+          round.id
+      ) {
+        triggeredRoundIdRef.current =
+          round.id;
+
+        void reveal(true);
+      }
+    };
+
+    updateTimer();
+
+    const timer = window.setInterval(
+      updateTimer,
+      500,
+    );
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [round, isHost, reveal]);
 
   if (room?.status === "lobby") {
     navigate(`/lobby/${room.code}`, {
@@ -522,16 +603,31 @@ function HigherLowerGame({
             </strong>
           </div>
 
-          <div className="higherLowerScore">
-            <Crown size={17} />
+          <div className="higherLowerHeaderRight">
+            {!revealed && (
+              <div
+                className={`gameTimerBadge ${
+                  secondsLeft <=
+                  10
+                    ? "gameTimerBadgeLow"
+                    : ""
+                }`}
+              >
+                {secondsLeft}s
+              </div>
+            )}
 
-            {(
-              players.find(
-                (player) =>
-                  player.id ===
-                  localPlayer.id,
-              )?.score ?? 0
-            ).toLocaleString()}
+            <div className="higherLowerScore">
+              <Crown size={17} />
+
+              {(
+                players.find(
+                  (player) =>
+                    player.id ===
+                    localPlayer.id,
+                )?.score ?? 0
+              ).toLocaleString()}
+            </div>
           </div>
         </header>
 

@@ -9,6 +9,7 @@ import {
   ListChecks,
   LogOut,
   MessageSquareQuote,
+  Settings,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -17,11 +18,18 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+import {
+  GAME_TIMER_OPTIONS,
+  getGameTimerSeconds,
+  withGameTimerSeconds,
+} from "../data/gameTimers";
+import type { TimedGameId } from "../data/gameTimers";
 import { useLanguage } from "../hooks/useLanguage";
 import { useRoom } from "../hooks/useRoom";
 import {
   leaveRoom,
   startGame,
+  updateGameSettings,
   updateSelectedGame,
 } from "../services/roomService";
 import "../styles/lobby.css";
@@ -31,6 +39,27 @@ import {
   getPlayer,
 } from "../utils/gameUtils";
 import { updateGameLanguage } from "../services/roomService";
+
+const timerLabelKeys: Record<
+  TimedGameId,
+  string
+> = {
+  bluff: "bluff.timerLabel",
+  categories: "categories.timerLabel",
+  minefield: "minefield.timerLabel",
+  "draw-guess": "drawing.timerLabel",
+  "higher-lower":
+    "higherLower.timerLabel",
+  trivia: "trivia.timerLabel",
+};
+
+function isTimedGame(
+  gameId: string,
+): gameId is TimedGameId {
+  return (
+    gameId in timerLabelKeys
+  );
+}
 
 const games = [
   {
@@ -359,7 +388,15 @@ function Lobby() {
           )}
         </div>
 
-        <div className="lobbyColumns">
+        <div
+          className={`lobbyColumns ${
+            isTimedGame(
+              room.selectedGame,
+            )
+              ? "withSettings"
+              : ""
+          }`}
+        >
           <section className="lobbyPanel playerPanel">
             <div className="panelTitle">
               <div>
@@ -575,6 +612,86 @@ function Lobby() {
               )}
             </div>
           </section>
+
+          {isTimedGame(
+            room.selectedGame,
+          ) && (
+            <section className="lobbyPanel gameSettingsPanel">
+              <div className="panelTitle">
+                <div>
+                  <span className="eyebrow">
+                    SETTINGS
+                  </span>
+
+                  <h2>
+                    <Settings
+                      size={19}
+                    />
+
+                    {t(
+                      "lobby.gameSettings",
+                    )}
+                  </h2>
+                </div>
+              </div>
+
+              <div className="gameTimerSetting">
+                <span>
+                  {t(
+                    timerLabelKeys[
+                      room.selectedGame
+                    ],
+                  )}
+                </span>
+
+                <select
+                  value={getGameTimerSeconds(
+                    room.gameSettings,
+                    room.selectedGame,
+                  )}
+                  disabled={
+                    !isHost
+                  }
+                  onChange={(
+                    event,
+                  ) => {
+                    void updateGameSettings(
+                      room.id,
+                      withGameTimerSeconds(
+                        room.gameSettings,
+                        room.selectedGame as TimedGameId,
+                        Number(
+                          event
+                            .target
+                            .value,
+                        ),
+                      ),
+                    );
+                  }}
+                >
+                  {GAME_TIMER_OPTIONS[
+                    room.selectedGame
+                  ].map(
+                    (seconds) => (
+                      <option
+                        key={
+                          seconds
+                        }
+                        value={
+                          seconds
+                        }
+                      >
+                        {seconds}{" "}
+                        {t(
+                          "lobby.seconds",
+                        )}
+                      </option>
+                    ),
+                  )}
+                </select>
+              </div>
+            </section>
+          )}
         </div>
 
         {isHost ? (

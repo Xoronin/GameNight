@@ -22,6 +22,7 @@ type BluffRoundRow = {
   question_id: string;
   status: BluffRoundStatus;
   created_at: string;
+  ends_at: string;
 };
 
 type BluffAnswerRow = {
@@ -52,6 +53,7 @@ function mapRound(
     questionId: row.question_id,
     status: row.status,
     createdAt: row.created_at,
+    endsAt: row.ends_at,
   };
 }
 
@@ -231,6 +233,7 @@ export async function createBluffRound(
   roundNumber: number,
   questionId: string,
   correctAnswer: string,
+  timerSeconds: number,
 ): Promise<BluffRound> {
   const {
     data: existingRound,
@@ -276,6 +279,11 @@ export async function createBluffRound(
         questionId,
       status:
         "answering",
+      ends_at:
+        new Date(
+          Date.now() +
+            timerSeconds * 1000,
+        ).toISOString(),
     })
     .select("*")
     .single();

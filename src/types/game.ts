@@ -12,6 +12,7 @@ export type BluffRound = {
   questionId: string;
   status: BluffRoundStatus;
   createdAt: string;
+  endsAt: string;
 };
 
 export type BluffAnswer = {
@@ -44,6 +45,7 @@ export type CategoriesRound = {
   status: CategoriesRoundStatus;
   createdAt: string;
   scoresApplied: boolean;
+  endsAt: string;
 };
 
 export type CategoriesAnswer = {
@@ -85,6 +87,7 @@ export type MinefieldRound = {
   status: MinefieldRoundStatus;
   createdAt: string;
   sessionId: string;
+  turnEndsAt: string | null;
 };
 
 export type MinefieldTile = {
@@ -211,6 +214,7 @@ export type HigherLowerRound = {
   nextItemId: string;
   status: HigherLowerRoundStatus;
   createdAt: string;
+  endsAt: string;
 };
 
 export type HigherLowerGuess = {
@@ -219,5 +223,47 @@ export type HigherLowerGuess = {
   playerId: string;
   guess: "higher" | "lower";
   isCorrect: boolean | null;
+  createdAt: string;
+};
+
+export type TriviaRoundStatus =
+  | "answering"
+  | "reveal"
+  | "finished";
+
+export type TriviaSessionStatus =
+  | "playing"
+  | "finished";
+
+export type TriviaQuestion = {
+  id: string;
+  category: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+  difficulty:
+    | "easy"
+    | "medium"
+    | "hard";
+};
+
+export type TriviaRound = {
+  id: string;
+  roomId: string;
+  sessionId: string;
+  roundNumber: number;
+  questionId: string;
+  status: TriviaRoundStatus;
+  createdAt: string;
+  endsAt: string;
+};
+
+export type TriviaAnswer = {
+  id: string;
+  roundId: string;
+  playerId: string;
+  selectedIndex: number;
+  isCorrect: boolean;
+  points: number;
   createdAt: string;
 };
