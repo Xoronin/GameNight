@@ -1,8 +1,10 @@
 import {
   ArrowRight,
   Check,
+  Crown,
   ListChecks,
   LoaderCircle,
+  Trophy,
   Users,
 } from "lucide-react";
 import {
@@ -17,13 +19,18 @@ import {
   categoryLetters,
   classicCategories,
 } from "../../data/categoryPacks";
-import { getGameTimerSeconds } from "../../data/gameTimers";
+import {
+  getCategoriesRoundCount,
+  getCategoriesSelectedKeys,
+  getGameTimerSeconds,
+} from "../../data/gameTimers";
 import { useCategoriesRound } from "../../hooks/useCategoriesRound";
 import { translate } from "../../i18n/i18n";
 import { useRoom } from "../../hooks/useRoom";
 import {
   createCategoriesRound,
   finalizeCategoriesRound,
+  finishCategoriesGame,
   returnCategoriesToLobby,
   reviewCategoriesAnswer,
   setCategoriesRoundStatus,
@@ -96,6 +103,28 @@ function CategoriesGame({
     room?.id,
   );
 
+  /*
+   * Reset draft answers whenever a new
+   * round arrives, for every client (not
+   * just the host, who already clears
+   * `values` locally when starting the
+   * round). Adjusted during render rather
+   * than in an effect so it lands before
+   * this same render paints stale drafts
+   * from the previous round.
+   */
+  const [
+    valuesRoundId,
+    setValuesRoundId,
+  ] = useState<
+    string | undefined
+  >(undefined);
+
+  if (round?.id !== valuesRoundId) {
+    setValuesRoundId(round?.id);
+    setValues({});
+  }
+
   const hasPendingReviews =
   answers.some(
     (answer) =>
@@ -148,6 +177,48 @@ function CategoriesGame({
     players.length > 0 &&
     submittedPlayerIds.size >=
       players.length;
+
+  const roundCount =
+    getCategoriesRoundCount(
+      room?.gameSettings,
+    );
+
+  const isLastRound =
+    !!round &&
+    round.roundNumber >=
+      roundCount;
+
+  const activeCategories =
+    useMemo(() => {
+      const selectedKeys =
+        getCategoriesSelectedKeys(
+          room?.gameSettings,
+        );
+
+      return classicCategories.filter(
+        (category) =>
+          selectedKeys.includes(
+            category.key,
+          ),
+      );
+    }, [room?.gameSettings]);
+
+  const sortedPlayers =
+    useMemo(
+      () =>
+        [...players].sort(
+          (a, b) =>
+            b.score - a.score,
+        ),
+      [players],
+    );
+
+  const myScore =
+    players.find(
+      (player) =>
+        player.id ===
+        localPlayer?.id,
+    )?.score ?? 0;
 
   const runAction = async (
     action: () => Promise<void>,
@@ -209,6 +280,14 @@ function CategoriesGame({
         !isHost ||
         hasPendingReviews
       ) {
+        return;
+      }
+
+      if (isLastRound) {
+        await finishCategoriesGame(
+          round.id,
+        );
+
         return;
       }
 
@@ -392,6 +471,24 @@ function CategoriesGame({
     };
   }, [round, isHost, reveal]);
 
+  useEffect(() => {
+    if (
+      room?.status ===
+      "lobby"
+    ) {
+      navigate(
+        `/lobby/${room.code}`,
+        {
+          replace: true,
+        },
+      );
+    }
+  }, [
+    room?.status,
+    room?.code,
+    navigate,
+  ]);
+
   if (
     roomLoading ||
     roundLoading
@@ -444,13 +541,6 @@ function CategoriesGame({
     room.status ===
     "lobby"
   ) {
-    navigate(
-      `/lobby/${room.code}`,
-      {
-        replace: true,
-      },
-    );
-
     return null;
   }
 
@@ -518,6 +608,105 @@ function CategoriesGame({
 
   if (
     round.status ===
+    "finished"
+  ) {
+    return (
+      <div className="page gamePage">
+        <div className="categoriesGame">
+          <section className="categoriesStart">
+            <div className="categoriesStartIcon">
+              <Trophy
+                size={38}
+              />
+            </div>
+
+            <span className="eyebrow">
+              {gameT(
+                "categories.gameComplete",
+              )}
+            </span>
+
+            <h1>
+              {gameT(
+                "categories.finalScores",
+              )}
+            </h1>
+
+            <div className="categoriesScoreboard">
+              {sortedPlayers.map(
+                (
+                  player,
+                  index,
+                ) => (
+                  <div
+                    key={
+                      player.id
+                    }
+                    className="categoriesScoreRow"
+                  >
+                    <span>
+                      {index + 1}
+                    </span>
+
+                    <strong>
+                      {
+                        player.name
+                      }
+                    </strong>
+
+                    <b>
+                      {player.score.toLocaleString()}
+                    </b>
+                  </div>
+                ),
+              )}
+            </div>
+
+            {isHost ? (
+              <button
+                className="primaryButton categoriesMainButton"
+                disabled={
+                  working
+                }
+                onClick={() => {
+                  void runAction(
+                    async () => {
+                      if (
+                        !room
+                      ) {
+                        return;
+                      }
+
+                      await returnCategoriesToLobby(
+                        room.id,
+                      );
+                    },
+                  );
+                }}
+              >
+                {gameT(
+                  "categories.backToLobby",
+                )}
+
+                <ArrowRight
+                  size={18}
+                />
+              </button>
+            ) : (
+              <div className="categoriesWaiting">
+                {gameT(
+                  "categories.waitingHost",
+                )}
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    round.status ===
     "answering"
   ) {
     return (
@@ -537,7 +726,9 @@ function CategoriesGame({
                 )}{" "}
                 {
                   round.roundNumber
-                }
+                }{" "}
+                /{" "}
+                {roundCount}
               </strong>
             </div>
 
@@ -551,6 +742,14 @@ function CategoriesGame({
                 }`}
               >
                 {secondsLeft}s
+              </div>
+
+              <div className="categoriesScore">
+                <Crown
+                  size={17}
+                />
+
+                {myScore.toLocaleString()}
               </div>
 
               <div className="letterBadge">
@@ -590,7 +789,7 @@ function CategoriesGame({
                 </p>
 
                 <div className="categoryInputs">
-                  {classicCategories.map(
+                  {activeCategories.map(
                     (
                       category,
                     ) => (
@@ -691,7 +890,7 @@ function CategoriesGame({
             )}
 
             {isHost &&
-              allSubmitted && (
+              (allSubmitted ? (
                 <button
                   className="primaryButton categoriesMainButton hostActionButton"
                   disabled={
@@ -699,7 +898,8 @@ function CategoriesGame({
                   }
                   onClick={() => {
                     void runAction(
-                      reveal,
+                      () =>
+                        reveal(true),
                     );
                   }}
                 >
@@ -711,7 +911,25 @@ function CategoriesGame({
                     size={18}
                   />
                 </button>
-              )}
+              ) : (
+                <button
+                  className="secondaryButton categoriesEndEarlyButton"
+                  type="button"
+                  disabled={
+                    working
+                  }
+                  onClick={() => {
+                    void runAction(
+                      () =>
+                        reveal(true),
+                    );
+                  }}
+                >
+                  {gameT(
+                    "categories.endRoundEarly",
+                  )}
+                </button>
+              ))}
           </section>
         </div>
       </div>
@@ -719,7 +937,7 @@ function CategoriesGame({
   }
 
   const grouped =
-    classicCategories.map(
+    activeCategories.map(
       (category) => ({
         ...category,
 
@@ -780,12 +998,24 @@ function CategoriesGame({
               )}{" "}
               {
                 round.roundNumber
-              }
+              }{" "}
+              /{" "}
+              {roundCount}
             </strong>
           </div>
 
-          <div className="letterBadge">
-            {round.letter}
+          <div className="categoriesHeaderRight">
+            <div className="categoriesScore">
+              <Crown
+                size={17}
+              />
+
+              {myScore.toLocaleString()}
+            </div>
+
+            <div className="letterBadge">
+              {round.letter}
+            </div>
           </div>
         </header>
 
@@ -969,9 +1199,13 @@ function CategoriesGame({
                   );
                 }}
               >
-                {gameT(
-                  "categories.nextRound",
-                )}
+                {isLastRound
+                  ? gameT(
+                      "categories.finishGame",
+                    )
+                  : gameT(
+                      "categories.nextRound",
+                    )}
 
                 <ArrowRight
                   size={18}

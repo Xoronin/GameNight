@@ -767,7 +767,7 @@ export async function returnDrawingToLobby(
       .from("rooms")
       .update({
         status: "lobby",
-        selected_game: null,
+        selected_game: "draw-guess",
       })
       .eq("id", roomId);
 

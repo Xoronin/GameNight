@@ -464,12 +464,22 @@ canvas.drawingCanvas.drawable {
   }
 }
 
-/* Ensure drawing game page fills viewport without scrolling */
-.page.gamePage {
+/*
+ * Ensure the drawing screen fills the viewport
+ * without scrolling. Scoped to .drawingPlayingPage
+ * (not the shared .page.gamePage every game uses)
+ * and uses a definite `height`, not `min-height`:
+ * percentage heights on children (.drawingGame,
+ * .drawingPanel, .drawingBoardWrap, the canvas
+ * itself) only resolve against a definite height,
+ * so `min-height` alone collapsed the whole chain
+ * to content size and left the canvas at ~0px tall.
+ */
+.page.gamePage.drawingPlayingPage {
   padding: 0;
   margin: 0;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }

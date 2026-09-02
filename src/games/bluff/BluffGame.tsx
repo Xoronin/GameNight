@@ -646,17 +646,28 @@ function BluffGame({
     };
   }, [round, isHost]);
 
+  useEffect(() => {
+    if (
+      room?.status ===
+      "lobby"
+    ) {
+      navigate(
+        `/lobby/${room.code}`,
+        {
+          replace: true,
+        },
+      );
+    }
+  }, [
+    room?.status,
+    room?.code,
+    navigate,
+  ]);
+
   if (
     room?.status ===
     "lobby"
   ) {
-    navigate(
-      `/lobby/${room.code}`,
-      {
-        replace: true,
-      },
-    );
-
     return null;
   }
 

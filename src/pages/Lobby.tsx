@@ -19,11 +19,17 @@ import {
   useParams,
 } from "react-router-dom";
 import {
+  CATEGORIES_ROUND_COUNT_OPTIONS,
   GAME_TIMER_OPTIONS,
+  getCategoriesRoundCount,
+  getCategoriesSelectedKeys,
   getGameTimerSeconds,
+  withCategoriesRoundCount,
+  withCategoriesSelectedKeys,
   withGameTimerSeconds,
 } from "../data/gameTimers";
 import type { TimedGameId } from "../data/gameTimers";
+import { classicCategories } from "../data/categoryPacks";
 import { useLanguage } from "../hooks/useLanguage";
 import { useRoom } from "../hooks/useRoom";
 import {
@@ -690,6 +696,148 @@ function Lobby() {
                   )}
                 </select>
               </div>
+
+              {room.selectedGame ===
+                "categories" && (
+                <>
+                  <div className="gameTimerSetting">
+                    <span>
+                      {t(
+                        "categories.roundCountLabel",
+                      )}
+                    </span>
+
+                    <select
+                      value={getCategoriesRoundCount(
+                        room.gameSettings,
+                      )}
+                      disabled={
+                        !isHost
+                      }
+                      onChange={(
+                        event,
+                      ) => {
+                        void updateGameSettings(
+                          room.id,
+                          withCategoriesRoundCount(
+                            room.gameSettings,
+                            Number(
+                              event
+                                .target
+                                .value,
+                            ),
+                          ),
+                        );
+                      }}
+                    >
+                      {CATEGORIES_ROUND_COUNT_OPTIONS.map(
+                        (
+                          count,
+                        ) => (
+                          <option
+                            key={
+                              count
+                            }
+                            value={
+                              count
+                            }
+                          >
+                            {count}{" "}
+                            {t(
+                              "categories.rounds",
+                            )}
+                          </option>
+                        ),
+                      )}
+                    </select>
+                  </div>
+
+                  <div className="categorySettingList">
+                    <span>
+                      {t(
+                        "categories.categoriesLabel",
+                      )}
+                    </span>
+
+                    {classicCategories.map(
+                      (
+                        category,
+                      ) => {
+                        const selectedKeys =
+                          getCategoriesSelectedKeys(
+                            room.gameSettings,
+                          );
+
+                        const checked =
+                          selectedKeys.includes(
+                            category.key,
+                          );
+
+                        return (
+                          <label
+                            key={
+                              category.key
+                            }
+                            className="categorySettingOption"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={
+                                checked
+                              }
+                              disabled={
+                                !isHost
+                              }
+                              onChange={(
+                                event,
+                              ) => {
+                                const next =
+                                  event
+                                    .target
+                                    .checked
+                                    ? [
+                                        ...selectedKeys,
+                                        category.key,
+                                      ]
+                                    : selectedKeys.filter(
+                                        (
+                                          key,
+                                        ) =>
+                                          key !==
+                                          category.key,
+                                      );
+
+                                /*
+                                 * Refuse to leave zero
+                                 * categories selected.
+                                 */
+                                if (
+                                  next.length ===
+                                  0
+                                ) {
+                                  return;
+                                }
+
+                                void updateGameSettings(
+                                  room.id,
+                                  withCategoriesSelectedKeys(
+                                    room.gameSettings,
+                                    next,
+                                  ),
+                                );
+                              }}
+                            />
+
+                            {t(
+                              `categories.labels.${category.key}`,
+                            )}
+                          </label>
+                        );
+                      },
+                    )}
+                  </div>
+                </>
+              )}
             </section>
           )}
         </div>

@@ -717,7 +717,7 @@ export async function returnBluffRoomToLobby(
     .from("rooms")
     .update({
       status: "lobby",
-      selected_game: null,
+      selected_game: "bluff",
     })
     .eq("id", roomId);
 

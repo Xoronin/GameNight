@@ -132,9 +132,19 @@ function MinefieldGame({
       (tile) => tile.isCorrect,
     );
 
+  /*
+   * Count tiles actually picked, not
+   * merely revealed: a mine hit reveals
+   * every remaining tile at once (see
+   * revealRemainingTiles), which would
+   * otherwise make every correct tile
+   * look "found" even if nobody picked
+   * it, wrongly showing "cleared" after
+   * a loss.
+   */
   const foundCorrect =
     correctTiles.filter(
-      (tile) => tile.revealed,
+      (tile) => tile.pickedBy,
     ).length;
 
   const allCorrectFound =
@@ -356,16 +366,26 @@ function MinefieldGame({
     room?.gameSettings,
   ]);
 
+  useEffect(() => {
+    if (
+      room?.status === "lobby"
+    ) {
+      navigate(
+        `/lobby/${room.code}`,
+        {
+          replace: true,
+        },
+      );
+    }
+  }, [
+    room?.status,
+    room?.code,
+    navigate,
+  ]);
+
   if (
     room?.status === "lobby"
   ) {
-    navigate(
-      `/lobby/${room.code}`,
-      {
-        replace: true,
-      },
-    );
-
     return null;
   }
 

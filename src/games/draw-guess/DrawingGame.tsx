@@ -680,17 +680,28 @@ function DrawingGame({
       setGuess("");
     };
 
+  useEffect(() => {
+    if (
+      room?.status ===
+      "lobby"
+    ) {
+      navigate(
+        `/lobby/${room.code}`,
+        {
+          replace: true,
+        },
+      );
+    }
+  }, [
+    room?.status,
+    room?.code,
+    navigate,
+  ]);
+
   if (
     room?.status ===
     "lobby"
   ) {
-    navigate(
-      `/lobby/${room.code}`,
-      {
-        replace: true,
-      },
-    );
-
     return null;
   }
 
@@ -897,7 +908,7 @@ function DrawingGame({
   }
 
   return (
-    <div className="page gamePage">
+    <div className="page gamePage drawingPlayingPage">
       <div className="drawingGame">
         <header className="drawingHeader">
           <div>

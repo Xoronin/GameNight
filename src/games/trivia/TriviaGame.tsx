@@ -328,11 +328,19 @@ function TriviaGame({
     };
   }, [round, isHost, reveal]);
 
-  if (room?.status === "lobby") {
-    navigate(`/lobby/${room.code}`, {
-      replace: true,
-    });
+  useEffect(() => {
+    if (room?.status === "lobby") {
+      navigate(`/lobby/${room.code}`, {
+        replace: true,
+      });
+    }
+  }, [
+    room?.status,
+    room?.code,
+    navigate,
+  ]);
 
+  if (room?.status === "lobby") {
     return null;
   }
 
@@ -848,6 +856,27 @@ function TriviaGame({
                         <span>
                           {player.name}
                         </span>
+
+                        {answer ? (
+                          <span className="triviaResultAnswer">
+                            {OPTION_LETTERS[
+                              answer
+                                .selectedIndex
+                            ] ?? "?"}{" "}
+                            —{" "}
+                            {question
+                              .options[
+                              answer
+                                .selectedIndex
+                            ] ?? "?"}
+                          </span>
+                        ) : (
+                          <span className="triviaResultAnswer">
+                            {gameT(
+                              "trivia.noAnswer",
+                            )}
+                          </span>
+                        )}
 
                         {answer ? (
                           <span className="triviaResultPoints">

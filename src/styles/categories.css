@@ -25,6 +25,32 @@
   gap: 12px;
 }
 
+.categoriesScore {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border-radius: 999px;
+  background: rgba(250, 204, 21, 0.1);
+}
+
+.categoriesScoreboard {
+  margin-top: 24px;
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.categoriesScoreRow {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .letterBadge {
   width: 54px;
   height: 54px;
@@ -132,6 +158,13 @@
 }
 
 .categoriesMainButton {
+  justify-content: center;
+}
+
+.categoriesEndEarlyButton {
+  margin-top: 24px;
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
 }
 

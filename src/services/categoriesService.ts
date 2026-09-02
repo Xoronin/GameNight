@@ -246,7 +246,7 @@ export async function returnCategoriesToLobby(
     .from("rooms")
     .update({
       status: "lobby",
-      selected_game: null,
+      selected_game: "categories",
     })
     .eq("id", roomId);
 
@@ -300,4 +300,17 @@ export async function finalizeCategoriesRound(
       `Could not finalize Categories round: ${error.message}`,
     );
   }
+}
+
+export async function finishCategoriesGame(
+  roundId: string,
+) {
+  await finalizeCategoriesRound(
+    roundId,
+  );
+
+  await setCategoriesRoundStatus(
+    roundId,
+    "finished",
+  );
 }

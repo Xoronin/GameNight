@@ -596,3 +596,40 @@
   color: #9999a5;
   cursor: default;
 }
+
+.gameTimerSetting + .gameTimerSetting,
+.categorySettingList {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #ffffff0d;
+}
+
+.categorySettingList > span {
+  display: block;
+  margin-bottom: 10px;
+  color: #8f8f9e;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.categorySettingOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 2px;
+  color: #d4d4dc;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.categorySettingOption input {
+  width: 16px;
+  height: 16px;
+  accent-color: #fb923c;
+  cursor: pointer;
+}
+
+.categorySettingOption input:disabled {
+  cursor: default;
+}

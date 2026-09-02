@@ -331,11 +331,19 @@ function HigherLowerGame({
     };
   }, [round, isHost, reveal]);
 
-  if (room?.status === "lobby") {
-    navigate(`/lobby/${room.code}`, {
-      replace: true,
-    });
+  useEffect(() => {
+    if (room?.status === "lobby") {
+      navigate(`/lobby/${room.code}`, {
+        replace: true,
+      });
+    }
+  }, [
+    room?.status,
+    room?.code,
+    navigate,
+  ]);
 
+  if (room?.status === "lobby") {
     return null;
   }
 
