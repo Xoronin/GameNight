@@ -426,6 +426,23 @@
   transform: none;
 }
 
+.preselectedGameHint {
+  margin: 14px 0 0;
+  padding: 10px 14px;
+
+  border: 1px solid #ffffff0d;
+  border-radius: 999px;
+
+  background: #18181f;
+  color: #a5a5b3;
+
+  font-size: 13px;
+}
+
+.preselectedGameHint strong {
+  color: #ffffff;
+}
+
 .accountIdentity {
   margin: 24px 0 8px;
   padding: 14px;

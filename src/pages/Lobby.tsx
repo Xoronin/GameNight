@@ -1,16 +1,10 @@
 import {
-  Bomb,
-  Brain,
-  Brush,
   Check,
   ChevronRight,
   Copy,
   Crown,
-  ListChecks,
   LogOut,
-  MessageSquareQuote,
   Settings,
-  TrendingUp,
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -30,6 +24,7 @@ import {
 } from "../data/gameTimers";
 import type { TimedGameId } from "../data/gameTimers";
 import { classicCategories } from "../data/categoryPacks";
+import { gameLibrary } from "../data/gameLibrary";
 import { useLanguage } from "../hooks/useLanguage";
 import { useRoom } from "../hooks/useRoom";
 import {
@@ -67,59 +62,7 @@ function isTimedGame(
   );
 }
 
-const games = [
-  {
-    id: "bluff",
-    nameKey: "games.bluff.name",
-    descriptionKey:
-      "games.bluff.description",
-    icon: <MessageSquareQuote />,
-    className: "purple",
-  },
-  {
-    id: "minefield",
-    nameKey: "games.minefield.name",
-    descriptionKey:
-      "games.minefield.description",
-    icon: <Bomb />,
-    className: "red",
-  },
-  {
-    id: "higher-lower",
-    nameKey:
-      "games.higherLower.name",
-    descriptionKey:
-      "games.higherLower.description",
-    icon: <TrendingUp />,
-    className: "green",
-  },
-  {
-    id: "trivia",
-    nameKey: "games.trivia.name",
-    descriptionKey:
-      "games.trivia.description",
-    icon: <Brain />,
-    className: "blue",
-  },
-  {
-    id: "categories",
-    nameKey:
-      "games.categories.name",
-    descriptionKey:
-      "games.categories.description",
-    icon: <ListChecks />,
-    className: "orange",
-  },
-  {
-    id: "draw-guess",
-    nameKey:
-      "games.drawGuess.name",
-    descriptionKey:
-      "games.drawGuess.description",
-    icon: <Brush />,
-    className: "pink",
-  },
-];
+const games = gameLibrary;
 
 function Lobby() {
   const navigate = useNavigate();

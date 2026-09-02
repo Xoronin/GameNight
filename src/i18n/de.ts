@@ -113,6 +113,7 @@ const de = {
     create: "Raum erstellen",
     signInHint: "Anmelden, um dein Profil zu behalten",
     error: "Raum konnte nicht erstellt werden.",
+    startingWith: "Los geht's mit",
   },
 
   joinRoom: {
@@ -371,6 +372,7 @@ const de = {
     unknownGame: "Unbekanntes Spiel",
     notImplemented:
         "Dieses Spiel wurde noch nicht implementiert.",
+    howToPlay: "So wird gespielt",
     },
 };
 

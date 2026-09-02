@@ -1,4 +1,9 @@
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ListChecks,
+  Users,
+} from "lucide-react";
 import {
   useNavigate,
   useParams,
@@ -10,27 +15,23 @@ import DrawingGame from "../games/draw-guess/DrawingGame";
 import HigherLowerGame from "../games/higher-lower/HigherLowerGame";
 import MinefieldGame from "../games/minefield/MinefieldGame";
 import TriviaGame from "../games/trivia/TriviaGame";
+import { getGameLibraryEntry } from "../data/gameLibrary";
+import { gameRules } from "../data/gameRules";
 import { useLanguage } from "../hooks/useLanguage";
+import "../styles/gamePreview.css";
 
-const gameNameKeys: Record<
-  string,
-  string
-> = {
-  bluff: "games.bluff.name",
-  minefield:
-    "games.minefield.name",
-  "higher-lower":
-    "games.higherLower.name",
-  trivia: "games.trivia.name",
-  categories:
-    "games.categories.name",
-  "draw-guess":
-    "games.drawGuess.name",
-};
+const multiplayerGames = [
+  "bluff",
+  "categories",
+  "minefield",
+  "draw-guess",
+  "higher-lower",
+  "trivia",
+];
 
 function GamePage() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
 
   const { gameId } =
     useParams();
@@ -41,9 +42,6 @@ function GamePage() {
   const roomCode =
     searchParams.get("room");
 
-  const multiplayerGames =
-    ["bluff", "categories", "minefield", "draw-guess", "higher-lower", "trivia"];
-
   if (
     gameId &&
     multiplayerGames.includes(
@@ -51,6 +49,14 @@ function GamePage() {
     )
   ) {
     if (!roomCode) {
+      const game =
+        getGameLibraryEntry(
+          gameId,
+        );
+
+      const rules =
+        gameRules[gameId];
+
       return (
         <div className="page">
           <button
@@ -67,28 +73,125 @@ function GamePage() {
             {t("common.home")}
           </button>
 
-          <div className="centerCard">
-            <h1>
-              {t(
-                "gamePage.noRoomSelected",
+          <div className="gamePreview">
+            <div
+              className={`gamePreviewIcon ${
+                game?.className ??
+                ""
+              }`}
+            >
+              {game?.icon ?? (
+                <ListChecks />
               )}
+            </div>
+
+            <span className="eyebrow">
+              {game
+                ? t(
+                    game.nameKey,
+                  ).toUpperCase()
+                : t(
+                    "gamePage.unknownGame",
+                  ).toUpperCase()}
+            </span>
+
+            <h1>
+              {game
+                ? t(
+                    game.nameKey,
+                  )
+                : t(
+                    "gamePage.unknownGame",
+                  )}
             </h1>
 
             <p>
-              {t(
-                "gamePage.joinRoomFirst",
-              )}
+              {game
+                ? t(
+                    game.descriptionKey,
+                  )
+                : t(
+                    "gamePage.joinRoomFirst",
+                  )}
             </p>
 
-            <button
-              className="primaryButton formButton"
-              type="button"
-              onClick={() =>
-                navigate("/")
-              }
-            >
-              {t("common.home")}
-            </button>
+            {game && (
+              <div className="gamePreviewMeta">
+                <Users
+                  size={16}
+                />
+
+                {game.players}{" "}
+                {t(
+                  "common.players",
+                )}
+              </div>
+            )}
+
+            {rules && (
+              <div className="gamePreviewRules">
+                <h2>
+                  {t(
+                    "gamePage.howToPlay",
+                  )}
+                </h2>
+
+                <ol>
+                  {rules[
+                    language
+                  ].map(
+                    (
+                      step,
+                      index,
+                    ) => (
+                      <li
+                        key={
+                          index
+                        }
+                      >
+                        {step}
+                      </li>
+                    ),
+                  )}
+                </ol>
+              </div>
+            )}
+
+            <div className="gamePreviewActions">
+              <button
+                className="primaryButton"
+                type="button"
+                onClick={() =>
+                  navigate(
+                    game
+                      ? `/create?game=${game.id}`
+                      : "/create",
+                  )
+                }
+              >
+                {t(
+                  "home.createRoom",
+                )}
+
+                <ArrowRight
+                  size={18}
+                />
+              </button>
+
+              <button
+                className="secondaryButton"
+                type="button"
+                onClick={() =>
+                  navigate(
+                    "/join",
+                  )
+                }
+              >
+                {t(
+                  "home.joinRoom",
+                )}
+              </button>
+            </div>
           </div>
         </div>
       );
@@ -159,18 +262,6 @@ function GamePage() {
     }
   }
 
-  const gameNameKey =
-    gameNameKeys[
-      gameId ?? ""
-    ];
-
-  const gameName =
-    gameNameKey
-      ? t(gameNameKey)
-      : t(
-          "gamePage.unknownGame",
-        );
-
   return (
     <div className="page">
       <button
@@ -193,7 +284,9 @@ function GamePage() {
         </span>
 
         <h1>
-          {gameName}
+          {t(
+            "gamePage.unknownGame",
+          )}
         </h1>
 
         <p>

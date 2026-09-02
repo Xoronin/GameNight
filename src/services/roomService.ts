@@ -52,6 +52,7 @@ function mapPlayer(row: PlayerRow): RoomPlayer {
 export async function createRoom(
   code: string,
   player: Player,
+  selectedGame = "bluff",
 ): Promise<Room> {
   const cleanedCode = code.trim().toUpperCase();
 
@@ -62,7 +63,7 @@ export async function createRoom(
     .insert({
       code: cleanedCode,
       host_player_id: null,
-      selected_game: "bluff",
+      selected_game: selectedGame,
       status: "lobby",
       game_language: "en",
     })

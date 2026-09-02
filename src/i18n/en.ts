@@ -113,6 +113,7 @@ const en = {
     create: "Create Room",
     signInHint: "Sign in to keep your profile",
     error: "Could not create room.",
+    startingWith: "Starting with",
   },
 
   joinRoom: {
@@ -370,6 +371,7 @@ const en = {
     unknownGame: "Unknown Game",
     notImplemented:
         "This game has not been implemented yet.",
+    howToPlay: "How to play",
     },
 };
 

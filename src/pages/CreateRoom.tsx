@@ -4,7 +4,11 @@ import {
   User,
 } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
+import { getGameLibraryEntry } from "../data/gameLibrary";
 import { useAuth } from "../hooks/useAuth";
 import { useLanguage } from "../hooks/useLanguage";
 import { createRoom } from "../services/roomService";
@@ -18,6 +22,18 @@ import {
 function CreateRoom() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+
+  const [searchParams] =
+    useSearchParams();
+
+  const preselectedGameId =
+    searchParams.get("game") ??
+    undefined;
+
+  const preselectedGame =
+    getGameLibraryEntry(
+      preselectedGameId,
+    );
 
   const {
     user,
@@ -71,6 +87,7 @@ function CreateRoom() {
       await createRoom(
         roomCode,
         player,
+        preselectedGame?.id,
       );
 
       savePlayer(player);
@@ -118,6 +135,19 @@ function CreateRoom() {
                 "createRoom.titleGuest",
               )}
         </h1>
+
+        {preselectedGame && (
+          <div className="preselectedGameHint">
+            {t(
+              "createRoom.startingWith",
+            )}{" "}
+            <strong>
+              {t(
+                preselectedGame.nameKey,
+              )}
+            </strong>
+          </div>
+        )}
 
         {isLoggedIn ? (
           <>
