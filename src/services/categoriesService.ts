@@ -238,7 +238,7 @@ export async function returnCategoriesToLobby(
     .from("rooms")
     .update({
       status: "lobby",
-      selected_game: "categories",
+      selected_game: null,
     })
     .eq("id", roomId);
 

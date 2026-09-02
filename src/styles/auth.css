@@ -1,6 +1,6 @@
 .authCard {
   max-width: 520px;
-  margin: 80px auto 0;
+  margin: 50px auto 0;
   padding: 36px;
 
   border: 1px solid #ffffff0d;
@@ -22,7 +22,7 @@
 }
 
 .authForm {
-  margin-top: 28px;
+  margin-top: 18px;
 
   display: grid;
   gap: 16px;
@@ -67,7 +67,7 @@
 }
 
 .authSwitchButton {
-  margin-top: 22px;
+  margin-top: 14px;
 
   border: 0;
   background: transparent;
@@ -82,7 +82,7 @@
 
 @media (max-width: 560px) {
   .authCard {
-    margin-top: 50px;
+    margin-top: 30px;
     padding: 26px 20px;
   }
 

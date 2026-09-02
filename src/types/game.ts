@@ -105,6 +105,82 @@ export type MinefieldQuestion = {
   wrongAnswers: string[];
 };
 
+export type DrawingRoundStatus =
+  | "drawing"
+  | "reveal"
+  | "finished";
+
+export type DrawingSession = {
+  id: string;
+  roomId: string;
+  status:
+    | "playing"
+    | "finished";
+  createdAt: string;
+  finishedAt: string | null;
+};
+
+export type DrawingRound = {
+  id: string;
+  roomId: string;
+  sessionId: string;
+  roundNumber: number;
+
+  drawerPlayerId: string;
+
+  wordId: string;
+
+  status: DrawingRoundStatus;
+
+  startedAt: string;
+  endsAt: string;
+  createdAt: string;
+};
+
+export type DrawingPoint = {
+  x: number;
+  y: number;
+};
+
+export type DrawingStroke = {
+  id: string;
+  roundId: string;
+  playerId: string;
+
+  points: DrawingPoint[];
+
+  lineWidth: number;
+
+  createdAt: string;
+};
+
+export type DrawingGuess = {
+  id: string;
+  roundId: string;
+  playerId: string;
+
+  guess: string;
+
+  isCorrect: boolean;
+
+  points: number;
+
+  createdAt: string;
+};
+
+export type DrawingWord = {
+  id: string;
+
+  word: string;
+
+  category: string;
+
+  difficulty:
+    | "easy"
+    | "medium"
+    | "hard";
+};
+
 export type HigherLowerRoundStatus =
   | "guessing"
   | "reveal"

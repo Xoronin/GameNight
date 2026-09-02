@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import BluffGame from "../games/bluff/BluffGame";
 import CategoriesGame from "../games/categories/CategoriesGame";
+import DrawingGame from "../games/draw-guess/DrawingGame";
 import HigherLowerGame from "../games/higher-lower/HigherLowerGame";
 import MinefieldGame from "../games/minefield/MinefieldGame";
 import { useLanguage } from "../hooks/useLanguage";
@@ -40,7 +41,7 @@ function GamePage() {
     searchParams.get("room");
 
   const multiplayerGames =
-    ["bluff", "categories", "minefield", "higher-lower"];
+    ["bluff", "categories", "minefield", "draw-guess", "higher-lower"];
 
   if (
     gameId &&
@@ -119,6 +120,17 @@ function GamePage() {
     ) {
       return (
         <MinefieldGame
+          roomCode={roomCode}
+        />
+      );
+    }
+
+    if (
+      gameId ===
+      "draw-guess"
+    ) {
+      return (
+        <DrawingGame
           roomCode={roomCode}
         />
       );

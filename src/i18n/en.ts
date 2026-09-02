@@ -293,6 +293,29 @@ const en = {
     backToLobby: "Back to lobby",
     waitingForHost: "Waiting for the host to continue...",
   },
+
+  drawing: {
+    loading: "Loading Draw & Guess...",
+    loadError: "Could not load Draw & Guess.",
+    startTitle: "Draw it. Guess it.",
+    startDescription:
+      "One player draws a secret word while everyone else tries to guess it as quickly as possible.",
+    startGame: "Start game",
+    waitingHost: "Waiting for the host...",
+    round: "Round",
+    drawThis: "Draw this",
+    drawer: "Drawing",
+    clear: "Clear",
+    guessPlaceholder: "Enter your guess...",
+    correct: "Correct!",
+    wordWas: "The word was",
+    nextRound: "Next round",
+    finishGame: "Finish game",
+    finalScores: "Final scores",
+    backToLobby: "Back to lobby",
+    waitingContinue: "Waiting for the host to continue...",
+  },
+
   gamePage: {
     noRoomSelected: "No room selected",
     joinRoomFirst: "Create or join a room first.",

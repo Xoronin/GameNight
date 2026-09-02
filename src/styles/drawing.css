@@ -1,0 +1,485 @@
+.drawingGame {
+  width: 100%;
+  margin: 0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+.drawingStart {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(16, 16, 24, 0.82);
+  border-radius: 24px;
+  padding: 48px 32px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
+  max-width: 620px;
+  margin: 30px auto 0;
+  text-align: center;
+}
+
+.drawingStartIcon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.drawingStart .eyebrow {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 12px;
+}
+
+.drawingStart h1 {
+  font-size: 2.2rem;
+  margin: 16px 0 12px;
+}
+
+.drawingStart p {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.drawingHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 0 4px;
+}
+
+.drawingHeader > div:first-child .eyebrow {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 4px;
+}
+
+.drawingHeader strong {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.drawingHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.drawingTimer {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-weight: 700;
+  font-size: 0.95rem;
+  min-width: 50px;
+  text-align: center;
+  color: rgba(255, 107, 107, 1);
+}
+
+.drawingScore {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(234, 179, 8, 0.12);
+  border: 1px solid rgba(234, 179, 8, 0.25);
+  font-weight: 700;
+}
+
+.drawingPanel {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(16, 16, 24, 0.6);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.drawingPrompt {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.drawingPrompt span {
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.drawingPrompt strong {
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.drawingPrompt small {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.drawingBoardWrap {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+canvas.drawingCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+  cursor: crosshair;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+}
+
+canvas.drawingCanvas.drawable {
+  cursor: cell;
+}
+
+.drawingClear {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drawingClear:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: rgba(255, 107, 107, 1);
+}
+
+.drawingClear:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.drawingGuessArea {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.drawingGuessInput {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.drawingGuessInput input {
+  flex: 1;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  font: inherit;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+}
+
+.drawingGuessInput input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.drawingGuessInput input:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.drawingGuessInput button {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.drawingCorrect {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 8px;
+  color: rgba(134, 239, 172, 1);
+  font-weight: 600;
+}
+
+.drawingCorrect strong {
+  margin-left: auto;
+  font-size: 1.1rem;
+}
+
+.drawingGuesses {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 140px;
+  overflow-y: auto;
+  padding: 0 4px;
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar styling */
+.drawingGuesses::-webkit-scrollbar {
+  width: 6px;
+}
+
+.drawingGuesses::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.drawingGuesses::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.4);
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.drawingGuesses::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.7);
+}
+
+/* Firefox scrollbar */
+.drawingGuesses {
+  scrollbar-color: rgba(168, 85, 247, 0.4) rgba(255, 255, 255, 0.05);
+  scrollbar-width: thin;
+}
+
+.drawingGuessItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid rgba(168, 85, 247, 0.3);
+  font-size: 0.85rem;
+}
+
+.drawingGuessItem strong {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.drawingGuessItem span {
+  color: rgba(255, 255, 255, 0.65);
+  word-break: break-word;
+}
+
+.drawingScores {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.drawingScoreRow {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.drawingScoreRow span {
+  font-weight: 700;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.drawingScoreRow strong {
+  font-size: 0.95rem;
+}
+
+.drawingScoreRow b {
+  font-size: 1rem;
+  color: rgba(234, 179, 8, 1);
+}
+
+.drawingReveal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.drawingReveal span {
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.drawingReveal strong {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  word-break: break-word;
+}
+
+.drawingReveal button,
+.drawingReveal .drawingWaiting {
+  margin-top: 8px;
+}
+
+.drawingLeaderboard {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(16, 16, 24, 0.82);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
+}
+
+.drawingLeaderboard h2 {
+  margin: 0 0 20px;
+  font-size: 1.3rem;
+}
+
+.drawingError {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: rgba(255, 107, 107, 1);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.drawingMainButton {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.drawingWaiting {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  opacity: 0.8;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 720px) {
+  .drawingGame {
+    padding: 12px;
+    height: auto;
+  }
+
+  .drawingStart {
+    padding: 32px 20px;
+  }
+
+  .drawingPanel {
+    padding: 16px;
+  }
+
+  .drawingHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .drawingHeaderRight {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Ensure drawing game page fills viewport without scrolling */
+.page.gamePage {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawingWordPattern {
+  margin-top: 12px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  text-align: center;
+  word-break: break-word;
+}

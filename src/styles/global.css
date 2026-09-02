@@ -54,9 +54,9 @@ button {
 }
 
 .page {
-    width: min(1000px, calc(100% - 32px));
+    width: min(1400px, calc(100% - 20px));
     margin: 0 auto;
-    padding: 32px 0 80px;
+    padding: 16px 0 40px;
 }
 
 .backButton {
@@ -106,7 +106,7 @@ button {
 
 .centerCard {
     max-width: 560px;
-    margin: 100px auto 0;
+    margin: 60px auto 0;
     padding: 36px;
     border: 1px solid #ffffff0d;
     border-radius: 20px;

@@ -294,6 +294,28 @@ const de = {
     waitingForHost: "Warte auf den Host...",
   },
 
+  drawing: {
+    loading: "Zeichnen & Raten wird geladen...",
+    loadError: "Zeichnen & Raten konnte nicht geladen werden.",
+    startTitle: "Zeichnen. Raten. Punkten.",
+    startDescription:
+      "Ein Spieler zeichnet einen geheimen Begriff, während alle anderen versuchen, ihn so schnell wie möglich zu erraten.",
+    startGame: "Spiel starten",
+    waitingHost: "Warte auf den Host...",
+    round: "Runde",
+    drawThis: "Zeichne",
+    drawer: "Zeichnet gerade",
+    clear: "Löschen",
+    guessPlaceholder: "Deine Vermutung...",
+    correct: "Richtig!",
+    wordWas: "Der Begriff war",
+    nextRound: "Nächste Runde",
+    finishGame: "Spiel beenden",
+    finalScores: "Endstand",
+    backToLobby: "Zurück zur Lobby",
+    waitingContinue: "Warte darauf, dass der Host fortfährt...",
+  },
+
   gamePage: {
     noRoomSelected: "Kein Raum ausgewählt",
     joinRoomFirst:
