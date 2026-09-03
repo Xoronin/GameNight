@@ -1,15 +1,3 @@
-.joinButton {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border: 1px solid #ffffff14;
-    border-radius: 10px;
-    background: #ffffff08;
-    color: #f7f7fb;
-    cursor: pointer;
-}
-
 main {
     width: min(1600px, 94%);
     margin: auto;
@@ -272,14 +260,6 @@ footer {
 
     main {
         width: calc(100% - 32px);
-    }
-
-    .joinButtonText {
-        display: none;
-    }
-
-    .joinButton {
-        padding: 10px;
     }
 
     .hero {

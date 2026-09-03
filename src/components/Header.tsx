@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../hooks/useLanguage";
+import LanguageSwitcher from "./LanguageSwitcher";
+import ProfileButton from "./ProfileButton";
+import SoundToggle from "./SoundToggle";
 import "../styles/header.css";
 
 type HeaderProps = {
@@ -42,11 +45,15 @@ function Header({
           </div>
         </button>
 
-        {children && (
-          <div className="headerActions">
-            {children}
-          </div>
-        )}
+        <div className="headerActions">
+          {children}
+
+          <SoundToggle />
+
+          <LanguageSwitcher />
+
+          <ProfileButton />
+        </div>
       </div>
     </header>
   );

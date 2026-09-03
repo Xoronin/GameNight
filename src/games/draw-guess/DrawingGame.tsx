@@ -15,6 +15,7 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../../components/Header";
 import {
   getGameRoundCount,
   getGameTimerSeconds,
@@ -848,25 +849,29 @@ function DrawingGame({
     roundLoading
   ) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <LoaderCircle
-            size={30}
-          />
+      <>
+        <Header />
 
-          <h1>
-            {gameT(
-              "games.drawGuess.name",
-            )}
-          </h1>
+        <div className="page">
+          <div className="centerCard">
+            <LoaderCircle
+              size={30}
+            />
 
-          <p>
-            {gameT(
-              "common.loading",
-            )}
-          </p>
+            <h1>
+              {gameT(
+                "games.drawGuess.name",
+              )}
+            </h1>
+
+            <p>
+              {gameT(
+                "common.loading",
+              )}
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -877,29 +882,36 @@ function DrawingGame({
     !localPlayer
   ) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            {gameT(
-              "common.error",
-            )}
-          </h1>
+      <>
+        <Header />
 
-          <p>
-            {roomError ??
-              roundError ??
-              gameT(
-                "drawing.loadError",
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              {gameT(
+                "common.error",
               )}
-          </p>
+            </h1>
+
+            <p>
+              {roomError ??
+                roundError ??
+                gameT(
+                  "drawing.loadError",
+                )}
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!round) {
     return (
-      <div className="page gamePage">
+      <>
+        <Header />
+
+        <div className="page gamePage">
         <div className="drawingGame">
           <section className="drawingStart">
             <div className="drawingStartIcon">
@@ -963,7 +975,8 @@ function DrawingGame({
             )}
           </section>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -972,7 +985,10 @@ function DrawingGame({
     "finished"
   ) {
     return (
-      <div className="page gamePage">
+      <>
+        <Header />
+
+        <div className="page gamePage">
         <div className="drawingGame">
           <section className="drawingStart">
             <Trophy
@@ -1069,12 +1085,16 @@ function DrawingGame({
             )}
           </section>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="page gamePage drawingPlayingPage">
+    <>
+      <Header />
+
+      <div className="page gamePage drawingPlayingPage">
       <div className="drawingGame">
         <header className="drawingHeader">
           <div>
@@ -1444,7 +1464,8 @@ function DrawingGame({
             )}
         </section>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

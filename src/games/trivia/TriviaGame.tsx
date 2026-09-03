@@ -16,6 +16,7 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../../components/Header";
 import {
   getGameRoundCount,
   getGameTimerSeconds,
@@ -423,59 +424,74 @@ function TriviaGame({
 
   if (!localPlayer) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            {gameT(
-              "trivia.noPlayerTitle",
-            )}
-          </h1>
+      <>
+        <Header />
 
-          <p>
-            {gameT(
-              "trivia.joinAgain",
-            )}
-          </p>
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              {gameT(
+                "trivia.noPlayerTitle",
+              )}
+            </h1>
+
+            <p>
+              {gameT(
+                "trivia.joinAgain",
+              )}
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (roomLoading || roundLoading) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <LoaderCircle size={30} />
+      <>
+        <Header />
 
-          <h1>
-            {gameT("trivia.loading")}
-          </h1>
+        <div className="page">
+          <div className="centerCard">
+            <LoaderCircle size={30} />
+
+            <h1>
+              {gameT("trivia.loading")}
+            </h1>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (roomError || roundError || !room) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            {gameT(
-              "trivia.loadError",
-            )}
-          </h1>
+      <>
+        <Header />
 
-          <p>
-            {roomError ?? roundError}
-          </p>
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              {gameT(
+                "trivia.loadError",
+              )}
+            </h1>
+
+            <p>
+              {roomError ?? roundError}
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!round) {
     return (
-      <div className="page gamePage">
+      <>
+        <Header />
+
+        <div className="page gamePage">
         <div className="triviaGame">
           <section className="triviaStart">
             <div className="triviaHeroIcon">
@@ -573,13 +589,17 @@ function TriviaGame({
             )}
           </section>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
   if (round.status === "finished") {
     return (
-      <div className="page gamePage">
+      <>
+        <Header />
+
+        <div className="page gamePage">
         <div className="triviaGame">
           <section className="triviaStart">
             <div className="triviaHeroIcon">
@@ -672,23 +692,28 @@ function TriviaGame({
             )}
           </section>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
   if (!question) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <LoaderCircle size={30} />
+      <>
+        <Header />
 
-          <h1>
-            {gameT(
-              "trivia.questionMissing",
-            )}
-          </h1>
+        <div className="page">
+          <div className="centerCard">
+            <LoaderCircle size={30} />
+
+            <h1>
+              {gameT(
+                "trivia.questionMissing",
+              )}
+            </h1>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -696,7 +721,10 @@ function TriviaGame({
     round.status === "reveal";
 
   return (
-    <div className="page gamePage">
+    <>
+      <Header />
+
+      <div className="page gamePage">
       <div className="triviaGame">
         <header className="triviaHeader">
           <div>
@@ -1042,7 +1070,8 @@ function TriviaGame({
           )}
         </section>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

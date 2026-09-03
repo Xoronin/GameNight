@@ -16,7 +16,6 @@ import {
   useParams,
 } from "react-router-dom";
 import Header from "../components/Header";
-import SoundToggle from "../components/SoundToggle";
 import {
   GAME_ROUND_COUNT_OPTIONS,
   GAME_TIMER_OPTIONS,
@@ -1048,8 +1047,6 @@ function Lobby() {
               {room.code}
             </strong>
           </div>
-
-          <SoundToggle />
         </div>
       </div>
 

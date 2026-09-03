@@ -17,6 +17,7 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../../components/Header";
 import {
   getGameRoundCount,
   getGameTimerSeconds,
@@ -427,59 +428,74 @@ function HigherLowerGame({
 
   if (!localPlayer) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            {gameT(
-              "higherLower.noPlayerTitle",
-            )}
-          </h1>
+      <>
+        <Header />
 
-          <p>
-            {gameT(
-              "higherLower.joinAgain",
-            )}
-          </p>
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              {gameT(
+                "higherLower.noPlayerTitle",
+              )}
+            </h1>
+
+            <p>
+              {gameT(
+                "higherLower.joinAgain",
+              )}
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (roomLoading || roundLoading) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <LoaderCircle size={30} />
+      <>
+        <Header />
 
-          <h1>
-            {gameT("higherLower.loading")}
-          </h1>
+        <div className="page">
+          <div className="centerCard">
+            <LoaderCircle size={30} />
+
+            <h1>
+              {gameT("higherLower.loading")}
+            </h1>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (roomError || roundError || !room) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            {gameT(
-              "higherLower.loadError",
-            )}
-          </h1>
+      <>
+        <Header />
 
-          <p>
-            {roomError ?? roundError}
-          </p>
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              {gameT(
+                "higherLower.loadError",
+              )}
+            </h1>
+
+            <p>
+              {roomError ?? roundError}
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!round) {
     return (
-      <div className="page gamePage">
+      <>
+        <Header />
+
+        <div className="page gamePage">
         <div className="higherLowerGame">
           <section className="higherLowerStart">
             <div className="higherLowerHeroIcon">
@@ -577,13 +593,17 @@ function HigherLowerGame({
             )}
           </section>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
   if (round.status === "finished") {
     return (
-      <div className="page gamePage">
+      <>
+        <Header />
+
+        <div className="page gamePage">
         <div className="higherLowerGame">
           <section className="higherLowerStart">
             <div className="higherLowerHeroIcon">
@@ -676,23 +696,28 @@ function HigherLowerGame({
             )}
           </section>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
   if (!currentItem || !nextItem) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <LoaderCircle size={30} />
+      <>
+        <Header />
 
-          <h1>
-            {gameT(
-              "higherLower.itemsMissing",
-            )}
-          </h1>
+        <div className="page">
+          <div className="centerCard">
+            <LoaderCircle size={30} />
+
+            <h1>
+              {gameT(
+                "higherLower.itemsMissing",
+              )}
+            </h1>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -700,7 +725,10 @@ function HigherLowerGame({
     round.status === "reveal";
 
   return (
-    <div className="page gamePage">
+    <>
+      <Header />
+
+      <div className="page gamePage">
       <div className="higherLowerGame">
         <header className="higherLowerHeader">
           <div>
@@ -1027,7 +1055,8 @@ function HigherLowerGame({
           )}
         </section>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

@@ -15,6 +15,7 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../../components/Header";
 import {
   categoryLetters,
   classicCategories,
@@ -642,19 +643,23 @@ function CategoriesGame({
     roundLoading
   ) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <LoaderCircle
-            size={28}
-          />
+      <>
+        <Header />
 
-          <h1>
-            {gameT(
-              "categories.loading",
-            )}
-          </h1>
+        <div className="page">
+          <div className="centerCard">
+            <LoaderCircle
+              size={28}
+            />
+
+            <h1>
+              {gameT(
+                "categories.loading",
+              )}
+            </h1>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -665,23 +670,27 @@ function CategoriesGame({
     !localPlayer
   ) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            {gameT(
-              "categories.loadError",
-            )}
-          </h1>
+      <>
+        <Header />
 
-          <p>
-            {roomError ??
-              roundError ??
-              gameT(
-                "categories.playerRoomMissing",
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              {gameT(
+                "categories.loadError",
               )}
-          </p>
+            </h1>
+
+            <p>
+              {roomError ??
+                roundError ??
+                gameT(
+                  "categories.playerRoomMissing",
+                )}
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -694,7 +703,10 @@ function CategoriesGame({
 
   if (!round) {
     return (
-      <div className="page gamePage">
+      <>
+        <Header />
+
+        <div className="page gamePage">
         <div className="categoriesGame">
           <section className="categoriesStart">
             <div className="categoriesStartIcon">
@@ -750,7 +762,8 @@ function CategoriesGame({
             )}
           </section>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -759,7 +772,10 @@ function CategoriesGame({
     "finished"
   ) {
     return (
-      <div className="page gamePage">
+      <>
+        <Header />
+
+        <div className="page gamePage">
         <div className="categoriesGame">
           <section className="categoriesStart">
             <div className="categoriesStartIcon">
@@ -876,7 +892,8 @@ function CategoriesGame({
             )}
           </section>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -885,7 +902,10 @@ function CategoriesGame({
     "answering"
   ) {
     return (
-      <div className="page gamePage">
+      <>
+        <Header />
+
+        <div className="page gamePage">
         <div className="categoriesGame">
           <header className="categoriesHeader">
             <div>
@@ -1107,7 +1127,8 @@ function CategoriesGame({
               ))}
           </section>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -1182,7 +1203,10 @@ function CategoriesGame({
     );
 
   return (
-    <div className="page gamePage">
+    <>
+      <Header />
+
+      <div className="page gamePage">
       <div className="categoriesGame">
         <header className="categoriesHeader">
           <div>
@@ -1391,7 +1415,8 @@ function CategoriesGame({
           )}
         </section>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

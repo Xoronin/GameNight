@@ -16,6 +16,7 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../../components/Header";
 import {
   getGameRoundCount,
   getGameTimerSeconds,
@@ -446,17 +447,21 @@ function MinefieldGame({
 
   if (!localPlayer) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            {gameT("minefield.noPlayerTitle")}
-          </h1>
+      <>
+        <Header />
 
-          <p>
-            {gameT("minefield.joinAgain")}
-          </p>
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              {gameT("minefield.noPlayerTitle")}
+            </h1>
+
+            <p>
+              {gameT("minefield.joinAgain")}
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -465,17 +470,21 @@ function MinefieldGame({
     roundLoading
   ) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <LoaderCircle
-            size={30}
-          />
+      <>
+        <Header />
 
-          <h1>
-            {gameT("minefield.loading")}
-          </h1>
+        <div className="page">
+          <div className="centerCard">
+            <LoaderCircle
+              size={30}
+            />
+
+            <h1>
+              {gameT("minefield.loading")}
+            </h1>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -485,23 +494,30 @@ function MinefieldGame({
     !room
   ) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            {gameT("minefield.loadError")}
-          </h1>
+      <>
+        <Header />
 
-          <p>
-            {roomError ?? roundError}
-          </p>
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              {gameT("minefield.loadError")}
+            </h1>
+
+            <p>
+              {roomError ?? roundError}
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!round) {
     return (
-      <div className="page gamePage">
+      <>
+        <Header />
+
+        <div className="page gamePage">
         <div className="minefieldGame">
           <section className="minefieldStart">
             <div className="minefieldHeroIcon">
@@ -574,7 +590,8 @@ function MinefieldGame({
             )}
           </section>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -583,7 +600,10 @@ function MinefieldGame({
     "finished"
   ) {
     return (
-      <div className="page gamePage">
+      <>
+        <Header />
+
+        <div className="page gamePage">
         <div className="minefieldGame">
           <section className="minefieldStart">
             <div className="minefieldHeroIcon">
@@ -679,19 +699,24 @@ function MinefieldGame({
             )}
           </section>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
   if (!question) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            Question missing
-          </h1>
+      <>
+        <Header />
+
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              Question missing
+            </h1>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -701,7 +726,10 @@ function MinefieldGame({
     allCorrectFound;
 
   return (
-    <div className="page gamePage">
+    <>
+      <Header />
+
+      <div className="page gamePage">
       <div className="minefieldGame">
         <header className="minefieldHeader">
           <div>
@@ -953,7 +981,8 @@ function MinefieldGame({
             )}
         </section>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

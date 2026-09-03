@@ -4,8 +4,6 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import LanguageSwitcher from "../components/LanguageSwitcher";
-import SoundToggle from "../components/SoundToggle";
 import { gameLibrary } from "../data/gameLibrary";
 import { useLanguage } from "../hooks/useLanguage";
 import "../styles/home.css";
@@ -112,28 +110,7 @@ function Home() {
 
   return (
     <div className="app">
-      <Header>
-        <SoundToggle />
-
-        <LanguageSwitcher />
-
-        <button
-          className="joinButton"
-          onClick={() =>
-            navigate("/join")
-          }
-          type="button"
-          aria-label={t(
-            "home.joinRoom",
-          )}
-        >
-          <Users size={18} />
-
-          <span className="joinButtonText">
-            {t("home.joinRoom")}
-          </span>
-        </button>
-      </Header>
+      <Header />
 
       <main>
         <section className="hero">

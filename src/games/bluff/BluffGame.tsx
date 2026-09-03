@@ -17,6 +17,7 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../../components/Header";
 import {
   getGameRoundCount,
   getGameTimerSeconds,
@@ -766,21 +767,25 @@ function BluffGame({
 
   if (!localPlayer) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            {gameT(
-              "lobby.noPlayerTitle",
-            )}
-          </h1>
+      <>
+        <Header />
 
-          <p>
-            {gameT(
-              "bluff.joinAgain",
-            )}
-          </p>
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              {gameT(
+                "lobby.noPlayerTitle",
+              )}
+            </h1>
+
+            <p>
+              {gameT(
+                "bluff.joinAgain",
+              )}
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -790,19 +795,23 @@ function BluffGame({
     questionsLoading
   ) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <LoaderCircle
-            size={28}
-          />
+      <>
+        <Header />
 
-          <h1>
-            {gameT(
-              "bluff.loading",
-            )}
-          </h1>
+        <div className="page">
+          <div className="centerCard">
+            <LoaderCircle
+              size={28}
+            />
+
+            <h1>
+              {gameT(
+                "bluff.loading",
+              )}
+            </h1>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -813,24 +822,28 @@ function BluffGame({
     !room
   ) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            {gameT(
-              "bluff.loadError",
-            )}
-          </h1>
+      <>
+        <Header />
 
-          <p>
-            {roomError ??
-              roundError ??
-              questionsError ??
-              gameT(
-                "lobby.roomNotFound",
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              {gameT(
+                "bluff.loadError",
               )}
-          </p>
+            </h1>
+
+            <p>
+              {roomError ??
+                roundError ??
+                questionsError ??
+                gameT(
+                  "lobby.roomNotFound",
+                )}
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -838,27 +851,34 @@ function BluffGame({
     bluffQuestions.length === 0
   ) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            {gameT(
-              "bluff.questionMissing",
-            )}
-          </h1>
+      <>
+        <Header />
 
-          <p>
-            {gameT(
-              "bluff.noQuestions",
-            )}
-          </p>
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              {gameT(
+                "bluff.questionMissing",
+              )}
+            </h1>
+
+            <p>
+              {gameT(
+                "bluff.noQuestions",
+              )}
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!round) {
     return (
-      <div className="page gamePage">
+      <>
+        <Header />
+
+        <div className="page gamePage">
         <button
           className="backButton"
           type="button"
@@ -931,7 +951,8 @@ function BluffGame({
             )}
           </section>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -947,7 +968,10 @@ function BluffGame({
       );
 
     return (
-      <div className="page gamePage">
+      <>
+        <Header />
+
+        <div className="page gamePage">
         <div className="bluffGame">
           <section className="bluffFinished">
             <div className="bluffFinishedIcon">
@@ -1056,7 +1080,8 @@ function BluffGame({
             )}
           </section>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -1065,15 +1090,19 @@ function BluffGame({
     !localizedQuestion
   ) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            {gameT(
-              "bluff.questionMissing",
-            )}
-          </h1>
+      <>
+        <Header />
+
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              {gameT(
+                "bluff.questionMissing",
+              )}
+            </h1>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -1088,7 +1117,10 @@ function BluffGame({
     myRoundBreakdown.total;
 
   return (
-    <div className="page gamePage">
+    <>
+      <Header />
+
+      <div className="page gamePage">
       <div className="bluffGame">
         <header className="bluffGameHeader">
           <div>
@@ -1670,7 +1702,8 @@ function BluffGame({
           </section>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
