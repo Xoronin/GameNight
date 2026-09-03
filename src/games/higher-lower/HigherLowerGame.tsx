@@ -34,6 +34,7 @@ import {
   revealHigherLowerRound,
   submitHigherLowerGuess,
 } from "../../services/higherLowerService";
+import { advanceTournament } from "../../services/roomService";
 import type { HigherLowerRound } from "../../types/game";
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
@@ -43,6 +44,7 @@ import {
   playIncorrect,
   playTick,
 } from "../../utils/sounds";
+import { getTournamentStatus } from "../../utils/tournament";
 
 type HigherLowerGameProps = {
   roomCode: string;
@@ -126,6 +128,9 @@ function HigherLowerGame({
     !!localPlayer &&
     room.hostPlayerId ===
       localPlayer.id;
+
+  const tournament =
+    getTournamentStatus(room);
 
   const myGuess = useMemo(
     () =>
@@ -395,9 +400,23 @@ function HigherLowerGame({
       navigate(`/lobby/${room.code}`, {
         replace: true,
       });
+
+      return;
+    }
+
+    if (
+      room?.status === "playing" &&
+      room.selectedGame !==
+        "higher-lower"
+    ) {
+      navigate(
+        `/game/${room.selectedGame}?room=${room.code}`,
+        { replace: true },
+      );
     }
   }, [
     room?.status,
+    room?.selectedGame,
     room?.code,
     navigate,
   ]);
@@ -610,13 +629,41 @@ function HigherLowerGame({
                 disabled={working}
                 onClick={() => {
                   void runAction(
-                    backToLobby,
+                    async () => {
+                      if (
+                        tournament.isTournament &&
+                        room
+                      ) {
+                        await advanceTournament(
+                          room,
+                        );
+                      } else {
+                        await backToLobby();
+                      }
+                    },
                   );
                 }}
               >
-                {gameT(
-                  "higherLower.backToLobby",
-                )}
+                {tournament.isTournament
+                  ? tournament.isLastGame
+                    ? gameT(
+                        "tournament.viewResults",
+                      )
+                    : `${gameT(
+                        "tournament.nextGame",
+                      )}: ${
+                        tournament
+                          .nextGameEntry
+                          ? gameT(
+                              tournament
+                                .nextGameEntry
+                                .nameKey,
+                            )
+                          : ""
+                      }`
+                  : gameT(
+                      "higherLower.backToLobby",
+                    )}
 
                 <ArrowRight size={18} />
               </button>

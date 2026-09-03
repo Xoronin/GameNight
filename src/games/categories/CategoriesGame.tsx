@@ -42,6 +42,7 @@ import {
   setCategoriesRoundStatus,
   submitCategoriesAnswers,
 } from "../../services/categoriesService";
+import { advanceTournament } from "../../services/roomService";
 import "../../styles/categories.css";
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
@@ -49,6 +50,7 @@ import {
   playReveal,
   playTick,
 } from "../../utils/sounds";
+import { getTournamentStatus } from "../../utils/tournament";
 
 type CategoriesGameProps = {
   roomCode: string;
@@ -159,6 +161,9 @@ function CategoriesGame({
     !!localPlayer &&
     room.hostPlayerId ===
       localPlayer.id;
+
+  const tournament =
+    getTournamentStatus(room);
 
   const myAnswers =
     localPlayer
@@ -610,9 +615,24 @@ function CategoriesGame({
           replace: true,
         },
       );
+
+      return;
+    }
+
+    if (
+      room?.status ===
+        "playing" &&
+      room.selectedGame !==
+        "categories"
+    ) {
+      navigate(
+        `/game/${room.selectedGame}?room=${room.code}`,
+        { replace: true },
+      );
     }
   }, [
     room?.status,
+    room?.selectedGame,
     room?.code,
     navigate,
   ]);
@@ -805,6 +825,16 @@ function CategoriesGame({
                         return;
                       }
 
+                      if (
+                        tournament.isTournament
+                      ) {
+                        await advanceTournament(
+                          room,
+                        );
+
+                        return;
+                      }
+
                       await returnCategoriesToLobby(
                         room.id,
                       );
@@ -812,9 +842,26 @@ function CategoriesGame({
                   );
                 }}
               >
-                {gameT(
-                  "categories.backToLobby",
-                )}
+                {tournament.isTournament
+                  ? tournament.isLastGame
+                    ? gameT(
+                        "tournament.viewResults",
+                      )
+                    : `${gameT(
+                        "tournament.nextGame",
+                      )}: ${
+                        tournament
+                          .nextGameEntry
+                          ? gameT(
+                              tournament
+                                .nextGameEntry
+                                .nameKey,
+                            )
+                          : ""
+                      }`
+                  : gameT(
+                      "categories.backToLobby",
+                    )}
 
                 <ArrowRight
                   size={18}

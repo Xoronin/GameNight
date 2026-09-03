@@ -234,6 +234,23 @@ const de = {
     roundCountLabel: "Anzahl der Runden",
   },
 
+  tournament: {
+    modeSingle: "Einzelspiel",
+    modeTournament: "Turnier",
+    selectGames: "Wähle eure Spiele",
+    selectGamesHint:
+      "Wähle mindestens 2 Spiele — sie werden in zufälliger Reihenfolge gespielt.",
+    startTournament: "Turnier starten",
+    gameCount: "Spiele ausgewählt",
+    nextGame: "Nächstes Spiel",
+    viewResults: "Endergebnis ansehen",
+    gameProgress: "Spiel",
+    complete: "TURNIER BEENDET",
+    finalStandings: "Endstand",
+    gamesPlayed: "Gespielte Spiele",
+    returnToLobby: "Zurück zur Lobby",
+  },
+
   bluff: {
     readyRound: "Bereit für Runde 1?",
     readyDescription:

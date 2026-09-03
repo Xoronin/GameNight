@@ -33,6 +33,7 @@ import {
   revealTriviaRound,
   submitTriviaAnswer,
 } from "../../services/triviaService";
+import { advanceTournament } from "../../services/roomService";
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
 import "../../styles/trivia.css";
@@ -41,6 +42,7 @@ import {
   playIncorrect,
   playTick,
 } from "../../utils/sounds";
+import { getTournamentStatus } from "../../utils/tournament";
 
 const OPTION_LETTERS = [
   "A",
@@ -130,6 +132,9 @@ function TriviaGame({
     !!localPlayer &&
     room.hostPlayerId ===
       localPlayer.id;
+
+  const tournament =
+    getTournamentStatus(room);
 
   const myAnswer = useMemo(
     () =>
@@ -392,9 +397,22 @@ function TriviaGame({
       navigate(`/lobby/${room.code}`, {
         replace: true,
       });
+
+      return;
+    }
+
+    if (
+      room?.status === "playing" &&
+      room.selectedGame !== "trivia"
+    ) {
+      navigate(
+        `/game/${room.selectedGame}?room=${room.code}`,
+        { replace: true },
+      );
     }
   }, [
     room?.status,
+    room?.selectedGame,
     room?.code,
     navigate,
   ]);
@@ -607,13 +625,41 @@ function TriviaGame({
                 disabled={working}
                 onClick={() => {
                   void runAction(
-                    backToLobby,
+                    async () => {
+                      if (
+                        tournament.isTournament &&
+                        room
+                      ) {
+                        await advanceTournament(
+                          room,
+                        );
+                      } else {
+                        await backToLobby();
+                      }
+                    },
                   );
                 }}
               >
-                {gameT(
-                  "trivia.backToLobby",
-                )}
+                {tournament.isTournament
+                  ? tournament.isLastGame
+                    ? gameT(
+                        "tournament.viewResults",
+                      )
+                    : `${gameT(
+                        "tournament.nextGame",
+                      )}: ${
+                        tournament
+                          .nextGameEntry
+                          ? gameT(
+                              tournament
+                                .nextGameEntry
+                                .nameKey,
+                            )
+                          : ""
+                      }`
+                  : gameT(
+                      "trivia.backToLobby",
+                    )}
 
                 <ArrowRight size={18} />
               </button>

@@ -12,6 +12,8 @@ type RoomRow = {
   created_at: string;
   game_language: "en" | "de";
   game_settings: GameSettings;
+  tournament_games: string[] | null;
+  tournament_index: number;
 };
 
 type PlayerRow = {
@@ -34,6 +36,8 @@ function mapRoom(row: RoomRow): Room {
     createdAt: row.created_at,
     gameLanguage: row.game_language,
     gameSettings: row.game_settings ?? {},
+    tournamentGames: row.tournament_games,
+    tournamentIndex: row.tournament_index ?? 0,
   };
 }
 
@@ -318,6 +322,139 @@ export async function updateGameLanguage(
   if (error) {
     throw new Error(
       `Could not update game language: ${error.message}`,
+    );
+  }
+}
+
+function shuffle<T>(items: T[]): T[] {
+  const shuffled = [...items];
+
+  for (
+    let index = shuffled.length - 1;
+    index > 0;
+    index--
+  ) {
+    const swapIndex = Math.floor(
+      Math.random() * (index + 1),
+    );
+
+    [
+      shuffled[index],
+      shuffled[swapIndex],
+    ] = [
+      shuffled[swapIndex],
+      shuffled[index],
+    ];
+  }
+
+  return shuffled;
+}
+
+export async function startTournament(
+  roomId: string,
+  gameIds: string[],
+) {
+  const order = shuffle(gameIds);
+
+  const { error } = await supabase
+    .from("rooms")
+    .update({
+      tournament_games: order,
+      tournament_index: 0,
+      selected_game: order[0],
+      status: "playing",
+    })
+    .eq("id", roomId);
+
+  if (error) {
+    throw new Error(
+      `Could not start tournament: ${error.message}`,
+    );
+  }
+}
+
+/*
+ * Called from a finished game's "continue" button
+ * when the room is mid-tournament. Moves on to the
+ * next game in the shuffled order, or — once the
+ * last game is done — flips the room back to
+ * "lobby" with tournament_index past the end, which
+ * is what tells the Lobby page to show final
+ * standings instead of the normal game picker.
+ */
+export async function advanceTournament(
+  room: Room,
+) {
+  if (!room.tournamentGames) {
+    return;
+  }
+
+  const nextIndex =
+    room.tournamentIndex + 1;
+
+  const hasNextGame =
+    nextIndex <
+    room.tournamentGames.length;
+
+  const { error } = await supabase
+    .from("rooms")
+    .update(
+      hasNextGame
+        ? {
+            selected_game:
+              room.tournamentGames[
+                nextIndex
+              ],
+            tournament_index:
+              nextIndex,
+            status: "playing",
+          }
+        : {
+            tournament_index:
+              nextIndex,
+            status: "lobby",
+          },
+    )
+    .eq("id", room.id);
+
+  if (error) {
+    throw new Error(
+      `Could not advance tournament: ${error.message}`,
+    );
+  }
+}
+
+export async function exitTournament(
+  roomId: string,
+) {
+  const {
+    error: roomError,
+  } = await supabase
+    .from("rooms")
+    .update({
+      tournament_games: null,
+      tournament_index: 0,
+    })
+    .eq("id", roomId);
+
+  if (roomError) {
+    throw new Error(
+      `Could not exit tournament: ${roomError.message}`,
+    );
+  }
+
+  const {
+    error: playersError,
+  } = await supabase
+    .from("players")
+    .update({
+      score: 0,
+    })
+    .eq("room_id", roomId);
+
+  if (playersError) {
+    throw new Error(
+      `Could not reset scores: ${playersError.message}`,
     );
   }
 }

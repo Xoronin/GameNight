@@ -234,6 +234,23 @@ const en = {
     roundCountLabel: "Number of rounds",
   },
 
+  tournament: {
+    modeSingle: "Single Game",
+    modeTournament: "Tournament",
+    selectGames: "Choose your games",
+    selectGamesHint:
+      "Pick at least 2 games — they'll be played in a random order.",
+    startTournament: "Start Tournament",
+    gameCount: "games selected",
+    nextGame: "Next Game",
+    viewResults: "View Final Results",
+    gameProgress: "Game",
+    complete: "TOURNAMENT COMPLETE",
+    finalStandings: "Final Standings",
+    gamesPlayed: "Games played",
+    returnToLobby: "Return to Lobby",
+  },
+
   bluff: {
     readyRound: "Ready for round 1?",
     readyDescription:

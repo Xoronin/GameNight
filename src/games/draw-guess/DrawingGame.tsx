@@ -32,6 +32,7 @@ import {
   revealDrawingRound,
   submitDrawingGuess,
 } from "../../services/drawingService";
+import { advanceTournament } from "../../services/roomService";
 import "../../styles/drawing.css";
 import type {
   DrawingPoint,
@@ -44,6 +45,7 @@ import {
   playReveal,
   playTick,
 } from "../../utils/sounds";
+import { getTournamentStatus } from "../../utils/tournament";
 
 type DrawingGameProps = {
   roomCode: string;
@@ -233,6 +235,9 @@ function DrawingGame({
     !!localPlayer &&
     room.hostPlayerId ===
       localPlayer.id;
+
+  const tournament =
+    getTournamentStatus(room);
 
   const isDrawer =
     !!round &&
@@ -807,9 +812,26 @@ function DrawingGame({
           replace: true,
         },
       );
+
+      return;
+    }
+
+    if (
+      room?.status ===
+        "playing" &&
+      room.selectedGame !==
+        "draw-guess"
+    ) {
+      navigate(
+        `/game/${room.selectedGame}?room=${room.code}`,
+        { replace: true },
+      );
+
+      return;
     }
   }, [
     room?.status,
+    room?.selectedGame,
     room?.code,
     navigate,
   ]);
@@ -1002,13 +1024,41 @@ function DrawingGame({
                 }
                 onClick={() => {
                   void runAction(
-                    backToLobby,
+                    async () => {
+                      if (
+                        tournament.isTournament &&
+                        room
+                      ) {
+                        await advanceTournament(
+                          room,
+                        );
+                      } else {
+                        await backToLobby();
+                      }
+                    },
                   );
                 }}
               >
-                {gameT(
-                  "drawing.backToLobby",
-                )}
+                {tournament.isTournament
+                  ? tournament.isLastGame
+                    ? gameT(
+                        "tournament.viewResults",
+                      )
+                    : `${gameT(
+                        "tournament.nextGame",
+                      )}: ${
+                        tournament
+                          .nextGameEntry
+                          ? gameT(
+                              tournament
+                                .nextGameEntry
+                                .nameKey,
+                            )
+                          : ""
+                      }`
+                  : gameT(
+                      "drawing.backToLobby",
+                    )}
               </button>
             ) : (
               <div className="drawingWaiting">

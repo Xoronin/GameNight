@@ -11,4 +11,6 @@ export type Room = {
   createdAt: string;
   gameLanguage: "en" | "de";
   gameSettings: GameSettings;
+  tournamentGames: string[] | null;
+  tournamentIndex: number;
 };

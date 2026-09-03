@@ -6,6 +6,7 @@ import {
   LogOut,
   Plus,
   Settings,
+  Trophy,
   Users,
   X,
 } from "lucide-react";
@@ -29,12 +30,17 @@ import {
 } from "../data/gameTimers";
 import type { TimedGameId } from "../data/gameTimers";
 import { classicCategories } from "../data/categoryPacks";
-import { gameLibrary } from "../data/gameLibrary";
+import {
+  gameLibrary,
+  getGameLibraryEntry,
+} from "../data/gameLibrary";
 import { useLanguage } from "../hooks/useLanguage";
 import { useRoom } from "../hooks/useRoom";
 import {
+  exitTournament,
   leaveRoom,
   startGame,
+  startTournament,
   updateGameSettings,
   updateSelectedGame,
 } from "../services/roomService";
@@ -94,6 +100,10 @@ const teamLobbyGames = games.filter(
   (game) => game.group === "team",
 );
 
+const playableGames = games.filter(
+  (game) => !game.comingSoon,
+);
+
 function Lobby() {
   const navigate = useNavigate();
   const { roomCode } = useParams();
@@ -111,6 +121,16 @@ function Lobby() {
     newCategoryName,
     setNewCategoryName,
   ] = useState("");
+
+  const [lobbyMode, setLobbyMode] =
+    useState<
+      "single" | "tournament"
+    >("single");
+
+  const [
+    tournamentSelection,
+    setTournamentSelection,
+  ] = useState<string[]>([]);
 
   const {
     room,
@@ -187,6 +207,61 @@ function Lobby() {
       );
     }
   };
+
+  const toggleTournamentGame = (
+    gameId: string,
+  ) => {
+    setTournamentSelection(
+      (current) =>
+        current.includes(gameId)
+          ? current.filter(
+              (id) => id !== gameId,
+            )
+          : [...current, gameId],
+    );
+  };
+
+  const handleStartTournament =
+    async () => {
+      if (
+        !room ||
+        !isHost ||
+        tournamentSelection.length <
+          2
+      ) {
+        return;
+      }
+
+      try {
+        await startTournament(
+          room.id,
+          tournamentSelection,
+        );
+      } catch (caughtError) {
+        console.error(
+          "Could not start tournament:",
+          caughtError,
+        );
+      }
+    };
+
+  const handleExitTournament =
+    async () => {
+      if (!room || !isHost) {
+        return;
+      }
+
+      try {
+        await exitTournament(
+          room.id,
+        );
+      } catch (caughtError) {
+        console.error(
+          "Could not exit tournament:",
+          caughtError,
+        );
+      }
+    };
 
   const addCustomCategory =
     async () => {
@@ -411,6 +486,121 @@ function Lobby() {
         room.selectedGame,
     );
 
+  const tournamentFinished =
+    !!room.tournamentGames &&
+    room.tournamentGames.length >
+      0 &&
+    room.tournamentIndex >=
+      room.tournamentGames.length;
+
+  if (tournamentFinished) {
+    const sortedPlayers = [
+      ...players,
+    ].sort(
+      (a, b) => b.score - a.score,
+    );
+
+    return (
+      <div className="page">
+        <div className="centerCard tournamentResults">
+          <Trophy size={40} />
+
+          <span className="eyebrow">
+            {t(
+              "tournament.complete",
+            )}
+          </span>
+
+          <h1>
+            {t(
+              "tournament.finalStandings",
+            )}
+          </h1>
+
+          <div className="tournamentScoreboard">
+            {sortedPlayers.map(
+              (player, index) => (
+                <div
+                  key={player.id}
+                  className="tournamentScoreRow"
+                >
+                  <span>
+                    {index + 1}
+                  </span>
+
+                  <strong>
+                    {player.name}
+                  </strong>
+
+                  <b>
+                    {player.score.toLocaleString()}
+                  </b>
+                </div>
+              ),
+            )}
+          </div>
+
+          <div className="tournamentGamesPlayed">
+            <span>
+              {t(
+                "tournament.gamesPlayed",
+              )}
+            </span>
+
+            <div className="tournamentGameChips">
+              {room.tournamentGames!.map(
+                (gameId) => {
+                  const entry =
+                    getGameLibraryEntry(
+                      gameId,
+                    );
+
+                  if (!entry) {
+                    return null;
+                  }
+
+                  return (
+                    <span
+                      key={
+                        gameId
+                      }
+                      className={`tournamentGameChip ${entry.className}`}
+                    >
+                      {entry.icon}
+
+                      {t(
+                        entry.nameKey,
+                      )}
+                    </span>
+                  );
+                },
+              )}
+            </div>
+          </div>
+
+          {isHost ? (
+            <button
+              className="primaryButton formButton"
+              onClick={() => {
+                void handleExitTournament();
+              }}
+            >
+              {t(
+                "tournament.returnToLobby",
+              )}
+            </button>
+          ) : (
+            <div className="waitingHost">
+              {t(
+                "lobby.waitingHost",
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   const handleStartGame =
     async () => {
       if (!isHost) {
@@ -508,6 +698,316 @@ function Lobby() {
     );
   };
 
+  const renderGameSettings = (
+    gameId: TimedGameId,
+  ) => (
+    <>
+      <div className="gameTimerSetting">
+        <span>
+          {t(
+            timerLabelKeys[gameId],
+          )}
+        </span>
+
+        <select
+          value={getGameTimerSeconds(
+            room.gameSettings,
+            gameId,
+          )}
+          disabled={!isHost}
+          onChange={(event) => {
+            void updateGameSettings(
+              room.id,
+              withGameTimerSeconds(
+                room.gameSettings,
+                gameId,
+                Number(
+                  event.target
+                    .value,
+                ),
+              ),
+            );
+          }}
+        >
+          {GAME_TIMER_OPTIONS[
+            gameId
+          ].map((seconds) => (
+            <option
+              key={seconds}
+              value={seconds}
+            >
+              {seconds}{" "}
+              {t("lobby.seconds")}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="gameTimerSetting">
+        <span>
+          {t(
+            roundCountLabelKeys[
+              gameId
+            ],
+          )}
+        </span>
+
+        <select
+          value={getGameRoundCount(
+            room.gameSettings,
+            gameId,
+          )}
+          disabled={!isHost}
+          onChange={(event) => {
+            void updateGameSettings(
+              room.id,
+              withGameRoundCount(
+                room.gameSettings,
+                gameId,
+                Number(
+                  event.target
+                    .value,
+                ),
+              ),
+            );
+          }}
+        >
+          {GAME_ROUND_COUNT_OPTIONS[
+            gameId
+          ].map((count) => (
+            <option
+              key={count}
+              value={count}
+            >
+              {count}{" "}
+              {t(
+                "categories.rounds",
+              )}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {gameId === "categories" && (
+        <div className="categorySettingList">
+          <span>
+            {t(
+              "categories.categoriesLabel",
+            )}
+          </span>
+
+          {classicCategories.map(
+            (category) => {
+              const selectedKeys =
+                getCategoriesSelectedKeys(
+                  room.gameSettings,
+                );
+
+              const checked =
+                selectedKeys.includes(
+                  category.key,
+                );
+
+              return (
+                <label
+                  key={
+                    category.key
+                  }
+                  className="categorySettingOption"
+                >
+                  <input
+                    type="checkbox"
+                    checked={
+                      checked
+                    }
+                    disabled={
+                      !isHost
+                    }
+                    onChange={(
+                      event,
+                    ) => {
+                      const next =
+                        event
+                          .target
+                          .checked
+                          ? [
+                              ...selectedKeys,
+                              category.key,
+                            ]
+                          : selectedKeys.filter(
+                              (
+                                key,
+                              ) =>
+                                key !==
+                                category.key,
+                            );
+
+                      if (
+                        next.length ===
+                        0
+                      ) {
+                        return;
+                      }
+
+                      void updateGameSettings(
+                        room.id,
+                        withCategoriesSelectedKeys(
+                          room.gameSettings,
+                          next,
+                        ),
+                      );
+                    }}
+                  />
+
+                  {t(
+                    `categories.labels.${category.key}`,
+                  )}
+                </label>
+              );
+            },
+          )}
+
+          {getCategoriesCustom(
+            room.gameSettings,
+          ).map((category) => {
+            const selectedKeys =
+              getCategoriesSelectedKeys(
+                room.gameSettings,
+              );
+
+            const checked =
+              selectedKeys.includes(
+                category.key,
+              );
+
+            return (
+              <div
+                key={category.key}
+                className="categorySettingOption customCategoryOption"
+              >
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={
+                      checked
+                    }
+                    disabled={
+                      !isHost
+                    }
+                    onChange={(
+                      event,
+                    ) => {
+                      const next =
+                        event
+                          .target
+                          .checked
+                          ? [
+                              ...selectedKeys,
+                              category.key,
+                            ]
+                          : selectedKeys.filter(
+                              (
+                                key,
+                              ) =>
+                                key !==
+                                category.key,
+                            );
+
+                      if (
+                        next.length ===
+                        0
+                      ) {
+                        return;
+                      }
+
+                      void updateGameSettings(
+                        room.id,
+                        withCategoriesSelectedKeys(
+                          room.gameSettings,
+                          next,
+                        ),
+                      );
+                    }}
+                  />
+
+                  {category.label}
+                </label>
+
+                {isHost && (
+                  <button
+                    type="button"
+                    className="removeCategoryButton"
+                    aria-label={t(
+                      "categories.removeCategory",
+                    )}
+                    onClick={() => {
+                      void removeCustomCategory(
+                        category.key,
+                      );
+                    }}
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+            );
+          })}
+
+          {isHost && (
+            <div className="addCategoryRow">
+              <input
+                type="text"
+                className="addCategoryInput"
+                value={
+                  newCategoryName
+                }
+                maxLength={30}
+                placeholder={t(
+                  "categories.addCustomCategoryPlaceholder",
+                )}
+                onChange={(
+                  event,
+                ) =>
+                  setNewCategoryName(
+                    event.target
+                      .value,
+                  )
+                }
+                onKeyDown={(
+                  event,
+                ) => {
+                  if (
+                    event.key ===
+                    "Enter"
+                  ) {
+                    void addCustomCategory();
+                  }
+                }}
+              />
+
+              <button
+                type="button"
+                className="addCategoryButton"
+                disabled={
+                  !newCategoryName.trim()
+                }
+                onClick={() => {
+                  void addCustomCategory();
+                }}
+              >
+                <Plus size={15} />
+
+                {t(
+                  "categories.addCustomCategory",
+                )}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </>
+  );
+
   return (
     <div className="page lobbyPage">
       <div className="lobbyTopBar">
@@ -572,9 +1072,14 @@ function Lobby() {
 
         <div
           className={`lobbyColumns ${
-            isTimedGame(
-              room.selectedGame,
-            )
+            (lobbyMode === "single" &&
+              isTimedGame(
+                room.selectedGame,
+              )) ||
+            (lobbyMode ===
+              "tournament" &&
+              tournamentSelection.length >
+                0)
               ? "withSettings"
               : ""
           }`}
@@ -697,6 +1202,52 @@ function Lobby() {
               </div>
             </div>
 
+            {isHost && (
+              <div className="lobbyModeToggle">
+                <button
+                  type="button"
+                  className={
+                    lobbyMode ===
+                    "single"
+                      ? "active"
+                      : ""
+                  }
+                  onClick={() =>
+                    setLobbyMode(
+                      "single",
+                    )
+                  }
+                >
+                  {t(
+                    "tournament.modeSingle",
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  className={
+                    lobbyMode ===
+                    "tournament"
+                      ? "active"
+                      : ""
+                  }
+                  onClick={() =>
+                    setLobbyMode(
+                      "tournament",
+                    )
+                  }
+                >
+                  <Trophy
+                    size={14}
+                  />
+
+                  {t(
+                    "tournament.modeTournament",
+                  )}
+                </button>
+              </div>
+            )}
+
             <div className="gameLanguageSelector">
               <span>
                 {t("lobby.gameLanguage")}
@@ -741,420 +1292,278 @@ function Lobby() {
               </div>
             </div>
 
-            <span className="lobbyGameGroupLabel">
-              {t("home.groupSolo")}
-            </span>
+            {(!isHost ||
+              lobbyMode ===
+                "single") && (
+              <>
+                <span className="lobbyGameGroupLabel">
+                  {t(
+                    "home.groupSolo",
+                  )}
+                </span>
 
-            <div className="lobbyGameList">
-              {soloLobbyGames.map(
-                renderLobbyGameOption,
-              )}
-            </div>
+                <div className="lobbyGameList">
+                  {soloLobbyGames.map(
+                    renderLobbyGameOption,
+                  )}
+                </div>
 
-            <span className="lobbyGameGroupLabel">
-              {t("home.groupTeam")}
-            </span>
+                <span className="lobbyGameGroupLabel">
+                  {t(
+                    "home.groupTeam",
+                  )}
+                </span>
 
-            <div className="lobbyGameList">
-              {teamLobbyGames.map(
-                renderLobbyGameOption,
-              )}
-            </div>
-          </section>
+                <div className="lobbyGameList">
+                  {teamLobbyGames.map(
+                    renderLobbyGameOption,
+                  )}
+                </div>
+              </>
+            )}
 
-          {isTimedGame(
-            room.selectedGame,
-          ) && (
-            <section className="lobbyPanel gameSettingsPanel">
-              <div className="panelTitle">
-                <div>
-                  <span className="eyebrow">
-                    SETTINGS
+            {isHost &&
+              lobbyMode ===
+                "tournament" && (
+                <>
+                  <span className="lobbyGameGroupLabel">
+                    {t(
+                      "tournament.selectGames",
+                    )}
                   </span>
 
-                  <h2>
-                    <Settings
-                      size={19}
-                    />
-
+                  <p className="tournamentHint">
                     {t(
-                      "lobby.gameSettings",
+                      "tournament.selectGamesHint",
                     )}
-                  </h2>
-                </div>
-              </div>
+                  </p>
 
-              <div className="gameTimerSetting">
-                <span>
-                  {t(
-                    timerLabelKeys[
-                      room.selectedGame
-                    ],
-                  )}
-                </span>
-
-                <select
-                  value={getGameTimerSeconds(
-                    room.gameSettings,
-                    room.selectedGame,
-                  )}
-                  disabled={
-                    !isHost
-                  }
-                  onChange={(
-                    event,
-                  ) => {
-                    void updateGameSettings(
-                      room.id,
-                      withGameTimerSeconds(
-                        room.gameSettings,
-                        room.selectedGame as TimedGameId,
-                        Number(
-                          event
-                            .target
-                            .value,
-                        ),
-                      ),
-                    );
-                  }}
-                >
-                  {GAME_TIMER_OPTIONS[
-                    room.selectedGame
-                  ].map(
-                    (seconds) => (
-                      <option
-                        key={
-                          seconds
-                        }
-                        value={
-                          seconds
-                        }
-                      >
-                        {seconds}{" "}
-                        {t(
-                          "lobby.seconds",
-                        )}
-                      </option>
-                    ),
-                  )}
-                </select>
-              </div>
-
-              <div className="gameTimerSetting">
-                <span>
-                  {t(
-                    roundCountLabelKeys[
-                      room.selectedGame
-                    ],
-                  )}
-                </span>
-
-                <select
-                  value={getGameRoundCount(
-                    room.gameSettings,
-                    room.selectedGame,
-                  )}
-                  disabled={
-                    !isHost
-                  }
-                  onChange={(
-                    event,
-                  ) => {
-                    void updateGameSettings(
-                      room.id,
-                      withGameRoundCount(
-                        room.gameSettings,
-                        room.selectedGame,
-                        Number(
-                          event
-                            .target
-                            .value,
-                        ),
-                      ),
-                    );
-                  }}
-                >
-                  {GAME_ROUND_COUNT_OPTIONS[
-                    room.selectedGame
-                  ].map(
-                    (count) => (
-                      <option
-                        key={
-                          count
-                        }
-                        value={
-                          count
-                        }
-                      >
-                        {count}{" "}
-                        {t(
-                          "categories.rounds",
-                        )}
-                      </option>
-                    ),
-                  )}
-                </select>
-              </div>
-
-              {room.selectedGame ===
-                "categories" && (
-                  <div className="categorySettingList">
-                    <span>
-                      {t(
-                        "categories.categoriesLabel",
-                      )}
-                    </span>
-
-                    {classicCategories.map(
-                      (
-                        category,
-                      ) => {
-                        const selectedKeys =
-                          getCategoriesSelectedKeys(
-                            room.gameSettings,
-                          );
-
+                  <div className="lobbyGameList">
+                    {playableGames.map(
+                      (game) => {
                         const checked =
-                          selectedKeys.includes(
-                            category.key,
+                          tournamentSelection.includes(
+                            game.id,
                           );
 
                         return (
                           <label
                             key={
-                              category.key
+                              game.id
                             }
-                            className="categorySettingOption"
+                            className={`lobbyGameOption tournamentPickOption ${
+                              game.className
+                            } ${
+                              checked
+                                ? "selected"
+                                : ""
+                            }`}
                           >
                             <input
                               type="checkbox"
                               checked={
                                 checked
                               }
-                              disabled={
-                                !isHost
+                              onChange={() =>
+                                toggleTournamentGame(
+                                  game.id,
+                                )
                               }
-                              onChange={(
-                                event,
-                              ) => {
-                                const next =
-                                  event
-                                    .target
-                                    .checked
-                                    ? [
-                                        ...selectedKeys,
-                                        category.key,
-                                      ]
-                                    : selectedKeys.filter(
-                                        (
-                                          key,
-                                        ) =>
-                                          key !==
-                                          category.key,
-                                      );
-
-                                /*
-                                 * Refuse to leave zero
-                                 * categories selected.
-                                 */
-                                if (
-                                  next.length ===
-                                  0
-                                ) {
-                                  return;
-                                }
-
-                                void updateGameSettings(
-                                  room.id,
-                                  withCategoriesSelectedKeys(
-                                    room.gameSettings,
-                                    next,
-                                  ),
-                                );
-                              }}
                             />
 
-                            {t(
-                              `categories.labels.${category.key}`,
+                            <div className="lobbyGameIcon">
+                              {
+                                game.icon
+                              }
+                            </div>
+
+                            <div className="lobbyGameText">
+                              <strong>
+                                {t(
+                                  game.nameKey,
+                                )}
+                              </strong>
+
+                              <span>
+                                {t(
+                                  game.descriptionKey,
+                                )}
+                              </span>
+                            </div>
+
+                            {checked && (
+                              <div className="selectedIndicator">
+                                <Check
+                                  size={
+                                    16
+                                  }
+                                />
+                              </div>
                             )}
                           </label>
                         );
                       },
                     )}
-
-                    {getCategoriesCustom(
-                      room.gameSettings,
-                    ).map(
-                      (
-                        category,
-                      ) => {
-                        const selectedKeys =
-                          getCategoriesSelectedKeys(
-                            room.gameSettings,
-                          );
-
-                        const checked =
-                          selectedKeys.includes(
-                            category.key,
-                          );
-
-                        return (
-                          <div
-                            key={
-                              category.key
-                            }
-                            className="categorySettingOption customCategoryOption"
-                          >
-                            <label>
-                              <input
-                                type="checkbox"
-                                checked={
-                                  checked
-                                }
-                                disabled={
-                                  !isHost
-                                }
-                                onChange={(
-                                  event,
-                                ) => {
-                                  const next =
-                                    event
-                                      .target
-                                      .checked
-                                      ? [
-                                          ...selectedKeys,
-                                          category.key,
-                                        ]
-                                      : selectedKeys.filter(
-                                          (
-                                            key,
-                                          ) =>
-                                            key !==
-                                            category.key,
-                                        );
-
-                                  if (
-                                    next.length ===
-                                    0
-                                  ) {
-                                    return;
-                                  }
-
-                                  void updateGameSettings(
-                                    room.id,
-                                    withCategoriesSelectedKeys(
-                                      room.gameSettings,
-                                      next,
-                                    ),
-                                  );
-                                }}
-                              />
-
-                              {
-                                category.label
-                              }
-                            </label>
-
-                            {isHost && (
-                              <button
-                                type="button"
-                                className="removeCategoryButton"
-                                aria-label={t(
-                                  "categories.removeCategory",
-                                )}
-                                onClick={() => {
-                                  void removeCustomCategory(
-                                    category.key,
-                                  );
-                                }}
-                              >
-                                <X
-                                  size={14}
-                                />
-                              </button>
-                            )}
-                          </div>
-                        );
-                      },
-                    )}
-
-                    {isHost && (
-                      <div className="addCategoryRow">
-                        <input
-                          type="text"
-                          className="addCategoryInput"
-                          value={
-                            newCategoryName
-                          }
-                          maxLength={30}
-                          placeholder={t(
-                            "categories.addCustomCategoryPlaceholder",
-                          )}
-                          onChange={(
-                            event,
-                          ) =>
-                            setNewCategoryName(
-                              event
-                                .target
-                                .value,
-                            )
-                          }
-                          onKeyDown={(
-                            event,
-                          ) => {
-                            if (
-                              event.key ===
-                              "Enter"
-                            ) {
-                              void addCustomCategory();
-                            }
-                          }}
-                        />
-
-                        <button
-                          type="button"
-                          className="addCategoryButton"
-                          disabled={
-                            !newCategoryName.trim()
-                          }
-                          onClick={() => {
-                            void addCustomCategory();
-                          }}
-                        >
-                          <Plus
-                            size={15}
-                          />
-
-                          {t(
-                            "categories.addCustomCategory",
-                          )}
-                        </button>
-                      </div>
-                    )}
                   </div>
+                </>
               )}
-            </section>
-          )}
+          </section>
+
+          {lobbyMode === "single" &&
+            isTimedGame(
+              room.selectedGame,
+            ) && (
+              <section className="lobbyPanel gameSettingsPanel">
+                <div className="panelTitle">
+                  <div>
+                    <span className="eyebrow">
+                      SETTINGS
+                    </span>
+
+                    <h2>
+                      <Settings
+                        size={19}
+                      />
+
+                      {t(
+                        "lobby.gameSettings",
+                      )}
+                    </h2>
+                  </div>
+                </div>
+
+                {renderGameSettings(
+                  room.selectedGame,
+                )}
+              </section>
+            )}
+
+          {isHost &&
+            lobbyMode ===
+              "tournament" &&
+            tournamentSelection.length >
+              0 && (
+              <section className="lobbyPanel gameSettingsPanel tournamentSettingsPanel">
+                <div className="panelTitle">
+                  <div>
+                    <span className="eyebrow">
+                      SETTINGS
+                    </span>
+
+                    <h2>
+                      <Settings
+                        size={19}
+                      />
+
+                      {t(
+                        "lobby.gameSettings",
+                      )}
+                    </h2>
+                  </div>
+                </div>
+
+                {tournamentSelection.map(
+                  (gameId) => {
+                    if (
+                      !isTimedGame(
+                        gameId,
+                      )
+                    ) {
+                      return null;
+                    }
+
+                    const entry =
+                      getGameLibraryEntry(
+                        gameId,
+                      );
+
+                    return (
+                      <div
+                        key={
+                          gameId
+                        }
+                        className="tournamentGameSettingsBlock"
+                      >
+                        <h3>
+                          {entry?.icon}
+
+                          {entry
+                            ? t(
+                                entry.nameKey,
+                              )
+                            : gameId}
+                        </h3>
+
+                        {renderGameSettings(
+                          gameId,
+                        )}
+                      </div>
+                    );
+                  },
+                )}
+              </section>
+            )}
         </div>
 
         {isHost ? (
-          <button
-            className="primaryButton largeButton startGameButton"
-            onClick={() => {
-              void handleStartGame();
-            }}
-          >
-            {t("lobby.start")}{" "}
-            {selectedGame
-              ? t(
-                  selectedGame.nameKey,
-                )
-              : ""}
+          lobbyMode ===
+          "tournament" ? (
+            <>
+              <button
+                className="primaryButton largeButton startGameButton"
+                disabled={
+                  tournamentSelection.length <
+                  2
+                }
+                onClick={() => {
+                  void handleStartTournament();
+                }}
+              >
+                <Trophy
+                  size={18}
+                />
 
-            <ChevronRight
-              size={20}
-            />
-          </button>
+                {t(
+                  "tournament.startTournament",
+                )}
+
+                {tournamentSelection.length >
+                  0 &&
+                  ` (${tournamentSelection.length} ${t("tournament.gameCount")})`}
+
+                <ChevronRight
+                  size={20}
+                />
+              </button>
+
+              {tournamentSelection.length <
+                2 && (
+                <p className="tournamentHint tournamentHintCentered">
+                  {t(
+                    "tournament.selectGamesHint",
+                  )}
+                </p>
+              )}
+            </>
+          ) : (
+            <button
+              className="primaryButton largeButton startGameButton"
+              onClick={() => {
+                void handleStartGame();
+              }}
+            >
+              {t("lobby.start")}{" "}
+              {selectedGame
+                ? t(
+                    selectedGame.nameKey,
+                  )
+                : ""}
+
+              <ChevronRight
+                size={20}
+              />
+            </button>
+          )
         ) : (
           <div className="waitingHost">
             {t(

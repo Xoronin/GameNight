@@ -33,6 +33,7 @@ import {
   pickMinefieldTile,
   returnMinefieldRoomToLobby,
 } from "../../services/minefieldService";
+import { advanceTournament } from "../../services/roomService";
 import type {
   MinefieldTile,
 } from "../../types/game";
@@ -44,6 +45,7 @@ import {
   playIncorrect,
   playTick,
 } from "../../utils/sounds";
+import { getTournamentStatus } from "../../utils/tournament";
 
 type MinefieldGameProps = {
   roomCode: string;
@@ -129,6 +131,9 @@ function MinefieldGame({
     !!localPlayer &&
     room.hostPlayerId ===
       localPlayer.id;
+
+  const tournament =
+    getTournamentStatus(room);
 
   const currentPlayer =
     round
@@ -411,9 +416,24 @@ function MinefieldGame({
           replace: true,
         },
       );
+
+      return;
+    }
+
+    if (
+      room?.status ===
+        "playing" &&
+      room.selectedGame !==
+        "minefield"
+    ) {
+      navigate(
+        `/game/${room.selectedGame}?room=${room.code}`,
+        { replace: true },
+      );
     }
   }, [
     room?.status,
+    room?.selectedGame,
     room?.code,
     navigate,
   ]);
@@ -614,11 +634,39 @@ function MinefieldGame({
                 disabled={working}
                 onClick={() => {
                   void runAction(
-                    backToLobby,
+                    async () => {
+                      if (
+                        tournament.isTournament &&
+                        room
+                      ) {
+                        await advanceTournament(
+                          room,
+                        );
+                      } else {
+                        await backToLobby();
+                      }
+                    },
                   );
                 }}
               >
-                Back to lobby
+                {tournament.isTournament
+                  ? tournament.isLastGame
+                    ? gameT(
+                        "tournament.viewResults",
+                      )
+                    : `${gameT(
+                        "tournament.nextGame",
+                      )}: ${
+                        tournament
+                          .nextGameEntry
+                          ? gameT(
+                              tournament
+                                .nextGameEntry
+                                .nameKey,
+                            )
+                          : ""
+                      }`
+                  : "Back to lobby"}
 
                 <ArrowRight
                   size={18}

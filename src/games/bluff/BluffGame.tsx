@@ -38,12 +38,14 @@ import {
   submitBluffAnswer,
   submitBluffVote,
 } from "../../services/bluffService";
+import { advanceTournament } from "../../services/roomService";
 import "../../styles/bluff.css";
 import {
   playCorrect,
   playIncorrect,
   playTick,
 } from "../../utils/sounds";
+import { getTournamentStatus } from "../../utils/tournament";
 import type {
   BluffAnswer,
   BluffVote,
@@ -261,6 +263,9 @@ function BluffGame({
     !!localPlayer &&
     room.hostPlayerId ===
       localPlayer.id;
+
+  const tournament =
+    getTournamentStatus(room);
 
   const question =
     round
@@ -730,9 +735,24 @@ function BluffGame({
           replace: true,
         },
       );
+
+      return;
+    }
+
+    if (
+      room?.status ===
+        "playing" &&
+      room.selectedGame !==
+        "bluff"
+    ) {
+      navigate(
+        `/game/${room.selectedGame}?room=${room.code}`,
+        { replace: true },
+      );
     }
   }, [
     room?.status,
+    room?.selectedGame,
     room?.code,
     navigate,
   ]);
@@ -987,13 +1007,41 @@ function BluffGame({
                 }
                 onClick={() => {
                   void runAction(
-                    backToLobby,
+                    async () => {
+                      if (
+                        tournament.isTournament &&
+                        room
+                      ) {
+                        await advanceTournament(
+                          room,
+                        );
+                      } else {
+                        await backToLobby();
+                      }
+                    },
                   );
                 }}
               >
-                {gameT(
-                  "bluff.backToLobby",
-                )}
+                {tournament.isTournament
+                  ? tournament.isLastGame
+                    ? gameT(
+                        "tournament.viewResults",
+                      )
+                    : `${gameT(
+                        "tournament.nextGame",
+                      )}: ${
+                        tournament
+                          .nextGameEntry
+                          ? gameT(
+                              tournament
+                                .nextGameEntry
+                                .nameKey,
+                            )
+                          : ""
+                      }`
+                  : gameT(
+                      "bluff.backToLobby",
+                    )}
 
                 <ArrowRight
                   size={18}
