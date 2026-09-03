@@ -1,13 +1,18 @@
 .header {
     flex-shrink: 0;
     height: 76px;
-    padding: 0 5vw;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     border-bottom: 1px solid #ffffff0d;
     background: #09090dbd;
     backdrop-filter: blur(18px);
+}
+
+.headerInner {
+    width: min(1600px, 94%);
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .brand {
@@ -316,8 +321,8 @@ footer {
         overflow-y: visible;
     }
 
-    .header {
-        padding: 0 18px;
+    .headerInner {
+        width: calc(100% - 36px);
     }
 
     main {

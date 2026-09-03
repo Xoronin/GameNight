@@ -112,46 +112,48 @@ function Home() {
   return (
     <div className="app">
       <header className="header">
-        <button
-          className="brand brandButton"
-          onClick={() => navigate("/")}
-          type="button"
-        >
-          <img
-            className="brandDice"
-            src="/favicon.svg"
-            alt=""
-            width={42}
-            height={42}
-          />
-
-          <div>
-            <strong>
-              Game Night
-            </strong>
-
-            <span>
-              {t("home.madeFor")}
-            </span>
-          </div>
-        </button>
-
-        <div className="headerActions">
-          <SoundToggle />
-
-          <LanguageSwitcher />
-
+        <div className="headerInner">
           <button
-            className="joinButton"
-            onClick={() =>
-              navigate("/join")
-            }
+            className="brand brandButton"
+            onClick={() => navigate("/")}
             type="button"
           >
-            <Users size={18} />
+            <img
+              className="brandDice"
+              src="/favicon.svg"
+              alt=""
+              width={42}
+              height={42}
+            />
 
-            {t("home.joinRoom")}
+            <div>
+              <strong>
+                Game Night
+              </strong>
+
+              <span>
+                {t("home.madeFor")}
+              </span>
+            </div>
           </button>
+
+          <div className="headerActions">
+            <SoundToggle />
+
+            <LanguageSwitcher />
+
+            <button
+              className="joinButton"
+              onClick={() =>
+                navigate("/join")
+              }
+              type="button"
+            >
+              <Users size={18} />
+
+              {t("home.joinRoom")}
+            </button>
+          </div>
         </div>
       </header>
 
