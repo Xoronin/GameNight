@@ -175,6 +175,7 @@
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
+    padding-right: 10px;
 }
 
 .playerPanel {
@@ -493,6 +494,10 @@
 
 .lobbyGameOption:disabled:hover {
   transform: none;
+}
+
+.lobbyGameOption.comingSoon {
+  grid-template-columns: 48px minmax(0, 1fr) auto;
 }
 
 .lobbyGameGroupLabel {

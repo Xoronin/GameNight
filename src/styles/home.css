@@ -111,6 +111,7 @@ main {
     overflow-y: auto;
     overflow-x: hidden;
     padding-bottom: 40px;
+    padding-right: 10px;
 }
 
 .sectionHeading {
