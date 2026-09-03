@@ -66,30 +66,56 @@ export function withGameTimerSeconds(
   };
 }
 
-export const CATEGORIES_ROUND_COUNT_DEFAULT = 5;
+/*
+ * For Draw & Guess, "round count" means rounds
+ * *per player* (each round is one player's turn
+ * to draw), not a flat total — the total is that
+ * value times the current player count.
+ */
+export const GAME_ROUND_COUNT_DEFAULTS: Record<
+  TimedGameId,
+  number
+> = {
+  bluff: 8,
+  categories: 5,
+  minefield: 6,
+  "draw-guess": 2,
+  "higher-lower": 8,
+  trivia: 8,
+};
 
-export const CATEGORIES_ROUND_COUNT_OPTIONS = [
-  3, 5, 7, 10,
-];
+export const GAME_ROUND_COUNT_OPTIONS: Record<
+  TimedGameId,
+  number[]
+> = {
+  bluff: [4, 6, 8, 10, 12],
+  categories: [3, 5, 7, 10],
+  minefield: [3, 4, 6, 8, 10],
+  "draw-guess": [1, 2, 3, 4],
+  "higher-lower": [4, 6, 8, 10, 12],
+  trivia: [4, 6, 8, 10, 12],
+};
 
-export function getCategoriesRoundCount(
+export function getGameRoundCount(
   gameSettings: GameSettings | null | undefined,
+  gameId: TimedGameId,
 ): number {
   return (
-    gameSettings?.categories
+    gameSettings?.[gameId]
       ?.roundCount ??
-    CATEGORIES_ROUND_COUNT_DEFAULT
+    GAME_ROUND_COUNT_DEFAULTS[gameId]
   );
 }
 
-export function withCategoriesRoundCount(
+export function withGameRoundCount(
   gameSettings: GameSettings | null | undefined,
+  gameId: string,
   roundCount: number,
 ): GameSettings {
   return {
     ...gameSettings,
-    categories: {
-      ...gameSettings?.categories,
+    [gameId]: {
+      ...gameSettings?.[gameId],
       roundCount,
     },
   };

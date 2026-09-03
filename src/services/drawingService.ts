@@ -39,6 +39,7 @@ type DrawingStrokeRow = {
   player_id: string;
   points: DrawingPoint[];
   line_width: number;
+  color: string;
   created_at: string;
 };
 
@@ -106,6 +107,7 @@ function mapStroke(
     lineWidth: Number(
       row.line_width,
     ),
+    color: row.color,
     createdAt: row.created_at,
   };
 }
@@ -494,6 +496,7 @@ export async function addDrawingStroke(
   playerId: string,
   points: DrawingPoint[],
   lineWidth: number,
+  color: string,
 ) {
   if (
     points.length < 2
@@ -511,6 +514,7 @@ export async function addDrawingStroke(
         points,
         line_width:
           lineWidth,
+        color,
       });
 
   if (error) {

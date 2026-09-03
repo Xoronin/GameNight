@@ -1,0 +1,22 @@
+.soundToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  border: 1px solid #ffffff10;
+  border-radius: 10px;
+
+  background: #ffffff06;
+
+  color: #6f6f7d;
+
+  cursor: pointer;
+}
+
+.soundToggle:hover {
+  color: #d8d8df;
+  border-color: #ffffff1c;
+}

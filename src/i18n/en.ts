@@ -151,6 +151,7 @@ const en = {
     roomGone: "This room no longer exists.",
     gameSettings: "Game settings",
     seconds: "seconds",
+    roundCountLabel: "Number of rounds",
   },
 
   bluff: {
@@ -361,6 +362,7 @@ const en = {
     backToLobby: "Back to lobby",
     waitingContinue: "Waiting for the host to continue...",
     timerLabel: "Drawing time",
+    roundsPerPlayerLabel: "Rounds per player",
   },
 
   gamePage: {

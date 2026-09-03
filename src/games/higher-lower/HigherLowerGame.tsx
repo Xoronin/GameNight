@@ -17,7 +17,10 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { getGameTimerSeconds } from "../../data/gameTimers";
+import {
+  getGameRoundCount,
+  getGameTimerSeconds,
+} from "../../data/gameTimers";
 import { translate } from "../../i18n/i18n";
 import { useRoom } from "../../hooks/useRoom";
 import { useHigherLowerRound } from "../../hooks/useHigherLowerRound";
@@ -35,8 +38,11 @@ import type { HigherLowerRound } from "../../types/game";
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
 import "../../styles/higherLower.css";
-
-const ROUNDS_PER_GAME = 8;
+import {
+  playCorrect,
+  playIncorrect,
+  playTick,
+} from "../../utils/sounds";
 
 type HigherLowerGameProps = {
   roomCode: string;
@@ -73,12 +79,28 @@ function HigherLowerGame({
       null,
     );
 
+  const lowTimeRoundIdRef =
+    useRef<string | null>(
+      null,
+    );
+
+  const revealedRoundIdRef =
+    useRef<string | null>(
+      null,
+    );
+
   const {
     room,
     players,
     loading: roomLoading,
     error: roomError,
   } = useRoom(roomCode);
+
+  const ROUNDS_PER_GAME =
+    getGameRoundCount(
+      room?.gameSettings,
+      "higher-lower",
+    );
 
   const gameLanguage =
     room?.gameLanguage ?? "en";
@@ -307,6 +329,18 @@ function HigherLowerGame({
       setSecondsLeft(remaining);
 
       if (
+        remaining > 0 &&
+        remaining <= 5 &&
+        lowTimeRoundIdRef.current !==
+          round.id
+      ) {
+        lowTimeRoundIdRef.current =
+          round.id;
+
+        playTick();
+      }
+
+      if (
         remaining === 0 &&
         isHost &&
         triggeredRoundIdRef.current !==
@@ -330,6 +364,31 @@ function HigherLowerGame({
       window.clearInterval(timer);
     };
   }, [round, isHost, reveal]);
+
+  useEffect(() => {
+    if (
+      !round ||
+      round.status !== "reveal"
+    ) {
+      return;
+    }
+
+    if (
+      revealedRoundIdRef.current ===
+      round.id
+    ) {
+      return;
+    }
+
+    revealedRoundIdRef.current =
+      round.id;
+
+    if (myGuess?.isCorrect) {
+      playCorrect();
+    } else {
+      playIncorrect();
+    }
+  }, [round, myGuess]);
 
   useEffect(() => {
     if (room?.status === "lobby") {

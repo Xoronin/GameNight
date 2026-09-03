@@ -15,7 +15,10 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { getGameTimerSeconds } from "../../data/gameTimers";
+import {
+  getGameRoundCount,
+  getGameTimerSeconds,
+} from "../../data/gameTimers";
 import { useDrawingRound } from "../../hooks/useDrawingRound";
 import { translate } from "../../i18n/i18n";
 import { useRoom } from "../../hooks/useRoom";
@@ -36,12 +39,34 @@ import type {
 } from "../../types/game";
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
-
-const ROUNDS_PER_PLAYER = 2;
+import {
+  playCorrect,
+  playReveal,
+  playTick,
+} from "../../utils/sounds";
 
 type DrawingGameProps = {
   roomCode: string;
 };
+
+const DRAWING_COLORS = [
+  "#f8fafc",
+  "#ef4444",
+  "#f97316",
+  "#facc15",
+  "#22c55e",
+  "#3b82f6",
+  "#8b5cf6",
+  "#ec4899",
+  "#78350f",
+  "#000000",
+];
+
+const DRAWING_WIDTHS = [
+  { size: 3, label: "S" },
+  { size: 6, label: "M" },
+  { size: 10, label: "L" },
+];
 
 function drawStroke(
   context: CanvasRenderingContext2D,
@@ -57,7 +82,7 @@ function drawStroke(
   context.lineCap = "round";
   context.lineJoin = "round";
   context.lineWidth = stroke.lineWidth;
-  context.strokeStyle = "#f8fafc";
+  context.strokeStyle = stroke.color;
 
   const first = stroke.points[0];
 
@@ -117,6 +142,21 @@ function DrawingGame({
   const currentStrokeRef =
     useRef<DrawingPoint[]>([]);
 
+  const lowTimeRoundIdRef =
+    useRef<string | null>(
+      null,
+    );
+
+  const correctGuessRoundIdRef =
+    useRef<string | null>(
+      null,
+    );
+
+  const revealedRoundIdRef =
+    useRef<string | null>(
+      null,
+    );
+
   const [localPlayer] =
     useState<Player | null>(
       () => getPlayer(),
@@ -124,6 +164,20 @@ function DrawingGame({
 
   const [drawing, setDrawing] =
     useState(false);
+
+  const [
+    selectedColor,
+    setSelectedColor,
+  ] = useState(
+    DRAWING_COLORS[0],
+  );
+
+  const [
+    selectedWidth,
+    setSelectedWidth,
+  ] = useState(
+    DRAWING_WIDTHS[1].size,
+  );
 
   const [guess, setGuess] =
     useState("");
@@ -203,10 +257,16 @@ function DrawingGame({
       [players],
     );
 
+  const roundsPerPlayer =
+    getGameRoundCount(
+      room?.gameSettings,
+      "draw-guess",
+    );
+
   const totalRounds =
     Math.max(
       players.length *
-        ROUNDS_PER_PLAYER,
+        roundsPerPlayer,
       1,
     );
 
@@ -381,6 +441,18 @@ function DrawingGame({
         );
 
         if (
+          remaining > 0 &&
+          remaining <= 5 &&
+          lowTimeRoundIdRef.current !==
+            round.id
+        ) {
+          lowTimeRoundIdRef.current =
+            round.id;
+
+          playTick();
+        }
+
+        if (
           remaining === 0 &&
           isHost
         ) {
@@ -427,6 +499,48 @@ function DrawingGame({
     isHost,
     round,
   ]);
+
+  useEffect(() => {
+    if (
+      !round ||
+      !myCorrectGuess
+    ) {
+      return;
+    }
+
+    if (
+      correctGuessRoundIdRef.current ===
+      round.id
+    ) {
+      return;
+    }
+
+    correctGuessRoundIdRef.current =
+      round.id;
+
+    playCorrect();
+  }, [round, myCorrectGuess]);
+
+  useEffect(() => {
+    if (
+      !round ||
+      round.status !== "reveal"
+    ) {
+      return;
+    }
+
+    if (
+      revealedRoundIdRef.current ===
+      round.id
+    ) {
+      return;
+    }
+
+    revealedRoundIdRef.current =
+      round.id;
+
+    playReveal();
+  }, [round]);
 
   useEffect(() => {
     const canvas =
@@ -598,8 +712,9 @@ function DrawingGame({
 
     context.beginPath();
     context.strokeStyle =
-      "#f8fafc";
-    context.lineWidth = 5;
+      selectedColor;
+    context.lineWidth =
+      selectedWidth;
     context.lineCap =
       "round";
 
@@ -648,7 +763,8 @@ function DrawingGame({
         round.id,
         localPlayer.id,
         points,
-        5,
+        selectedWidth,
+        selectedColor,
       );
     };
 
@@ -1047,6 +1163,75 @@ function DrawingGame({
                 </button>
               )}
           </div>
+
+          {isDrawer &&
+            round.status ===
+              "drawing" && (
+              <div className="drawingToolbar">
+                <div className="drawingColors">
+                  {DRAWING_COLORS.map(
+                    (
+                      color,
+                    ) => (
+                      <button
+                        key={
+                          color
+                        }
+                        type="button"
+                        className={`drawingColorSwatch ${
+                          selectedColor ===
+                          color
+                            ? "selected"
+                            : ""
+                        }`}
+                        style={{
+                          background:
+                            color,
+                        }}
+                        aria-label={
+                          color
+                        }
+                        onClick={() =>
+                          setSelectedColor(
+                            color,
+                          )
+                        }
+                      />
+                    ),
+                  )}
+                </div>
+
+                <div className="drawingWidths">
+                  {DRAWING_WIDTHS.map(
+                    (
+                      option,
+                    ) => (
+                      <button
+                        key={
+                          option.size
+                        }
+                        type="button"
+                        className={`drawingWidthOption ${
+                          selectedWidth ===
+                          option.size
+                            ? "selected"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          setSelectedWidth(
+                            option.size,
+                          )
+                        }
+                      >
+                        {
+                          option.label
+                        }
+                      </button>
+                    ),
+                  )}
+                </div>
+              </div>
+            )}
 
           {round.status ===
             "drawing" &&

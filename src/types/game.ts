@@ -153,6 +153,7 @@ export type DrawingStroke = {
   points: DrawingPoint[];
 
   lineWidth: number;
+  color: string;
 
   createdAt: string;
 };

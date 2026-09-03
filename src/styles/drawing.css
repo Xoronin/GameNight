@@ -210,6 +210,72 @@ canvas.drawingCanvas.drawable {
   cursor: not-allowed;
 }
 
+.drawingToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  flex-wrap: wrap;
+}
+
+.drawingColors {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.drawingColorSwatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.drawingColorSwatch:hover {
+  transform: scale(1.1);
+}
+
+.drawingColorSwatch.selected {
+  border-color: #3b82f6;
+  transform: scale(1.15);
+}
+
+.drawingWidths {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.drawingWidthOption {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.drawingWidthOption:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.drawingWidthOption.selected {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.18);
+  color: #ffffff;
+}
+
 .drawingGuessArea {
   display: flex;
   flex-direction: column;

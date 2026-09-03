@@ -12,14 +12,15 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+import SoundToggle from "../components/SoundToggle";
 import {
-  CATEGORIES_ROUND_COUNT_OPTIONS,
+  GAME_ROUND_COUNT_OPTIONS,
   GAME_TIMER_OPTIONS,
-  getCategoriesRoundCount,
   getCategoriesSelectedKeys,
+  getGameRoundCount,
   getGameTimerSeconds,
-  withCategoriesRoundCount,
   withCategoriesSelectedKeys,
+  withGameRoundCount,
   withGameTimerSeconds,
 } from "../data/gameTimers";
 import type { TimedGameId } from "../data/gameTimers";
@@ -61,6 +62,23 @@ function isTimedGame(
     gameId in timerLabelKeys
   );
 }
+
+const roundCountLabelKeys: Record<
+  TimedGameId,
+  string
+> = {
+  bluff: "lobby.roundCountLabel",
+  categories:
+    "lobby.roundCountLabel",
+  minefield:
+    "lobby.roundCountLabel",
+  "draw-guess":
+    "drawing.roundsPerPlayerLabel",
+  "higher-lower":
+    "lobby.roundCountLabel",
+  trivia:
+    "lobby.roundCountLabel",
+};
 
 const games = gameLibrary;
 
@@ -292,11 +310,15 @@ function Lobby() {
           {t("lobby.leaveRoom")}
         </button>
 
-        <div className="roomTopInfo">
-          {t("common.room")}
-          <strong>
-            {room.code}
-          </strong>
+        <div className="lobbyTopBarRight">
+          <div className="roomTopInfo">
+            {t("common.room")}
+            <strong>
+              {room.code}
+            </strong>
+          </div>
+
+          <SoundToggle />
         </div>
       </div>
 
@@ -403,6 +425,10 @@ function Lobby() {
                             )}
                       </span>
                     </div>
+
+                    <span className="playerScore">
+                      {player.score.toLocaleString()}
+                    </span>
 
                     {player.isHost && (
                       <span className="hostBadge">
@@ -640,61 +666,64 @@ function Lobby() {
                 </select>
               </div>
 
+              <div className="gameTimerSetting">
+                <span>
+                  {t(
+                    roundCountLabelKeys[
+                      room.selectedGame
+                    ],
+                  )}
+                </span>
+
+                <select
+                  value={getGameRoundCount(
+                    room.gameSettings,
+                    room.selectedGame,
+                  )}
+                  disabled={
+                    !isHost
+                  }
+                  onChange={(
+                    event,
+                  ) => {
+                    void updateGameSettings(
+                      room.id,
+                      withGameRoundCount(
+                        room.gameSettings,
+                        room.selectedGame,
+                        Number(
+                          event
+                            .target
+                            .value,
+                        ),
+                      ),
+                    );
+                  }}
+                >
+                  {GAME_ROUND_COUNT_OPTIONS[
+                    room.selectedGame
+                  ].map(
+                    (count) => (
+                      <option
+                        key={
+                          count
+                        }
+                        value={
+                          count
+                        }
+                      >
+                        {count}{" "}
+                        {t(
+                          "categories.rounds",
+                        )}
+                      </option>
+                    ),
+                  )}
+                </select>
+              </div>
+
               {room.selectedGame ===
                 "categories" && (
-                <>
-                  <div className="gameTimerSetting">
-                    <span>
-                      {t(
-                        "categories.roundCountLabel",
-                      )}
-                    </span>
-
-                    <select
-                      value={getCategoriesRoundCount(
-                        room.gameSettings,
-                      )}
-                      disabled={
-                        !isHost
-                      }
-                      onChange={(
-                        event,
-                      ) => {
-                        void updateGameSettings(
-                          room.id,
-                          withCategoriesRoundCount(
-                            room.gameSettings,
-                            Number(
-                              event
-                                .target
-                                .value,
-                            ),
-                          ),
-                        );
-                      }}
-                    >
-                      {CATEGORIES_ROUND_COUNT_OPTIONS.map(
-                        (
-                          count,
-                        ) => (
-                          <option
-                            key={
-                              count
-                            }
-                            value={
-                              count
-                            }
-                          >
-                            {count}{" "}
-                            {t(
-                              "categories.rounds",
-                            )}
-                          </option>
-                        ),
-                      )}
-                    </select>
-                  </div>
-
                   <div className="categorySettingList">
                     <span>
                       {t(
@@ -779,7 +808,6 @@ function Lobby() {
                       },
                     )}
                   </div>
-                </>
               )}
             </section>
           )}

@@ -16,7 +16,10 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { getGameTimerSeconds } from "../../data/gameTimers";
+import {
+  getGameRoundCount,
+  getGameTimerSeconds,
+} from "../../data/gameTimers";
 import { translate } from "../../i18n/i18n";
 import { useRoom } from "../../hooks/useRoom";
 import { useTriviaRound } from "../../hooks/useTriviaRound";
@@ -33,8 +36,11 @@ import {
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
 import "../../styles/trivia.css";
-
-const ROUNDS_PER_GAME = 8;
+import {
+  playCorrect,
+  playIncorrect,
+  playTick,
+} from "../../utils/sounds";
 
 const OPTION_LETTERS = [
   "A",
@@ -78,12 +84,28 @@ function TriviaGame({
       null,
     );
 
+  const lowTimeRoundIdRef =
+    useRef<string | null>(
+      null,
+    );
+
+  const revealedRoundIdRef =
+    useRef<string | null>(
+      null,
+    );
+
   const {
     room,
     players,
     loading: roomLoading,
     error: roomError,
   } = useRoom(roomCode);
+
+  const ROUNDS_PER_GAME =
+    getGameRoundCount(
+      room?.gameSettings,
+      "trivia",
+    );
 
   const gameLanguage =
     room?.gameLanguage ?? "en";
@@ -304,6 +326,18 @@ function TriviaGame({
       setSecondsLeft(remaining);
 
       if (
+        remaining > 0 &&
+        remaining <= 5 &&
+        lowTimeRoundIdRef.current !==
+          round.id
+      ) {
+        lowTimeRoundIdRef.current =
+          round.id;
+
+        playTick();
+      }
+
+      if (
         remaining === 0 &&
         isHost &&
         triggeredRoundIdRef.current !==
@@ -327,6 +361,31 @@ function TriviaGame({
       window.clearInterval(timer);
     };
   }, [round, isHost, reveal]);
+
+  useEffect(() => {
+    if (
+      !round ||
+      round.status !== "reveal"
+    ) {
+      return;
+    }
+
+    if (
+      revealedRoundIdRef.current ===
+      round.id
+    ) {
+      return;
+    }
+
+    revealedRoundIdRef.current =
+      round.id;
+
+    if (myAnswer?.isCorrect) {
+      playCorrect();
+    } else {
+      playIncorrect();
+    }
+  }, [round, myAnswer]);
 
   useEffect(() => {
     if (room?.status === "lobby") {

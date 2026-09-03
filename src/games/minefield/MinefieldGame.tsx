@@ -16,7 +16,10 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { getGameTimerSeconds } from "../../data/gameTimers";
+import {
+  getGameRoundCount,
+  getGameTimerSeconds,
+} from "../../data/gameTimers";
 import { translate } from "../../i18n/i18n";
 import { useRoom } from "../../hooks/useRoom";
 import { useMinefieldRound } from "../../hooks/useMinefieldRound";
@@ -36,8 +39,11 @@ import type {
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
 import "../../styles/minefield.css";
-
-const ROUNDS_PER_GAME = 6;
+import {
+  playCorrect,
+  playIncorrect,
+  playTick,
+} from "../../utils/sounds";
 
 type MinefieldGameProps = {
   roomCode: string;
@@ -82,12 +88,23 @@ function MinefieldGame({
       null,
     );
 
+  const lowTimeTurnRef =
+    useRef<string | null>(
+      null,
+    );
+
   const {
     room,
     players,
     loading: roomLoading,
     error: roomError,
   } = useRoom(roomCode);
+
+  const ROUNDS_PER_GAME =
+    getGameRoundCount(
+      room?.gameSettings,
+      "minefield",
+    );
 
   const gameLanguage =
     room?.gameLanguage ?? "en";
@@ -241,6 +258,12 @@ function MinefieldGame({
         return;
       }
 
+      if (tile.isCorrect) {
+        playCorrect();
+      } else {
+        playIncorrect();
+      }
+
       await pickMinefieldTile(
         round,
         tile,
@@ -325,6 +348,18 @@ function MinefieldGame({
         setSecondsLeft(
           remaining,
         );
+
+        if (
+          remaining > 0 &&
+          remaining <= 5 &&
+          lowTimeTurnRef.current !==
+            turnKey
+        ) {
+          lowTimeTurnRef.current =
+            turnKey;
+
+          playTick();
+        }
 
         if (
           remaining === 0 &&

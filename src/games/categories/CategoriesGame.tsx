@@ -20,8 +20,8 @@ import {
   classicCategories,
 } from "../../data/categoryPacks";
 import {
-  getCategoriesRoundCount,
   getCategoriesSelectedKeys,
+  getGameRoundCount,
   getGameTimerSeconds,
 } from "../../data/gameTimers";
 import { useCategoriesRound } from "../../hooks/useCategoriesRound";
@@ -42,6 +42,10 @@ import {
 import "../../styles/categories.css";
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
+import {
+  playReveal,
+  playTick,
+} from "../../utils/sounds";
 
 type CategoriesGameProps = {
   roomCode: string;
@@ -83,6 +87,16 @@ function CategoriesGame({
   ] = useState(0);
 
   const triggeredRoundIdRef =
+    useRef<string | null>(
+      null,
+    );
+
+  const lowTimeRoundIdRef =
+    useRef<string | null>(
+      null,
+    );
+
+  const revealedRoundIdRef =
     useRef<string | null>(
       null,
     );
@@ -179,8 +193,9 @@ function CategoriesGame({
       players.length;
 
   const roundCount =
-    getCategoriesRoundCount(
+    getGameRoundCount(
       room?.gameSettings,
+      "categories",
     );
 
   const isLastRound =
@@ -444,6 +459,18 @@ function CategoriesGame({
         );
 
         if (
+          remaining > 0 &&
+          remaining <= 5 &&
+          lowTimeRoundIdRef.current !==
+            round.id
+        ) {
+          lowTimeRoundIdRef.current =
+            round.id;
+
+          playTick();
+        }
+
+        if (
           remaining === 0 &&
           isHost &&
           triggeredRoundIdRef.current !==
@@ -470,6 +497,28 @@ function CategoriesGame({
       );
     };
   }, [round, isHost, reveal]);
+
+  useEffect(() => {
+    if (
+      !round ||
+      round.status !==
+        "reveal"
+    ) {
+      return;
+    }
+
+    if (
+      revealedRoundIdRef.current ===
+      round.id
+    ) {
+      return;
+    }
+
+    revealedRoundIdRef.current =
+      round.id;
+
+    playReveal();
+  }, [round]);
 
   useEffect(() => {
     if (

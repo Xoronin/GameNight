@@ -62,6 +62,12 @@
     justify-content: space-between;
 }
 
+.lobbyTopBarRight {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .roomTopInfo {
     display: flex;
     align-items: center;
@@ -193,8 +199,15 @@
         font-size: 12px;
     }
 
-.hostBadge {
+.playerScore {
     margin-left: auto;
+    color: #f5f5f5;
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.hostBadge {
     display: inline-flex;
     align-items: center;
     gap: 5px;

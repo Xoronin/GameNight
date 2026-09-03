@@ -4,6 +4,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import SoundToggle from "../components/SoundToggle";
 import { gameLibrary } from "../data/gameLibrary";
 import { useLanguage } from "../hooks/useLanguage";
 import "../styles/home.css";
@@ -38,6 +39,8 @@ function Home() {
         </button>
 
         <div className="headerActions">
+          <SoundToggle />
+
           <LanguageSwitcher />
 
           <button

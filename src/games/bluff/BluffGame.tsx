@@ -17,7 +17,10 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { getGameTimerSeconds } from "../../data/gameTimers";
+import {
+  getGameRoundCount,
+  getGameTimerSeconds,
+} from "../../data/gameTimers";
 import {
   useBluffQuestions,
 } from "../../hooks/useBluffQuestions";
@@ -36,14 +39,17 @@ import {
   submitBluffVote,
 } from "../../services/bluffService";
 import "../../styles/bluff.css";
+import {
+  playCorrect,
+  playIncorrect,
+  playTick,
+} from "../../utils/sounds";
 import type {
   BluffAnswer,
   BluffVote,
 } from "../../types/game";
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
-
-const BLUFF_ROUNDS_PER_GAME = 8;
 
 type BluffGameProps = {
   roomCode: string;
@@ -196,12 +202,28 @@ function BluffGame({
       null,
     );
 
+  const lowTimeRoundIdRef =
+    useRef<string | null>(
+      null,
+    );
+
+  const revealedRoundIdRef =
+    useRef<string | null>(
+      null,
+    );
+
   const {
     room,
     players,
     loading: roomLoading,
     error: roomError,
   } = useRoom(roomCode);
+
+  const BLUFF_ROUNDS_PER_GAME =
+    getGameRoundCount(
+      room?.gameSettings,
+      "bluff",
+    );
 
   const {
     session,
@@ -616,6 +638,18 @@ function BluffGame({
         );
 
         if (
+          remaining > 0 &&
+          remaining <= 5 &&
+          lowTimeRoundIdRef.current !==
+            round.id
+        ) {
+          lowTimeRoundIdRef.current =
+            round.id;
+
+          playTick();
+        }
+
+        if (
           remaining === 0 &&
           isHost &&
           triggeredRoundIdRef.current !==
@@ -645,6 +679,45 @@ function BluffGame({
       );
     };
   }, [round, isHost]);
+
+  useEffect(() => {
+    if (
+      !round ||
+      round.status !==
+        "reveal" ||
+      !localPlayer
+    ) {
+      return;
+    }
+
+    if (
+      revealedRoundIdRef.current ===
+      round.id
+    ) {
+      return;
+    }
+
+    revealedRoundIdRef.current =
+      round.id;
+
+    const breakdown =
+      calculateRoundBreakdown(
+        localPlayer.id,
+        answers,
+        votes,
+      );
+
+    if (breakdown.total > 0) {
+      playCorrect();
+    } else {
+      playIncorrect();
+    }
+  }, [
+    round,
+    localPlayer,
+    answers,
+    votes,
+  ]);
 
   useEffect(() => {
     if (
