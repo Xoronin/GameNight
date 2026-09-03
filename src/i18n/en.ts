@@ -22,7 +22,6 @@ const en = {
   },
 
   home: {
-    badge: "PARTY GAMES FOR EVERYONE",
     title1: "Pick a game.",
     title2: "Beat your friends.",
     description:

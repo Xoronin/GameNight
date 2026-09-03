@@ -68,13 +68,6 @@ main {
     text-align: center;
 }
 
-.heroBadge {
-    color: #a78bfa;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.13em;
-}
-
 .hero h1 {
     max-width: 800px;
     margin: 16px auto;

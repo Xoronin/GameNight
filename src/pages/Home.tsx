@@ -153,10 +153,6 @@ function Home() {
 
       <main>
         <section className="hero">
-          <div className="heroBadge">
-            🎲 {t("home.badge")}
-          </div>
-
           <h1>
             {t("home.title1")}
 

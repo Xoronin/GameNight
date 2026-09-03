@@ -22,11 +22,10 @@ const de = {
   },
 
   home: {
-    badge: "PARTYSPIELE FÜR ALLE",
     title1: "Wähle ein Spiel.",
-    title2: "Schlag deine Freunde.",
+    title2: "Hab Spaß mit deinen Freunden.",
     description:
-      "Schnelle Partyspiele für euren Spieleabend. Freunde schnappen, Spiel auswählen und loslegen.",
+      "Schnelle Partyspiele für euren Spieleabend. Lad deine Freunde ein und los geht's.",
     createRoom: "Raum erstellen",
     joinRoom: "Raum beitreten",
     enterRoomCode: "Raumcode eingeben",
