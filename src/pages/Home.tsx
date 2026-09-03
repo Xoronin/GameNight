@@ -3,6 +3,7 @@ import {
   Users,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import SoundToggle from "../components/SoundToggle";
 import { gameLibrary } from "../data/gameLibrary";
@@ -111,51 +112,28 @@ function Home() {
 
   return (
     <div className="app">
-      <header className="header">
-        <div className="headerInner">
-          <button
-            className="brand brandButton"
-            onClick={() => navigate("/")}
-            type="button"
-          >
-            <img
-              className="brandDice"
-              src="/favicon.svg"
-              alt=""
-              width={42}
-              height={42}
-            />
+      <Header>
+        <SoundToggle />
 
-            <div>
-              <strong>
-                Game Night
-              </strong>
+        <LanguageSwitcher />
 
-              <span>
-                {t("home.madeFor")}
-              </span>
-            </div>
-          </button>
+        <button
+          className="joinButton"
+          onClick={() =>
+            navigate("/join")
+          }
+          type="button"
+          aria-label={t(
+            "home.joinRoom",
+          )}
+        >
+          <Users size={18} />
 
-          <div className="headerActions">
-            <SoundToggle />
-
-            <LanguageSwitcher />
-
-            <button
-              className="joinButton"
-              onClick={() =>
-                navigate("/join")
-              }
-              type="button"
-            >
-              <Users size={18} />
-
-              {t("home.joinRoom")}
-            </button>
-          </div>
-        </div>
-      </header>
+          <span className="joinButtonText">
+            {t("home.joinRoom")}
+          </span>
+        </button>
+      </Header>
 
       <main>
         <section className="hero">

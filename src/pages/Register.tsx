@@ -4,6 +4,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 import { useLanguage } from "../hooks/useLanguage";
 import { signUp } from "../services/authService";
 import "../styles/auth.css";
@@ -74,7 +75,10 @@ function Register() {
     password === confirmPassword;
 
   return (
-    <div className="page">
+    <>
+      <Header />
+
+      <div className="page">
       <button
         className="backButton"
         onClick={() => navigate("/")}
@@ -199,7 +203,8 @@ function Register() {
           {t("auth.alreadyAccount")}
         </button>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

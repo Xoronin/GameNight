@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 import { useAuth } from "../hooks/useAuth";
 import { useLanguage } from "../hooks/useLanguage";
 import { joinRoom } from "../services/roomService";
@@ -93,7 +94,10 @@ function JoinRoom() {
   };
 
   return (
-    <div className="page">
+    <>
+      <Header />
+
+      <div className="page">
       <button
         className="backButton"
         onClick={() => navigate("/")}
@@ -237,7 +241,8 @@ function JoinRoom() {
           </button>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

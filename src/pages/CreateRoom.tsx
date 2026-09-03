@@ -8,6 +8,7 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import Header from "../components/Header";
 import { getGameLibraryEntry } from "../data/gameLibrary";
 import { useAuth } from "../hooks/useAuth";
 import { useLanguage } from "../hooks/useLanguage";
@@ -112,7 +113,10 @@ function CreateRoom() {
   };
 
   return (
-    <div className="page">
+    <>
+      <Header />
+
+      <div className="page">
       <button
         className="backButton"
         onClick={() => navigate("/")}
@@ -268,7 +272,8 @@ function CreateRoom() {
           </button>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

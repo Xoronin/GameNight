@@ -1,54 +1,3 @@
-.header {
-    flex-shrink: 0;
-    height: 76px;
-    border-bottom: 1px solid #ffffff0d;
-    background: #09090dbd;
-    backdrop-filter: blur(18px);
-}
-
-.headerInner {
-    width: min(1600px, 94%);
-    height: 100%;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: inherit;
-    text-decoration: none;
-}
-
-.brandButton {
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    text-align: left;
-}
-
-.brandDice {
-    width: 42px;
-    height: 42px;
-    flex-shrink: 0;
-    filter: drop-shadow(0 3px 10px rgba(139, 92, 246, 0.35));
-}
-
-.brand strong {
-    display: block;
-    font-size: 16px;
-}
-
-.brand span {
-    display: block;
-    margin-top: 2px;
-    color: #8d8d9c;
-    font-size: 11px;
-}
-
 .joinButton {
     display: flex;
     align-items: center;
@@ -321,16 +270,16 @@ footer {
         overflow-y: visible;
     }
 
-    .headerInner {
-        width: calc(100% - 36px);
-    }
-
     main {
         width: calc(100% - 32px);
     }
 
-    .brand span {
+    .joinButtonText {
         display: none;
+    }
+
+    .joinButton {
+        padding: 10px;
     }
 
     .hero {
@@ -357,10 +306,4 @@ footer {
         flex-direction: column;
         gap: 8px;
     }
-}
-
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }

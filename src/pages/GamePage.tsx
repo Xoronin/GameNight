@@ -9,6 +9,7 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
+import Header from "../components/Header";
 import BluffGame from "../games/bluff/BluffGame";
 import CategoriesGame from "../games/categories/CategoriesGame";
 import DrawingGame from "../games/draw-guess/DrawingGame";
@@ -58,7 +59,10 @@ function GamePage() {
         gameRules[gameId];
 
       return (
-        <div className="page">
+        <>
+          <Header />
+
+          <div className="page">
           <button
             className="backButton"
             type="button"
@@ -193,7 +197,8 @@ function GamePage() {
               </button>
             </div>
           </div>
-        </div>
+          </div>
+        </>
       );
     }
 
@@ -263,7 +268,10 @@ function GamePage() {
   }
 
   return (
-    <div className="page">
+    <>
+      <Header />
+
+      <div className="page">
       <button
         className="backButton"
         type="button"
@@ -295,7 +303,8 @@ function GamePage() {
           )}
         </p>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

@@ -15,6 +15,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+import Header from "../components/Header";
 import SoundToggle from "../components/SoundToggle";
 import {
   GAME_ROUND_COUNT_OPTIONS,
@@ -400,78 +401,90 @@ function Lobby() {
 
   if (!localPlayer) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <h1>
-            {t(
-              "lobby.noPlayerTitle",
-            )}
-          </h1>
+      <>
+        <Header />
 
-          <p>
-            {t(
-              "lobby.noPlayerDescription",
-            )}
-          </p>
+        <div className="page">
+          <div className="centerCard">
+            <h1>
+              {t(
+                "lobby.noPlayerTitle",
+              )}
+            </h1>
 
-          <button
-            className="primaryButton formButton"
-            onClick={() =>
-              navigate("/")
-            }
-          >
-            {t("common.home")}
-          </button>
+            <p>
+              {t(
+                "lobby.noPlayerDescription",
+              )}
+            </p>
+
+            <button
+              className="primaryButton formButton"
+              onClick={() =>
+                navigate("/")
+              }
+            >
+              {t("common.home")}
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (loading) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <span className="eyebrow">
-            {t("lobby.badge")}
-          </span>
+      <>
+        <Header />
 
-          <h1>
-            {t("lobby.loadingRoom")}
-          </h1>
+        <div className="page">
+          <div className="centerCard">
+            <span className="eyebrow">
+              {t("lobby.badge")}
+            </span>
+
+            <h1>
+              {t("lobby.loadingRoom")}
+            </h1>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (error || !room) {
     return (
-      <div className="page">
-        <div className="centerCard">
-          <span className="eyebrow">
-            {t("lobby.roomError")}
-          </span>
+      <>
+        <Header />
 
-          <h1>
-            {t("lobby.roomNotFound")}
-          </h1>
+        <div className="page">
+          <div className="centerCard">
+            <span className="eyebrow">
+              {t("lobby.roomError")}
+            </span>
 
-          <p>
-            {error ??
-              t(
-                "lobby.roomGone",
-              )}
-          </p>
+            <h1>
+              {t("lobby.roomNotFound")}
+            </h1>
 
-          <button
-            className="primaryButton formButton"
-            onClick={() =>
-              navigate("/")
-            }
-          >
-            {t("common.home")}
-          </button>
+            <p>
+              {error ??
+                t(
+                  "lobby.roomGone",
+                )}
+            </p>
+
+            <button
+              className="primaryButton formButton"
+              onClick={() =>
+                navigate("/")
+              }
+            >
+              {t("common.home")}
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -501,7 +514,10 @@ function Lobby() {
     );
 
     return (
-      <div className="page">
+      <>
+        <Header />
+
+        <div className="page">
         <div className="centerCard tournamentResults">
           <Trophy size={40} />
 
@@ -597,7 +613,8 @@ function Lobby() {
             </div>
           )}
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -1009,7 +1026,10 @@ function Lobby() {
   );
 
   return (
-    <div className="page lobbyPage">
+    <>
+      <Header />
+
+      <div className="page lobbyPage">
       <div className="lobbyTopBar">
         <button
           className="backButton"
@@ -1580,7 +1600,8 @@ function Lobby() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

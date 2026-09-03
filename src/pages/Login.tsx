@@ -4,6 +4,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 import { useLanguage } from "../hooks/useLanguage";
 import { signIn } from "../services/authService";
 import "../styles/auth.css";
@@ -55,7 +56,10 @@ function Login() {
   };
 
   return (
-    <div className="page">
+    <>
+      <Header />
+
+      <div className="page">
       <button
         className="backButton"
         onClick={() => navigate("/")}
@@ -152,7 +156,8 @@ function Login() {
           {t("auth.noAccount")}
         </button>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
