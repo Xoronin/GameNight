@@ -117,9 +117,13 @@ function Home() {
           onClick={() => navigate("/")}
           type="button"
         >
-          <div className="brandDice">
-            ◆
-          </div>
+          <img
+            className="brandDice"
+            src="/favicon.svg"
+            alt=""
+            width={42}
+            height={42}
+          />
 
           <div>
             <strong>
