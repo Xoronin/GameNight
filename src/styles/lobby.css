@@ -54,9 +54,15 @@
 
 .lobbyPage {
     max-width: 1600px;
+    height: 100vh;
+    padding: 16px 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .lobbyTopBar {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -83,10 +89,16 @@
 
 .lobby {
     max-width: 1560px;
-    margin: 40px auto 0;
+    width: 100%;
+    margin: 20px auto 0;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .lobbyHeader {
+    flex-shrink: 0;
     text-align: center;
 }
 
@@ -128,7 +140,8 @@
     grid-template-columns: 0.8fr 1.2fr;
     gap: 18px;
     margin-top: 24px;
-    align-items: start;
+    flex: 1;
+    min-height: 0;
 }
 
 .lobbyColumns.withSettings {
@@ -140,6 +153,13 @@
     border: 1px solid #ffffff0d;
     border-radius: 18px;
     background: #111117;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.panelTitle {
+    flex-shrink: 0;
 }
 
 .panelTitle h2 {
@@ -148,6 +168,13 @@
     gap: 8px;
     margin: 7px 0 0;
     font-size: 21px;
+}
+
+.lobbyPanelBody {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .playerPanel {
@@ -363,6 +390,7 @@
 }
 
 .startGameButton {
+    flex-shrink: 0;
     width: 100%;
     min-height: 56px;
     margin-top: 24px;
@@ -374,6 +402,7 @@
 }
 
 .waitingHost {
+    flex-shrink: 0;
     width: 100%;
     margin-top: 24px;
     padding: 18px;
@@ -386,9 +415,36 @@
 }
 
 @media (max-width: 760px) {
+    /*
+     * The fixed-viewport / internal-scroll layout
+     * only makes sense once panels sit side by
+     * side. Stacked on mobile, revert to plain
+     * document flow so nothing gets clipped inside
+     * a cramped fixed-height box.
+     */
+    .lobbyPage {
+        height: auto;
+        overflow: visible;
+    }
+
+    .lobby {
+        flex: initial;
+        min-height: 0;
+    }
+
     .lobbyColumns,
     .lobbyColumns.withSettings {
         grid-template-columns: 1fr;
+        flex: initial;
+    }
+
+    .lobbyPanel {
+        min-height: 0;
+    }
+
+    .lobbyPanelBody {
+        flex: initial;
+        overflow-y: visible;
     }
 
     .playerPanel {

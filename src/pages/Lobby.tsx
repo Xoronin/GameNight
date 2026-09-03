@@ -1108,6 +1108,7 @@ function Lobby() {
               </div>
             </div>
 
+            <div className="lobbyPanelBody">
             <div className="playerList">
               {players.map(
                 (player) => (
@@ -1180,6 +1181,7 @@ function Lobby() {
                   {room.code}
                 </span>
               </div>
+            </div>
             </div>
           </section>
 
@@ -1292,6 +1294,7 @@ function Lobby() {
               </div>
             </div>
 
+            <div className="lobbyPanelBody">
             {(!isHost ||
               lobbyMode ===
                 "single") && (
@@ -1407,6 +1410,7 @@ function Lobby() {
                   </div>
                 </>
               )}
+            </div>
           </section>
 
           {lobbyMode === "single" &&
@@ -1432,9 +1436,11 @@ function Lobby() {
                   </div>
                 </div>
 
-                {renderGameSettings(
-                  room.selectedGame,
-                )}
+                <div className="lobbyPanelBody">
+                  {renderGameSettings(
+                    room.selectedGame,
+                  )}
+                </div>
               </section>
             )}
 
@@ -1462,45 +1468,47 @@ function Lobby() {
                   </div>
                 </div>
 
-                {tournamentSelection.map(
-                  (gameId) => {
-                    if (
-                      !isTimedGame(
-                        gameId,
-                      )
-                    ) {
-                      return null;
-                    }
-
-                    const entry =
-                      getGameLibraryEntry(
-                        gameId,
-                      );
-
-                    return (
-                      <div
-                        key={
-                          gameId
-                        }
-                        className="tournamentGameSettingsBlock"
-                      >
-                        <h3>
-                          {entry?.icon}
-
-                          {entry
-                            ? t(
-                                entry.nameKey,
-                              )
-                            : gameId}
-                        </h3>
-
-                        {renderGameSettings(
+                <div className="lobbyPanelBody">
+                  {tournamentSelection.map(
+                    (gameId) => {
+                      if (
+                        !isTimedGame(
                           gameId,
-                        )}
-                      </div>
-                    );
-                  },
-                )}
+                        )
+                      ) {
+                        return null;
+                      }
+
+                      const entry =
+                        getGameLibraryEntry(
+                          gameId,
+                        );
+
+                      return (
+                        <div
+                          key={
+                            gameId
+                          }
+                          className="tournamentGameSettingsBlock"
+                        >
+                          <h3>
+                            {entry?.icon}
+
+                            {entry
+                              ? t(
+                                  entry.nameKey,
+                                )
+                              : gameId}
+                          </h3>
+
+                          {renderGameSettings(
+                            gameId,
+                          )}
+                        </div>
+                      );
+                    },
+                  )}
+                </div>
               </section>
             )}
         </div>

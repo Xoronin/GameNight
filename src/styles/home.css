@@ -1,4 +1,5 @@
 .header {
+    flex-shrink: 0;
     height: 76px;
     padding: 0 5vw;
     display: flex;
@@ -61,19 +62,25 @@
 main {
     width: min(1600px, 94%);
     margin: auto;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .hero {
-    padding: 60px 0 50px;
+    flex-shrink: 0;
+    padding: 20px 0 16px;
     text-align: center;
 }
 
 .hero h1 {
     max-width: 800px;
-    margin: 16px auto;
-    font-size: clamp(48px, 7vw, 84px);
-    line-height: 0.98;
-    letter-spacing: -0.055em;
+    margin: 8px auto;
+    font-size: clamp(32px, 4.2vw, 52px);
+    line-height: 1.02;
+    letter-spacing: -0.045em;
 }
 
     .hero h1 span {
@@ -85,21 +92,25 @@ main {
 
 .hero p {
     max-width: 570px;
-    margin: 16px auto;
+    margin: 10px auto;
     color: #a0a0ad;
-    font-size: 17px;
-    line-height: 1.7;
+    font-size: 15px;
+    line-height: 1.6;
 }
 
 .heroActions {
-    margin-top: 24px;
+    margin-top: 16px;
     display: flex;
     justify-content: center;
     gap: 12px;
 }
 
 .library {
-    padding-bottom: 60px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 40px;
 }
 
 .sectionHeading {
@@ -285,6 +296,28 @@ footer {
 }
 
 @media (max-width: 560px) {
+    /*
+     * The fixed-viewport / internal-scroll shell
+     * only makes sense with more breathing room
+     * than a phone screen has. Revert to plain
+     * document flow so the hero and card grid
+     * don't fight for a sliver of space.
+     */
+    .app {
+        height: auto;
+        overflow: visible;
+    }
+
+    main {
+        flex: initial;
+        overflow: visible;
+    }
+
+    .library {
+        flex: initial;
+        overflow-y: visible;
+    }
+
     .header {
         padding: 0 18px;
     }
