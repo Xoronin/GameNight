@@ -86,6 +86,14 @@ const roundCountLabelKeys: Record<
 
 const games = gameLibrary;
 
+const soloLobbyGames = games.filter(
+  (game) => game.group === "solo",
+);
+
+const teamLobbyGames = games.filter(
+  (game) => game.group === "team",
+);
+
 function Lobby() {
   const navigate = useNavigate();
   const { roomCode } = useParams();
@@ -422,6 +430,84 @@ function Lobby() {
       }
     };
 
+  const renderLobbyGameOption = (
+    game: (typeof games)[number],
+  ) => {
+    if (game.comingSoon) {
+      return (
+        <div
+          key={game.id}
+          className={`lobbyGameOption comingSoon ${game.className}`}
+        >
+          <div className="lobbyGameIcon">
+            {game.icon}
+          </div>
+
+          <div className="lobbyGameText">
+            <strong>
+              {t(game.nameKey)}
+            </strong>
+
+            <span>
+              {t(
+                game.descriptionKey,
+              )}
+            </span>
+          </div>
+
+          <div className="comingSoonTag">
+            {t("home.comingSoon")}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <button
+        key={game.id}
+        className={`lobbyGameOption ${
+          game.className
+        } ${
+          room.selectedGame ===
+          game.id
+            ? "selected"
+            : ""
+        }`}
+        onClick={() => {
+          void selectGame(game.id);
+        }}
+        disabled={!isHost}
+        type="button"
+      >
+        <div className="lobbyGameIcon">
+          {game.icon}
+        </div>
+
+        <div className="lobbyGameText">
+          <strong>
+            {t(game.nameKey)}
+          </strong>
+
+          <span>
+            {t(game.descriptionKey)}
+          </span>
+        </div>
+
+        {room.selectedGame ===
+        game.id ? (
+          <div className="selectedIndicator">
+            <Check size={16} />
+          </div>
+        ) : (
+          <ChevronRight
+            className="gameChevron"
+            size={18}
+          />
+        )}
+      </button>
+    );
+  };
+
   return (
     <div className="page lobbyPage">
       <div className="lobbyTopBar">
@@ -655,60 +741,23 @@ function Lobby() {
               </div>
             </div>
 
+            <span className="lobbyGameGroupLabel">
+              {t("home.groupSolo")}
+            </span>
+
             <div className="lobbyGameList">
-              {games.map(
-                (game) => (
-                  <button
-                    key={game.id}
-                    className={`lobbyGameOption ${
-                      game.className
-                    } ${
-                      room.selectedGame ===
-                      game.id
-                        ? "selected"
-                        : ""
-                    }`}
-                    onClick={() => {
-                      void selectGame(
-                        game.id,
-                      );
-                    }}
-                    disabled={!isHost}
-                    type="button"
-                  >
-                    <div className="lobbyGameIcon">
-                      {game.icon}
-                    </div>
+              {soloLobbyGames.map(
+                renderLobbyGameOption,
+              )}
+            </div>
 
-                    <div className="lobbyGameText">
-                      <strong>
-                        {t(
-                          game.nameKey,
-                        )}
-                      </strong>
+            <span className="lobbyGameGroupLabel">
+              {t("home.groupTeam")}
+            </span>
 
-                      <span>
-                        {t(
-                          game.descriptionKey,
-                        )}
-                      </span>
-                    </div>
-
-                    {room.selectedGame ===
-                    game.id ? (
-                      <div className="selectedIndicator">
-                        <Check
-                          size={16}
-                        />
-                      </div>
-                    ) : (
-                      <ChevronRight
-                        className="gameChevron"
-                        size={18}
-                      />
-                    )}
-                  </button>
-                ),
+            <div className="lobbyGameList">
+              {teamLobbyGames.map(
+                renderLobbyGameOption,
               )}
             </div>
           </section>

@@ -11,9 +11,103 @@ import "../styles/home.css";
 
 const games = gameLibrary;
 
+const soloGames = games.filter(
+  (game) => game.group === "solo",
+);
+
+const teamGames = games.filter(
+  (game) => game.group === "team",
+);
+
+const playableCount = games.filter(
+  (game) => !game.comingSoon,
+).length;
+
 function Home() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+
+  const renderGameCard = (
+    game: (typeof games)[number],
+  ) => {
+    if (game.comingSoon) {
+      return (
+        <div
+          className={`gameCard comingSoonCard ${game.className}`}
+          key={game.id}
+        >
+          <div className="cardTop">
+            <div className="gameIcon">
+              {game.icon}
+            </div>
+
+            <span className="players">
+              <Users size={15} />
+
+              {game.players}
+            </span>
+          </div>
+
+          <div className="cardContent">
+            <h3>
+              {t(game.nameKey)}
+            </h3>
+
+            <p>
+              {t(
+                game.descriptionKey,
+              )}
+            </p>
+          </div>
+
+          <div className="comingSoonBadge">
+            {t("home.comingSoon")}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <button
+        className={`gameCard ${game.className}`}
+        key={game.id}
+        onClick={() =>
+          navigate(
+            `/game/${game.id}`,
+          )
+        }
+        type="button"
+      >
+        <div className="cardTop">
+          <div className="gameIcon">
+            {game.icon}
+          </div>
+
+          <span className="players">
+            <Users size={15} />
+
+            {game.players}
+          </span>
+        </div>
+
+        <div className="cardContent">
+          <h3>
+            {t(game.nameKey)}
+          </h3>
+
+          <p>
+            {t(game.descriptionKey)}
+          </p>
+        </div>
+
+        <div className="play">
+          {t("home.viewGame")}
+
+          <ChevronRight size={18} />
+        </div>
+      </button>
+    );
+  };
 
   return (
     <div className="app">
@@ -119,65 +213,28 @@ function Home() {
             </div>
 
             <span className="gameCount">
-              {games.length}{" "}
+              {playableCount}{" "}
               {t("common.games")}
             </span>
           </div>
 
+          <h3 className="groupHeading">
+            {t("home.groupSolo")}
+          </h3>
+
           <div className="gameGrid">
-            {games.map(
-              (game) => (
-                <button
-                  className={`gameCard ${game.className}`}
-                  key={game.id}
-                  onClick={() =>
-                    navigate(
-                      `/game/${game.id}`,
-                    )
-                  }
-                  type="button"
-                >
-                  <div className="cardTop">
-                    <div className="gameIcon">
-                      {game.icon}
-                    </div>
+            {soloGames.map(
+              renderGameCard,
+            )}
+          </div>
 
-                    <span className="players">
-                      <Users
-                        size={15}
-                      />
+          <h3 className="groupHeading">
+            {t("home.groupTeam")}
+          </h3>
 
-                      {
-                        game.players
-                      }
-                    </span>
-                  </div>
-
-                  <div className="cardContent">
-                    <h3>
-                      {t(
-                        game.nameKey,
-                      )}
-                    </h3>
-
-                    <p>
-                      {t(
-                        game.descriptionKey,
-                      )}
-                    </p>
-                  </div>
-
-                  <div className="play">
-                    {t(
-                      "home.viewGame",
-                    )}
-
-                    <ChevronRight
-                      size={18}
-                    />
-                  </div>
-                </button>
-              ),
+          <div className="gameGrid">
+            {teamGames.map(
+              renderGameCard,
             )}
           </div>
         </section>

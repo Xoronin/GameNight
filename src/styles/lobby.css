@@ -439,6 +439,49 @@
   transform: none;
 }
 
+.lobbyGameGroupLabel {
+  display: block;
+  margin: 18px 0 0;
+
+  color: #6f6f7d;
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.lobbyGameList:has(+ .lobbyGameGroupLabel) {
+  margin-bottom: 0;
+}
+
+.lobbyGameOption.comingSoon {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.lobbyGameOption.comingSoon:hover {
+  background: #18181f;
+  border-color: #ffffff0d;
+}
+
+.comingSoonTag {
+  justify-self: end;
+
+  padding: 4px 8px;
+
+  border-radius: 999px;
+
+  background: #ffffff0a;
+  color: #81818e;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .preselectedGameHint {
   margin: 14px 0 0;
   padding: 10px 14px;

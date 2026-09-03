@@ -34,6 +34,9 @@ const de = {
     chooseGame: "Wähle dein Spiel",
     viewGame: "Spiel ansehen",
     madeFor: "Gemacht für Spieleabende 🎲",
+    groupSolo: "Einzelspieler / Jeder gegen jeden",
+    groupTeam: "Team-Spiele",
+    comingSoon: "Demnächst",
   },
 
   games: {
@@ -71,6 +74,84 @@ const de = {
       name: "Zeichnen & Raten",
       description:
         "Zeichne geheime Begriffe, während deine Freunde raten.",
+    },
+
+    codewords: {
+      name: "Codewörter",
+      description:
+        "Zwei Teams erraten ihre Wörter anhand von Ein-Wort-Hinweisen, ohne das falsche zu erwischen.",
+    },
+
+    riskIt: {
+      name: "Risk It",
+      description:
+        "Biete, wie viele richtige Antworten du nennen kannst, und beweise es, bevor die Zeit abläuft.",
+    },
+
+    forbiddenWords: {
+      name: "Verbotene Wörter",
+      description:
+        "Bring dein Team dazu, das Wort zu erraten, ohne eines der naheliegenden Wörter zu benutzen.",
+    },
+
+    emojiDecode: {
+      name: "Emoji Decode",
+      description:
+        "Entschlüssle Filme, Spiele oder Redewendungen, die nur aus Emojis bestehen.",
+    },
+
+    syllableRush: {
+      name: "Silben-Rush",
+      description:
+        "Finde ein Wort mit der vorgegebenen Silbe, bevor der schrumpfende Timer abläuft.",
+    },
+
+    knowYourFriends: {
+      name: "Kennst du deine Freunde?",
+      description:
+        "Sage voraus, wie ein Spieler eine persönliche Frage geheim beantwortet hat.",
+    },
+
+    knowTheirRanking: {
+      name: "Kennst du ihre Rangliste?",
+      description:
+        "Rekonstruiere die geheime Rangliste eines anderen Spielers.",
+    },
+
+    timeline: {
+      name: "Timeline",
+      description:
+        "Ordne eine neue Karte in eine wachsende Zeitleiste oder Rangliste ein — drei Fehler und du scheidest aus.",
+    },
+
+    soundGuess: {
+      name: "Sound Guess",
+      description:
+        "Erkenne einen Sound anhand eines immer länger werdenden Ausschnitts — je schneller, desto mehr Punkte.",
+    },
+
+    reverseQuiz: {
+      name: "Reverse Quiz",
+      description:
+        "Alle sehen die Antwort und erfinden eine falsche Frage — errate die echte unter den Fälschungen.",
+    },
+
+    zoomedIn: {
+      name: "Zoomed In",
+      description:
+        "Errate das extrem herangezoomte Bild, bevor weiter herausgezoomt wird.",
+    },
+
+    musicTimeline: {
+      name: "Musik-Timeline",
+      description:
+        "Platziere einen mysteriösen Song richtig in deiner chronologischen Musik-Timeline.",
+    },
+
+    matchUp: {
+      name: "Match Up",
+      description:
+        "Ordnet abwechselnd Paare aus zwei gemischten Listen zu — ein Fehler kostet ein Leben.",
     },
   },
 

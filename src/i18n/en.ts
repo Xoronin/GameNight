@@ -34,6 +34,9 @@ const en = {
     chooseGame: "Choose your game",
     viewGame: "View Game",
     madeFor: "Made for game nights 🎲",
+    groupSolo: "Individual / Free-for-All",
+    groupTeam: "Team Games",
+    comingSoon: "Coming soon",
   },
 
   games: {
@@ -71,6 +74,84 @@ const en = {
       name: "Draw & Guess",
       description:
         "Draw secret words while your friends guess.",
+    },
+
+    codewords: {
+      name: "Codewords",
+      description:
+        "Two teams race to identify their words from one-word clues before hitting the wrong one.",
+    },
+
+    riskIt: {
+      name: "Risk It",
+      description:
+        "Bid on how many correct answers you can name, then back it up before the timer runs out.",
+    },
+
+    forbiddenWords: {
+      name: "Forbidden Words",
+      description:
+        "Get your team to guess the word without saying any of the obvious ones.",
+    },
+
+    emojiDecode: {
+      name: "Emoji Decode",
+      description:
+        "Race to decode a movie, game or phrase from nothing but emojis.",
+    },
+
+    syllableRush: {
+      name: "Syllable Rush",
+      description:
+        "Find a word containing the given syllable before the shrinking timer runs out.",
+    },
+
+    knowYourFriends: {
+      name: "Know Your Friends",
+      description:
+        "Predict how a player secretly answered a personal question.",
+    },
+
+    knowTheirRanking: {
+      name: "Know Their Ranking",
+      description:
+        "Reconstruct another player's secret ranking of a set of options.",
+    },
+
+    timeline: {
+      name: "Timeline",
+      description:
+        "Slot a new card into a growing timeline or ranking — three wrong guesses and you're out.",
+    },
+
+    soundGuess: {
+      name: "Sound Guess",
+      description:
+        "Identify a sound from an ever-lengthening clip — the faster you guess, the more it's worth.",
+    },
+
+    reverseQuiz: {
+      name: "Reverse Quiz",
+      description:
+        "Everyone sees the answer and invents a fake question — spot the real one among the fakes.",
+    },
+
+    zoomedIn: {
+      name: "Zoomed In",
+      description:
+        "Guess the extremely zoomed-in image before it zooms out any further.",
+    },
+
+    musicTimeline: {
+      name: "Music Timeline",
+      description:
+        "Place a mystery song correctly into your chronological music timeline.",
+    },
+
+    matchUp: {
+      name: "Match Up",
+      description:
+        "Take turns matching pairs from two shuffled lists — a wrong match costs you a life.",
     },
   },
 
