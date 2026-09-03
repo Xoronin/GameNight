@@ -32,7 +32,7 @@ const de = {
     library: "SPIELEBIBLIOTHEK",
     chooseGame: "Wähle dein Spiel",
     viewGame: "Spiel ansehen",
-    madeFor: "Gemacht für Spieleabende 🎲",
+    madeFor: "Gemacht für Spieleabende",
     groupSolo: "Einzelspieler / Jeder gegen jeden",
     groupTeam: "Team-Spiele",
     comingSoon: "Demnächst",

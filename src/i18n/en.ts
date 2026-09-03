@@ -32,7 +32,7 @@ const en = {
     library: "GAME LIBRARY",
     chooseGame: "Choose your game",
     viewGame: "View Game",
-    madeFor: "Made for game nights 🎲",
+    madeFor: "Made for game nights",
     groupSolo: "Individual / Free-for-All",
     groupTeam: "Team Games",
     comingSoon: "Coming soon",
