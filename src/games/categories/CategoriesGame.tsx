@@ -20,25 +20,28 @@ import {
   classicCategories,
 } from "../../data/categoryPacks";
 import {
+  getCategoriesCustom,
   getCategoriesSelectedKeys,
   getGameRoundCount,
   getGameTimerSeconds,
 } from "../../data/gameTimers";
+import {
+  computeAnswerPoints,
+} from "./categoriesScoring";
 import { useCategoriesRound } from "../../hooks/useCategoriesRound";
 import { translate } from "../../i18n/i18n";
 import { useRoom } from "../../hooks/useRoom";
 import {
+  castCategoriesVote,
   createCategoriesRound,
   finalizeCategoriesRound,
   finishCategoriesGame,
   returnCategoriesToLobby,
-  reviewCategoriesAnswer,
+  retractCategoriesVote,
+  setCategoriesAnswerPoints,
   setCategoriesRoundStatus,
   submitCategoriesAnswers,
 } from "../../services/categoriesService";
-import {
-  validateCategoriesRound,
-} from "../../services/categoriesRoundValidationService";
 import "../../styles/categories.css";
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
@@ -111,6 +114,7 @@ function CategoriesGame({
   const {
     round,
     answers,
+    votes,
     loading: roundLoading,
     error: roundError,
   } = useCategoriesRound(
@@ -138,13 +142,6 @@ function CategoriesGame({
     setValuesRoundId(round?.id);
     setValues({});
   }
-
-  const hasPendingReviews =
-  answers.some(
-    (answer) =>
-      answer.validationStatus ===
-      "unknown",
-  );
 
   const gameLanguage =
     room?.gameLanguage ?? "en";
@@ -203,6 +200,15 @@ function CategoriesGame({
     round.roundNumber >=
       roundCount;
 
+  const customCategories =
+    useMemo(
+      () =>
+        getCategoriesCustom(
+          room?.gameSettings,
+        ),
+      [room?.gameSettings],
+    );
+
   const activeCategories =
     useMemo(() => {
       const selectedKeys =
@@ -210,13 +216,37 @@ function CategoriesGame({
           room?.gameSettings,
         );
 
-      return classicCategories.filter(
+      const allCategories = [
+        ...classicCategories,
+        ...customCategories,
+      ];
+
+      return allCategories.filter(
         (category) =>
           selectedKeys.includes(
             category.key,
           ),
       );
-    }, [room?.gameSettings]);
+    }, [
+      room?.gameSettings,
+      customCategories,
+    ]);
+
+  const categoryLabel = (
+    key: string,
+  ) => {
+    const custom =
+      customCategories.find(
+        (category) =>
+          category.key === key,
+      );
+
+    return custom
+      ? custom.label
+      : gameT(
+          `categories.labels.${key}`,
+        );
+  };
 
   const sortedPlayers =
     useMemo(
@@ -287,16 +317,83 @@ function CategoriesGame({
       setValues({});
     };
 
+  /*
+   * Answer points are computed live from votes for
+   * display, but the finalize RPC only sums the
+   * `points` column already stored in the database
+   * — so the final, vote-adjusted value has to be
+   * written back right before finalizing.
+   */
+  const syncFinalPoints =
+    async () => {
+      if (!round) {
+        return;
+      }
+
+      const playerCount =
+        players.length;
+
+      const updates = answers
+        .map((answer) => {
+          const rejectVotes =
+            votes.filter(
+              (vote) =>
+                vote.answerId ===
+                answer.id,
+            ).length;
+
+          const finalPoints =
+            computeAnswerPoints(
+              answer,
+              answers,
+              round.letter,
+              gameLanguage,
+              rejectVotes,
+              playerCount,
+            );
+
+          if (
+            finalPoints ===
+            answer.points
+          ) {
+            return null;
+          }
+
+          return {
+            id: answer.id,
+            points: finalPoints,
+          };
+        })
+        .filter(
+          (
+            update,
+          ): update is {
+            id: string;
+            points: number;
+          } => update !== null,
+        );
+
+      await Promise.all(
+        updates.map((update) =>
+          setCategoriesAnswerPoints(
+            update.id,
+            update.points,
+          ),
+        ),
+      );
+    };
+
   const continueToNextRound =
     async () => {
       if (
         !round ||
         !room ||
-        !isHost ||
-        hasPendingReviews
+        !isHost
       ) {
         return;
       }
+
+      await syncFinalPoints();
 
       if (isLastRound) {
         await finishCategoriesGame(
@@ -353,12 +450,6 @@ function CategoriesGame({
         return;
       }
 
-      await validateCategoriesRound(
-        answers,
-        round.letter,
-        room.gameLanguage,
-      );
-
       await setCategoriesRoundStatus(
         round.id,
         "reveal",
@@ -369,7 +460,6 @@ function CategoriesGame({
       room,
       isHost,
       allSubmitted,
-      answers,
     ],
   );
 
@@ -378,11 +468,12 @@ function CategoriesGame({
       if (
         !room ||
         !round ||
-        !isHost ||
-        hasPendingReviews
+        !isHost
       ) {
         return;
       }
+
+      await syncFinalPoints();
 
       await finalizeCategoriesRound(
         round.id,
@@ -392,43 +483,31 @@ function CategoriesGame({
         room.id,
       );
     };
-    
-  const manualReview =
+
+  const toggleVote =
     async (
       answerId: string,
-      accepted: boolean,
-      answerText: string,
-      categoryKey: string,
+      alreadyVoted: boolean,
     ) => {
-      const normalized =
-        answerText
-          .trim()
-          .toLocaleLowerCase(
-            gameLanguage,
-          );
+      if (
+        !round ||
+        !localPlayer
+      ) {
+        return;
+      }
 
-      const duplicateCount =
-        answers.filter(
-          (item) =>
-            item.categoryKey ===
-              categoryKey &&
-            item.answer
-              .trim()
-              .toLocaleLowerCase(
-                gameLanguage,
-              ) === normalized,
-        ).length;
-
-      const points =
-        duplicateCount > 1
-          ? 5
-          : 10;
-
-      await reviewCategoriesAnswer(
-        answerId,
-        accepted,
-        points,
-      );
+      if (alreadyVoted) {
+        await retractCategoriesVote(
+          answerId,
+          localPlayer.id,
+        );
+      } else {
+        await castCategoriesVote(
+          round.id,
+          answerId,
+          localPlayer.id,
+        );
+      }
     };
 
   useEffect(() => {
@@ -848,8 +927,8 @@ function CategoriesGame({
                         }
                       >
                         <span>
-                          {gameT(
-                            `categories.labels.${category.key}`,
+                          {categoryLabel(
+                            category.key,
                           )}
                         </span>
 
@@ -1002,28 +1081,53 @@ function CategoriesGame({
                       category.key,
                 );
 
+              if (!answer) {
+                return {
+                  player,
+                  answerId: null,
+                  answer: "",
+                  valid: false,
+                  points: 0,
+                  rejectVotes: 0,
+                  myVote: false,
+                };
+              }
+
+              const rejectVotes =
+                votes.filter(
+                  (vote) =>
+                    vote.answerId ===
+                    answer.id,
+                ).length;
+
+              const points =
+                computeAnswerPoints(
+                  answer,
+                  answers,
+                  round.letter,
+                  gameLanguage,
+                  rejectVotes,
+                  players.length,
+                );
+
+              const myVote =
+                !!localPlayer &&
+                votes.some(
+                  (vote) =>
+                    vote.answerId ===
+                      answer.id &&
+                    vote.playerId ===
+                      localPlayer.id,
+                );
+
               return {
                 player,
-
-                answerId:
-                  answer?.id ??
-                  null,
-
-                answer:
-                  answer?.answer ??
-                  "",
-
-                status:
-                  answer?.validationStatus ??
-                  null,
-
-                reason:
-                  answer?.validationReason ??
-                  null,
-
-                points:
-                  answer?.points ??
-                  0,
+                answerId: answer.id,
+                answer: answer.answer,
+                valid: points > 0,
+                points,
+                rejectVotes,
+                myVote,
               };
             },
           ),
@@ -1091,8 +1195,8 @@ function CategoriesGame({
                   }
                 >
                   <h2>
-                    {gameT(
-                      `categories.labels.${category.key}`,
+                    {categoryLabel(
+                      category.key,
                     )}
                   </h2>
 
@@ -1101,16 +1205,21 @@ function CategoriesGame({
                       player,
                       answerId,
                       answer,
-                      status,
-                      reason,
+                      valid,
                       points,
+                      rejectVotes,
+                      myVote,
                     }) => (
                       <div
                         key={
                           player.id
                         }
                         className={`categoryRevealRow ${
-                          status ?? ""
+                          answer
+                            ? valid
+                              ? "valid"
+                              : "invalid"
+                            : ""
                         }`}
                       >
                         <span>
@@ -1125,87 +1234,49 @@ function CategoriesGame({
                               "—"}
                           </strong>
 
-                          {status ===
-                            "valid" && (
-                            <span className="validationValid">
-                              ✓ +{points}
-                            </span>
-                          )}
+                          {answer && (
+                            <div className="voteControls">
+                              {valid ? (
+                                <span className="validationValid">
+                                  ✓ +{points}
+                                </span>
+                              ) : (
+                                <span className="validationInvalid">
+                                  ✕ 0
+                                </span>
+                              )}
 
-                          {status ===
-                            "invalid" && (
-                            <span className="validationInvalid">
-                              ✕ 0
-                            </span>
-                          )}
-
-                          {status ===
-                            "unknown" && (
-                            <div className="validationReview">
-                              <span
-                                className="validationUnknown"
-                                title={
-                                  reason ??
-                                  ""
-                                }
-                              >
-                                ?{" "}
-                                {gameT(
-                                  "categories.review",
-                                )}
-                              </span>
-
-                              {isHost &&
-                                answerId && (
-                                  <div className="reviewButtons">
-                                    <button
-                                      type="button"
-                                      className="reviewAccept"
-                                      disabled={
-                                        working
-                                      }
-                                      onClick={() => {
-                                        void runAction(
-                                          () =>
-                                            manualReview(
-                                              answerId,
-                                              true,
-                                              answer,
-                                              category.key,
-                                            ),
-                                        );
-                                      }}
-                                    >
-                                      ✓{" "}
-                                      {gameT(
-                                        "categories.accept",
-                                      )}
-                                    </button>
-
-                                    <button
-                                      type="button"
-                                      className="reviewReject"
-                                      disabled={
-                                        working
-                                      }
-                                      onClick={() => {
-                                        void runAction(
-                                          () =>
-                                            manualReview(
-                                              answerId,
-                                              false,
-                                              answer,
-                                              category.key,
-                                            ),
-                                        );
-                                      }}
-                                    >
-                                      ✕{" "}
-                                      {gameT(
-                                        "categories.reject",
-                                      )}
-                                    </button>
-                                  </div>
+                              {answerId &&
+                                player.id !==
+                                  localPlayer.id && (
+                                  <button
+                                    type="button"
+                                    className={`voteButton ${
+                                      myVote
+                                        ? "active"
+                                        : ""
+                                    }`}
+                                    disabled={
+                                      working
+                                    }
+                                    title={gameT(
+                                      "categories.voteInvalid",
+                                    )}
+                                    onClick={() => {
+                                      void runAction(
+                                        () =>
+                                          toggleVote(
+                                            answerId,
+                                            myVote,
+                                          ),
+                                      );
+                                    }}
+                                  >
+                                    👎{" "}
+                                    {
+                                      rejectVotes
+                                    }
+                                  </button>
                                 )}
                             </div>
                           )}
@@ -1239,8 +1310,7 @@ function CategoriesGame({
               <button
                 className="primaryButton categoriesMainButton"
                 disabled={
-                  working ||
-                  hasPendingReviews
+                  working
                 }
                 onClick={() => {
                   void runAction(

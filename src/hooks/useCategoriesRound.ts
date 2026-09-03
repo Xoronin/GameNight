@@ -5,11 +5,13 @@ import {
 import { supabase } from "../lib/supabase";
 import {
   getCategoriesAnswers,
+  getCategoriesVotes,
   getLatestCategoriesRound,
 } from "../services/categoriesService";
 import type {
   CategoriesAnswer,
   CategoriesRound,
+  CategoriesVote,
 } from "../types/game";
 
 export function useCategoriesRound(
@@ -22,6 +24,9 @@ export function useCategoriesRound(
 
   const [answers, setAnswers] =
     useState<CategoriesAnswer[]>([]);
+
+  const [votes, setVotes] =
+    useState<CategoriesVote[]>([]);
 
   const [loading, setLoading] =
     useState(Boolean(roomId));
@@ -37,6 +42,12 @@ export function useCategoriesRound(
     let cancelled = false;
 
     let answersChannel:
+      | ReturnType<
+          typeof supabase.channel
+        >
+      | null = null;
+
+    let votesChannel:
       | ReturnType<
           typeof supabase.channel
         >
@@ -72,6 +83,34 @@ export function useCategoriesRound(
       }
     };
 
+    const loadVotes = async (
+      roundId: string,
+    ) => {
+      try {
+        const loadedVotes =
+          await getCategoriesVotes(
+            roundId,
+          );
+
+        if (cancelled) {
+          return;
+        }
+
+        setVotes(loadedVotes);
+      } catch (
+        caughtError
+      ) {
+        if (cancelled) {
+          return;
+        }
+
+        console.error(
+          "Could not load Categories votes:",
+          caughtError,
+        );
+      }
+    };
+
     const subscribeToAnswers = (
       roundId: string,
     ) => {
@@ -89,14 +128,6 @@ export function useCategoriesRound(
           .on(
             "postgres_changes",
             {
-              /*
-               * IMPORTANT:
-               *
-               * Validation changes an
-               * existing answer, so we
-               * must listen for UPDATE
-               * as well as INSERT.
-               */
               event: "*",
               schema: "public",
               table:
@@ -106,6 +137,39 @@ export function useCategoriesRound(
             },
             () => {
               void loadAnswers(
+                roundId,
+              );
+            },
+          )
+          .subscribe();
+    };
+
+    const subscribeToVotes = (
+      roundId: string,
+    ) => {
+      if (votesChannel) {
+        void supabase.removeChannel(
+          votesChannel,
+        );
+      }
+
+      votesChannel =
+        supabase
+          .channel(
+            `categories-votes:${roundId}`,
+          )
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table:
+                "categories_answer_votes",
+              filter:
+                `round_id=eq.${roundId}`,
+            },
+            () => {
+              void loadVotes(
                 roundId,
               );
             },
@@ -130,15 +194,25 @@ export function useCategoriesRound(
           );
 
           if (loadedRound) {
-            await loadAnswers(
-              loadedRound.id,
-            );
+            await Promise.all([
+              loadAnswers(
+                loadedRound.id,
+              ),
+              loadVotes(
+                loadedRound.id,
+              ),
+            ]);
 
             subscribeToAnswers(
               loadedRound.id,
             );
+
+            subscribeToVotes(
+              loadedRound.id,
+            );
           } else {
             setAnswers([]);
+            setVotes([]);
           }
 
           setError(null);
@@ -202,12 +276,19 @@ export function useCategoriesRound(
           answersChannel,
         );
       }
+
+      if (votesChannel) {
+        void supabase.removeChannel(
+          votesChannel,
+        );
+      }
     };
   }, [roomId]);
 
   return {
     round,
     answers,
+    votes,
     loading,
     error,
   };

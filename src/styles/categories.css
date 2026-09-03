@@ -367,8 +367,7 @@
 }
 
 .validationValid,
-.validationInvalid,
-.validationUnknown {
+.validationInvalid {
   flex-shrink: 0;
 
   padding: 6px 9px;
@@ -393,14 +392,7 @@
   color: #fb7185;
 }
 
-.validationUnknown {
-  border: 1px solid #fbbf2435;
-
-  background: #fbbf2410;
-  color: #fbbf24;
-}
-
-.validationReview {
+.voteControls {
   flex-shrink: 0;
 
   display: flex;
@@ -408,16 +400,19 @@
   gap: 8px;
 }
 
-.reviewButtons {
-  display: flex;
-  gap: 6px;
-}
-
-.reviewButtons button {
+.voteButton {
   min-height: 30px;
   padding: 0 10px;
 
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  border: 1px solid #ffffff14;
   border-radius: 8px;
+
+  background: #ffffff06;
+  color: #898996;
 
   font: inherit;
   font-size: 11px;
@@ -426,29 +421,18 @@
   cursor: pointer;
 }
 
-.reviewAccept {
-  border: 1px solid #4ade8035;
-
-  background: #4ade8010;
-  color: #4ade80;
+.voteButton:hover {
+  background: #ffffff0c;
 }
 
-.reviewAccept:hover {
-  background: #4ade801c;
-}
+.voteButton.active {
+  border-color: #fb718535;
 
-.reviewReject {
-  border: 1px solid #fb718535;
-
-  background: #fb718510;
+  background: #fb718514;
   color: #fb7185;
 }
 
-.reviewReject:hover {
-  background: #fb71851c;
-}
-
-.reviewButtons button:disabled {
+.voteButton:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
@@ -471,15 +455,6 @@
     );
 }
 
-.categoryRevealRow.unknown {
-  background:
-    linear-gradient(
-      90deg,
-      #fbbf2405,
-      transparent 35%
-    );
-}
-
 @media (max-width: 650px) {
   .categoryRevealRow {
     grid-template-columns: 1fr;
@@ -491,17 +466,9 @@
     flex-direction: column;
   }
 
-  .validationReview {
+  .voteControls {
     width: 100%;
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .reviewButtons {
-    width: 100%;
-  }
-
-  .reviewButtons button {
-    flex: 1;
+    align-items: center;
+    justify-content: space-between;
   }
 }

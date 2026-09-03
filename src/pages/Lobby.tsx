@@ -4,8 +4,10 @@ import {
   Copy,
   Crown,
   LogOut,
+  Plus,
   Settings,
   Users,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -16,9 +18,11 @@ import SoundToggle from "../components/SoundToggle";
 import {
   GAME_ROUND_COUNT_OPTIONS,
   GAME_TIMER_OPTIONS,
+  getCategoriesCustom,
   getCategoriesSelectedKeys,
   getGameRoundCount,
   getGameTimerSeconds,
+  withCategoriesCustom,
   withCategoriesSelectedKeys,
   withGameRoundCount,
   withGameTimerSeconds,
@@ -95,6 +99,11 @@ function Lobby() {
   const [copied, setCopied] =
     useState(false);
 
+  const [
+    newCategoryName,
+    setNewCategoryName,
+  ] = useState("");
+
   const {
     room,
     players,
@@ -170,6 +179,122 @@ function Lobby() {
       );
     }
   };
+
+  const addCustomCategory =
+    async () => {
+      if (
+        !room ||
+        !isHost
+      ) {
+        return;
+      }
+
+      const trimmed =
+        newCategoryName.trim();
+
+      if (!trimmed) {
+        return;
+      }
+
+      const key = `custom-${crypto
+        .randomUUID()
+        .slice(0, 8)}`;
+
+      const custom =
+        getCategoriesCustom(
+          room.gameSettings,
+        );
+
+      const selectedKeys =
+        getCategoriesSelectedKeys(
+          room.gameSettings,
+        );
+
+      let nextSettings =
+        withCategoriesCustom(
+          room.gameSettings,
+          [
+            ...custom,
+            {
+              key,
+              label: trimmed,
+            },
+          ],
+        );
+
+      nextSettings =
+        withCategoriesSelectedKeys(
+          nextSettings,
+          [
+            ...selectedKeys,
+            key,
+          ],
+        );
+
+      setNewCategoryName("");
+
+      try {
+        await updateGameSettings(
+          room.id,
+          nextSettings,
+        );
+      } catch (caughtError) {
+        console.error(
+          "Could not add category:",
+          caughtError,
+        );
+      }
+    };
+
+  const removeCustomCategory =
+    async (key: string) => {
+      if (
+        !room ||
+        !isHost
+      ) {
+        return;
+      }
+
+      const custom =
+        getCategoriesCustom(
+          room.gameSettings,
+        );
+
+      const selectedKeys =
+        getCategoriesSelectedKeys(
+          room.gameSettings,
+        ).filter(
+          (item) =>
+            item !== key,
+        );
+
+      let nextSettings =
+        withCategoriesCustom(
+          room.gameSettings,
+          custom.filter(
+            (item) =>
+              item.key !== key,
+          ),
+        );
+
+      nextSettings =
+        withCategoriesSelectedKeys(
+          nextSettings,
+          selectedKeys,
+        );
+
+      try {
+        await updateGameSettings(
+          room.id,
+          nextSettings,
+        );
+      } catch (caughtError) {
+        console.error(
+          "Could not remove category:",
+          caughtError,
+        );
+      }
+    };
 
   const handleLeaveRoom =
     async () => {
@@ -806,6 +931,156 @@ function Lobby() {
                           </label>
                         );
                       },
+                    )}
+
+                    {getCategoriesCustom(
+                      room.gameSettings,
+                    ).map(
+                      (
+                        category,
+                      ) => {
+                        const selectedKeys =
+                          getCategoriesSelectedKeys(
+                            room.gameSettings,
+                          );
+
+                        const checked =
+                          selectedKeys.includes(
+                            category.key,
+                          );
+
+                        return (
+                          <div
+                            key={
+                              category.key
+                            }
+                            className="categorySettingOption customCategoryOption"
+                          >
+                            <label>
+                              <input
+                                type="checkbox"
+                                checked={
+                                  checked
+                                }
+                                disabled={
+                                  !isHost
+                                }
+                                onChange={(
+                                  event,
+                                ) => {
+                                  const next =
+                                    event
+                                      .target
+                                      .checked
+                                      ? [
+                                          ...selectedKeys,
+                                          category.key,
+                                        ]
+                                      : selectedKeys.filter(
+                                          (
+                                            key,
+                                          ) =>
+                                            key !==
+                                            category.key,
+                                        );
+
+                                  if (
+                                    next.length ===
+                                    0
+                                  ) {
+                                    return;
+                                  }
+
+                                  void updateGameSettings(
+                                    room.id,
+                                    withCategoriesSelectedKeys(
+                                      room.gameSettings,
+                                      next,
+                                    ),
+                                  );
+                                }}
+                              />
+
+                              {
+                                category.label
+                              }
+                            </label>
+
+                            {isHost && (
+                              <button
+                                type="button"
+                                className="removeCategoryButton"
+                                aria-label={t(
+                                  "categories.removeCategory",
+                                )}
+                                onClick={() => {
+                                  void removeCustomCategory(
+                                    category.key,
+                                  );
+                                }}
+                              >
+                                <X
+                                  size={14}
+                                />
+                              </button>
+                            )}
+                          </div>
+                        );
+                      },
+                    )}
+
+                    {isHost && (
+                      <div className="addCategoryRow">
+                        <input
+                          type="text"
+                          className="addCategoryInput"
+                          value={
+                            newCategoryName
+                          }
+                          maxLength={30}
+                          placeholder={t(
+                            "categories.addCustomCategoryPlaceholder",
+                          )}
+                          onChange={(
+                            event,
+                          ) =>
+                            setNewCategoryName(
+                              event
+                                .target
+                                .value,
+                            )
+                          }
+                          onKeyDown={(
+                            event,
+                          ) => {
+                            if (
+                              event.key ===
+                              "Enter"
+                            ) {
+                              void addCustomCategory();
+                            }
+                          }}
+                        />
+
+                        <button
+                          type="button"
+                          className="addCategoryButton"
+                          disabled={
+                            !newCategoryName.trim()
+                          }
+                          onClick={() => {
+                            void addCustomCategory();
+                          }}
+                        >
+                          <Plus
+                            size={15}
+                          />
+
+                          {t(
+                            "categories.addCustomCategory",
+                          )}
+                        </button>
+                      </div>
                     )}
                   </div>
               )}

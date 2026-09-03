@@ -230,9 +230,6 @@ const en = {
     waitingHost:
     "Waiting for the host...",
     round: "Round",
-    review: "Review",
-    accept: "Accept",
-    reject: "Reject",
     timerLabel: "Answer time",
     roundCountLabel: "Number of rounds",
     rounds: "rounds",
@@ -241,6 +238,11 @@ const en = {
     gameComplete: "GAME COMPLETE",
     finishGame: "Finish game",
     score: "Score",
+    voteInvalid: "Doesn't count",
+    addCustomCategoryPlaceholder:
+      "New category name...",
+    addCustomCategory: "Add",
+    removeCategory: "Remove category",
 
     labels: {
       city: "City",
@@ -249,6 +251,14 @@ const en = {
       animal: "Animal",
       name: "Name",
       profession: "Profession",
+      plant: "Plant",
+      food: "Food",
+      color: "Color",
+      sport: "Sport",
+      movie: "Movie",
+      brand: "Brand",
+      bodyPart: "Body part",
+      thing: "Thing",
     },
   },
 

@@ -55,22 +55,15 @@ export type CategoriesAnswer = {
   categoryKey: string;
   answer: string;
   createdAt: string;
-
-  validationStatus:
-    | "valid"
-    | "invalid"
-    | "unknown"
-    | null;
-
-  validationSource:
-    | string
-    | null;
-
-  validationReason:
-    | string
-    | null;
-
   points: number;
+};
+
+export type CategoriesVote = {
+  id: string;
+  roundId: string;
+  answerId: string;
+  playerId: string;
+  createdAt: string;
 };
 
 export type MinefieldRoundStatus =

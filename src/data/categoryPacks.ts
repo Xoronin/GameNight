@@ -9,6 +9,14 @@ export const classicCategories: CategoryDefinition[] = [
   { key: "animal" },
   { key: "name" },
   { key: "profession" },
+  { key: "plant" },
+  { key: "food" },
+  { key: "color" },
+  { key: "sport" },
+  { key: "movie" },
+  { key: "brand" },
+  { key: "bodyPart" },
+  { key: "thing" },
 ];
 
 export const categoryLetters = [

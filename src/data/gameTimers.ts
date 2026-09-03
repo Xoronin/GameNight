@@ -6,10 +6,16 @@ export type TimedGameId =
   | "higher-lower"
   | "trivia";
 
+export type CustomCategory = {
+  key: string;
+  label: string;
+};
+
 export type GameSettingsEntry = {
   timerSeconds?: number;
   roundCount?: number;
   categoryKeys?: string[];
+  customCategories?: CustomCategory[];
 };
 
 export type GameSettings = Record<
@@ -157,6 +163,28 @@ export function withCategoriesSelectedKeys(
     categories: {
       ...gameSettings?.categories,
       categoryKeys,
+    },
+  };
+}
+
+export function getCategoriesCustom(
+  gameSettings: GameSettings | null | undefined,
+): CustomCategory[] {
+  return (
+    gameSettings?.categories
+      ?.customCategories ?? []
+  );
+}
+
+export function withCategoriesCustom(
+  gameSettings: GameSettings | null | undefined,
+  customCategories: CustomCategory[],
+): GameSettings {
+  return {
+    ...gameSettings,
+    categories: {
+      ...gameSettings?.categories,
+      customCategories,
     },
   };
 }

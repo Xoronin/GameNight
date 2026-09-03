@@ -663,3 +663,82 @@
 .categorySettingOption input:disabled {
   cursor: default;
 }
+
+.customCategoryOption {
+  justify-content: space-between;
+  cursor: default;
+}
+
+.customCategoryOption label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.removeCategoryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #ffffff12;
+  border-radius: 7px;
+  background: #ffffff06;
+  color: #8f8f9e;
+  cursor: pointer;
+}
+
+.removeCategoryButton:hover {
+  color: #fb7185;
+  border-color: #fb718535;
+  background: #fb718510;
+}
+
+.addCategoryRow {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #ffffff0d;
+  display: flex;
+  gap: 8px;
+}
+
+.addCategoryInput {
+  flex: 1;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid #ffffff12;
+  border-radius: 9px;
+  background: #09090d;
+  color: #f7f7fb;
+  font-size: 13px;
+  outline: none;
+}
+
+.addCategoryInput:focus {
+  border-color: #fb923c;
+}
+
+.addCategoryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 14px;
+  border: 1px solid #fb923c35;
+  border-radius: 9px;
+  background: #fb923c14;
+  color: #fb923c;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.addCategoryButton:hover {
+  background: #fb923c22;
+}
+
+.addCategoryButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

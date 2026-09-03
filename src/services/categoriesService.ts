@@ -3,6 +3,7 @@ import type {
   CategoriesAnswer,
   CategoriesRound,
   CategoriesRoundStatus,
+  CategoriesVote,
 } from "../types/game";
 
 type CategoriesRoundRow = {
@@ -23,22 +24,15 @@ type CategoriesAnswerRow = {
   category_key: string;
   answer: string;
   created_at: string;
-
-  validation_status:
-    | "valid"
-    | "invalid"
-    | "unknown"
-    | null;
-
-  validation_source:
-    | string
-    | null;
-
-  validation_reason:
-    | string
-    | null;
-
   points: number;
+};
+
+type CategoriesVoteRow = {
+  id: string;
+  round_id: string;
+  answer_id: string;
+  player_id: string;
+  created_at: string;
 };
 
 function mapRound(
@@ -67,10 +61,19 @@ function mapAnswer(
     categoryKey: row.category_key,
     answer: row.answer,
     createdAt: row.created_at,
-    validationStatus: row.validation_status,
-    validationSource: row.validation_source,
-    validationReason: row.validation_reason,
     points: row.points,
+  };
+}
+
+function mapVote(
+  row: CategoriesVoteRow,
+): CategoriesVote {
+  return {
+    id: row.id,
+    roundId: row.round_id,
+    answerId: row.answer_id,
+    playerId: row.player_id,
+    createdAt: row.created_at,
   };
 }
 
@@ -257,29 +260,82 @@ export async function returnCategoriesToLobby(
   }
 }
 
-export async function reviewCategoriesAnswer(
+export async function setCategoriesAnswerPoints(
   answerId: string,
-  accepted: boolean,
   points: number,
 ) {
   const { error } = await supabase
     .from("categories_answers")
     .update({
-      validation_status:
-        accepted ? "valid" : "invalid",
-      validation_source: "manual",
-      validation_reason:
-        accepted
-          ? "Accepted by host"
-          : "Rejected by host",
-      points:
-        accepted ? points : 0,
+      points,
     })
     .eq("id", answerId);
 
   if (error) {
     throw new Error(
-      `Could not review answer: ${error.message}`,
+      `Could not update answer points: ${error.message}`,
+    );
+  }
+}
+
+export async function getCategoriesVotes(
+  roundId: string,
+): Promise<CategoriesVote[]> {
+  const { data, error } = await supabase
+    .from("categories_answer_votes")
+    .select("*")
+    .eq("round_id", roundId);
+
+  if (error) {
+    throw new Error(
+      `Could not load votes: ${error.message}`,
+    );
+  }
+
+  return (
+    data as CategoriesVoteRow[]
+  ).map(mapVote);
+}
+
+export async function castCategoriesVote(
+  roundId: string,
+  answerId: string,
+  playerId: string,
+) {
+  const { error } = await supabase
+    .from("categories_answer_votes")
+    .upsert(
+      {
+        round_id: roundId,
+        answer_id: answerId,
+        player_id: playerId,
+      },
+      {
+        onConflict:
+          "answer_id,player_id",
+      },
+    );
+
+  if (error) {
+    throw new Error(
+      `Could not cast vote: ${error.message}`,
+    );
+  }
+}
+
+export async function retractCategoriesVote(
+  answerId: string,
+  playerId: string,
+) {
+  const { error } = await supabase
+    .from("categories_answer_votes")
+    .delete()
+    .eq("answer_id", answerId)
+    .eq("player_id", playerId);
+
+  if (error) {
+    throw new Error(
+      `Could not retract vote: ${error.message}`,
     );
   }
 }

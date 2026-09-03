@@ -231,9 +231,6 @@ const de = {
     waitingHost:
     "Warte auf den Host...",
     round: "Runde",
-    review: "Prüfen",
-    accept: "Akzeptieren",
-    reject: "Ablehnen",
     timerLabel: "Antwortzeit",
     roundCountLabel: "Anzahl der Runden",
     rounds: "Runden",
@@ -242,6 +239,11 @@ const de = {
     gameComplete: "SPIEL BEENDET",
     finishGame: "Spiel beenden",
     score: "Punkte",
+    voteInvalid: "Zählt nicht",
+    addCustomCategoryPlaceholder:
+      "Name der neuen Kategorie...",
+    addCustomCategory: "Hinzufügen",
+    removeCategory: "Kategorie entfernen",
 
     labels: {
       city: "Stadt",
@@ -250,6 +252,14 @@ const de = {
       animal: "Tier",
       name: "Name",
       profession: "Beruf",
+      plant: "Pflanze",
+      food: "Essen",
+      color: "Farbe",
+      sport: "Sportart",
+      movie: "Film",
+      brand: "Marke",
+      bodyPart: "Körperteil",
+      thing: "Gegenstand",
     },
   },
 
