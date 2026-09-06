@@ -4,6 +4,7 @@ import type {
   AlphabetLetterStatus,
   AlphabetRound,
   AlphabetRoundStatus,
+  AlphabetTopic,
   AlphabetVote,
 } from "../types/game";
 import type {
@@ -46,12 +47,20 @@ type RoundRow = {
   session_id: string;
   round_number: number;
   topic: string;
+  topic_id: string | null;
   status: AlphabetRoundStatus;
   current_player_id: string | null;
   turn_ends_at: string | null;
   out_player_ids: string[] | null;
   player_lives: Record<string, number> | null;
   created_at: string;
+};
+
+type TopicRow = {
+  id: string;
+  topic_en: string;
+  topic_de: string;
+  active: boolean;
 };
 
 type LetterRow = {
@@ -93,6 +102,7 @@ function mapRound(
     sessionId: row.session_id,
     roundNumber: row.round_number,
     topic: row.topic,
+    topicId: row.topic_id,
     status: row.status,
     currentPlayerId:
       row.current_player_id,
@@ -128,6 +138,19 @@ function mapVote(
     letterId: row.letter_id,
     playerId: row.player_id,
     createdAt: row.created_at,
+  };
+}
+
+function mapTopic(
+  row: TopicRow,
+  language: "en" | "de",
+): AlphabetTopic {
+  return {
+    id: row.id,
+    topic:
+      language === "de"
+        ? row.topic_de
+        : row.topic_en,
   };
 }
 
@@ -404,12 +427,78 @@ export async function getAlphabetVotes(
   ).map(mapVote);
 }
 
+export async function getAlphabetTopics(
+  language: "en" | "de",
+): Promise<AlphabetTopic[]> {
+  const {
+    data,
+    error,
+  } = await supabase
+    .from(
+      "alphabet_topics",
+    )
+    .select("*")
+    .eq("active", true);
+
+  if (error) {
+    throw new Error(
+      `Could not load Alphabet topics: ${error.message}`,
+    );
+  }
+
+  return (
+    (data ?? []) as TopicRow[]
+  ).map((row) =>
+    mapTopic(row, language),
+  );
+}
+
+export async function getAlphabetUsedTopicIds(
+  sessionId: string,
+): Promise<string[]> {
+  const {
+    data,
+    error,
+  } = await supabase
+    .from(
+      "alphabet_rounds",
+    )
+    .select("topic_id")
+    .eq(
+      "session_id",
+      sessionId,
+    );
+
+  if (error) {
+    throw new Error(
+      `Could not load used Alphabet topics: ${error.message}`,
+    );
+  }
+
+  return (
+    data ?? []
+  )
+    .map(
+      (row) =>
+        row.topic_id as
+          | string
+          | null,
+    )
+    .filter(
+      (
+        topicId,
+      ): topicId is string =>
+        !!topicId,
+    );
+}
+
 export async function createAlphabetRound(
   sessionId: string,
   roomId: string,
   roundNumber: number,
   players: RoomPlayer[],
   topic: string,
+  topicId: string | null,
   timerSeconds: number,
 ): Promise<AlphabetRound> {
   if (players.length === 0) {
@@ -493,6 +582,7 @@ export async function createAlphabetRound(
       session_id: sessionId,
       round_number: roundNumber,
       topic: trimmedTopic,
+      topic_id: topicId,
       status: "playing",
       current_player_id:
         startingPlayer.id,

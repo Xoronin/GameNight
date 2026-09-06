@@ -113,12 +113,18 @@ export type AlphabetRound = {
   sessionId: string;
   roundNumber: number;
   topic: string;
+  topicId: string | null;
   status: AlphabetRoundStatus;
   currentPlayerId: string | null;
   turnEndsAt: string | null;
   outPlayerIds: string[];
   playerLives: Record<string, number>;
   createdAt: string;
+};
+
+export type AlphabetTopic = {
+  id: string;
+  topic: string;
 };
 
 export type AlphabetLetterStatus =

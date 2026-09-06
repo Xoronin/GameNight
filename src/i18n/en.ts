@@ -400,6 +400,11 @@ const en = {
     startTitle: "Pick a topic",
     startDescription:
       "Everyone takes turns naming a word from the topic for each letter of the alphabet. Get voted down or run out of time, and you lose a life.",
+    randomTopic: "Random Topic",
+    customTopic: "Custom Topic",
+    reroll: "New topic",
+    noTopicsAvailable:
+      "No topics available — try Custom Topic.",
     topicLabel: "Topic",
     topicPlaceholder: "e.g. Animals",
     yourTurn: "Your turn — pick a letter",

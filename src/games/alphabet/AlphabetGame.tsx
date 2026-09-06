@@ -5,6 +5,7 @@ import {
   Crown,
   Heart,
   LoaderCircle,
+  Shuffle,
   ThumbsDown,
   Trophy,
   X,
@@ -30,6 +31,8 @@ import {
   createAlphabetRound,
   createAlphabetSession,
   finishAlphabetGame,
+  getAlphabetTopics,
+  getAlphabetUsedTopicIds,
   passAlphabetTurn,
   resolveAlphabetLetter,
   retractAlphabetVote,
@@ -39,6 +42,7 @@ import {
 import { advanceTournament } from "../../services/roomService";
 import type {
   AlphabetLetter,
+  AlphabetTopic,
 } from "../../types/game";
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
@@ -74,9 +78,36 @@ function AlphabetGame({
   );
 
   const [
+    topicMode,
+    setTopicMode,
+  ] = useState<
+    "random" | "custom"
+  >("random");
+
+  const [
     topicDraft,
     setTopicDraft,
   ] = useState("");
+
+  const [
+    topicPool,
+    setTopicPool,
+  ] = useState<
+    AlphabetTopic[]
+  >([]);
+
+  const [
+    usedTopicIds,
+    setUsedTopicIds,
+  ] = useState<string[]>([]);
+
+  const [
+    randomTopic,
+    setRandomTopic,
+  ] =
+    useState<AlphabetTopic | null>(
+      null,
+    );
 
   const [
     selectedLetterId,
@@ -153,6 +184,229 @@ function AlphabetGame({
 
   const tournament =
     getTournamentStatus(room);
+
+  useEffect(() => {
+    let active = true;
+
+    void getAlphabetTopics(
+      gameLanguage,
+    ).then((topics) => {
+      if (active) {
+        setTopicPool(topics);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [gameLanguage]);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadUsedTopics =
+      async () => {
+        if (!session?.id) {
+          if (active) {
+            setUsedTopicIds([]);
+          }
+
+          return;
+        }
+
+        const ids =
+          await getAlphabetUsedTopicIds(
+            session.id,
+          );
+
+        if (active) {
+          setUsedTopicIds(ids);
+        }
+      };
+
+    void loadUsedTopics();
+
+    return () => {
+      active = false;
+    };
+  }, [session?.id, round?.id]);
+
+  const topicChoices = useMemo(
+    () => {
+      const unused =
+        topicPool.filter(
+          (topic) =>
+            !usedTopicIds.includes(
+              topic.id,
+            ),
+        );
+
+      return unused.length > 0
+        ? unused
+        : topicPool;
+    },
+    [topicPool, usedTopicIds],
+  );
+
+  const rollRandomTopic = () => {
+    if (
+      topicChoices.length === 0
+    ) {
+      return;
+    }
+
+    setRandomTopic(
+      topicChoices[
+        Math.floor(
+          Math.random() *
+            topicChoices.length,
+        )
+      ],
+    );
+  };
+
+  /*
+   * Auto-roll a random topic the first time one
+   * becomes available. Math.random() is impure, so
+   * this has to stay an effect rather than a
+   * render-time adjustment.
+   */
+  useEffect(() => {
+    const pickInitialTopic =
+      async () => {
+        if (
+          topicMode !==
+            "random" ||
+          randomTopic ||
+          topicChoices.length ===
+            0
+        ) {
+          return;
+        }
+
+        setRandomTopic(
+          topicChoices[
+            Math.floor(
+              Math.random() *
+                topicChoices.length,
+            )
+          ],
+        );
+      };
+
+    void pickInitialTopic();
+  }, [
+    topicMode,
+    randomTopic,
+    topicChoices,
+  ]);
+
+  const selectedTopicText =
+    topicMode === "random"
+      ? randomTopic?.topic ?? ""
+      : topicDraft;
+
+  const selectedTopicId =
+    topicMode === "random"
+      ? randomTopic?.id ?? null
+      : null;
+
+  const renderTopicChooser = (
+    inputId: string,
+  ) => (
+    <div className="alphabetTopicChooser">
+      <div className="alphabetTopicModeToggle">
+        <button
+          type="button"
+          className={
+            topicMode ===
+            "random"
+              ? "active"
+              : ""
+          }
+          onClick={() =>
+            setTopicMode("random")
+          }
+        >
+          {gameT(
+            "alphabet.randomTopic",
+          )}
+        </button>
+
+        <button
+          type="button"
+          className={
+            topicMode === "custom"
+              ? "active"
+              : ""
+          }
+          onClick={() =>
+            setTopicMode("custom")
+          }
+        >
+          {gameT(
+            "alphabet.customTopic",
+          )}
+        </button>
+      </div>
+
+      {topicMode === "random" ? (
+        <div className="alphabetRandomTopic">
+          <strong>
+            {randomTopic?.topic ??
+              gameT(
+                "alphabet.noTopicsAvailable",
+              )}
+          </strong>
+
+          <button
+            type="button"
+            className="secondaryButton"
+            disabled={
+              topicChoices.length ===
+              0
+            }
+            onClick={
+              rollRandomTopic
+            }
+          >
+            <Shuffle
+              size={16}
+            />
+
+            {gameT(
+              "alphabet.reroll",
+            )}
+          </button>
+        </div>
+      ) : (
+        <div className="alphabetTopicField">
+          <label
+            htmlFor={inputId}
+          >
+            {gameT(
+              "alphabet.topicLabel",
+            )}
+          </label>
+
+          <input
+            id={inputId}
+            value={topicDraft}
+            onChange={(event) =>
+              setTopicDraft(
+                event.target
+                  .value,
+              )
+            }
+            placeholder={gameT(
+              "alphabet.topicPlaceholder",
+            )}
+            autoComplete="off"
+          />
+        </div>
+      )}
+    </div>
+  );
 
   const outPlayerIds =
     round?.outPlayerIds ?? [];
@@ -261,7 +515,7 @@ function AlphabetGame({
     if (
       !room ||
       !isHost ||
-      !topicDraft.trim()
+      !selectedTopicText.trim()
     ) {
       return;
     }
@@ -280,7 +534,8 @@ function AlphabetGame({
       room.id,
       roundNumber,
       players,
-      topicDraft,
+      selectedTopicText,
+      selectedTopicId,
       getGameTimerSeconds(
         room.gameSettings,
         "alphabet",
@@ -288,6 +543,7 @@ function AlphabetGame({
     );
 
     setTopicDraft("");
+    setRandomTopic(null);
   };
 
   const pickLetter = (
@@ -411,6 +667,7 @@ function AlphabetGame({
     setDraftRoundId(round?.id);
     setSelectedLetterId(null);
     setWordDraft("");
+    setRandomTopic(null);
   }
 
   useEffect(() => {
@@ -678,40 +935,16 @@ function AlphabetGame({
 
             {isHost ? (
               <>
-                <div className="alphabetTopicField">
-                  <label htmlFor="alphabetTopic">
-                    {gameT(
-                      "alphabet.topicLabel",
-                    )}
-                  </label>
-
-                  <input
-                    id="alphabetTopic"
-                    value={
-                      topicDraft
-                    }
-                    onChange={(
-                      event,
-                    ) =>
-                      setTopicDraft(
-                        event
-                          .target
-                          .value,
-                      )
-                    }
-                    placeholder={gameT(
-                      "alphabet.topicPlaceholder",
-                    )}
-                    autoComplete="off"
-                  />
-                </div>
+                {renderTopicChooser(
+                  "alphabetTopic",
+                )}
 
                 <button
                   className="primaryButton alphabetMainButton"
                   type="button"
                   disabled={
                     working ||
-                    !topicDraft.trim()
+                    !selectedTopicText.trim()
                   }
                   onClick={() => {
                     void runAction(
@@ -965,42 +1198,17 @@ function AlphabetGame({
 
             {isHost ? (
               <>
-                {!isLastRound && (
-                  <div className="alphabetTopicField">
-                    <label htmlFor="alphabetNextTopic">
-                      {gameT(
-                        "alphabet.topicLabel",
-                      )}
-                    </label>
-
-                    <input
-                      id="alphabetNextTopic"
-                      value={
-                        topicDraft
-                      }
-                      onChange={(
-                        event,
-                      ) =>
-                        setTopicDraft(
-                          event
-                            .target
-                            .value,
-                        )
-                      }
-                      placeholder={gameT(
-                        "alphabet.topicPlaceholder",
-                      )}
-                      autoComplete="off"
-                    />
-                  </div>
-                )}
+                {!isLastRound &&
+                  renderTopicChooser(
+                    "alphabetNextTopic",
+                  )}
 
                 <button
                   className="primaryButton alphabetMainButton"
                   disabled={
                     working ||
                     (!isLastRound &&
-                      !topicDraft.trim())
+                      !selectedTopicText.trim())
                   }
                   onClick={() => {
                     void runAction(

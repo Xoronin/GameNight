@@ -400,6 +400,11 @@ const de = {
     startTitle: "Wähle ein Thema",
     startDescription:
       "Reihum nennt ihr für jeden Buchstaben des Alphabets ein passendes Wort zum Thema. Wird euer Wort abgelehnt oder läuft die Zeit ab, verliert ihr ein Leben.",
+    randomTopic: "Zufälliges Thema",
+    customTopic: "Eigenes Thema",
+    reroll: "Neues Thema",
+    noTopicsAvailable:
+      "Keine Themen verfügbar — nutze ein eigenes Thema.",
     topicLabel: "Thema",
     topicPlaceholder: "z. B. Tiere",
     yourTurn: "Dein Zug — wähle einen Buchstaben",
