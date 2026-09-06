@@ -15,6 +15,9 @@ export type MinefieldDifficulty =
   | "medium"
   | "hard";
 
+const CORRECT_TILE_POINTS = 500;
+const LAST_STANDING_BONUS = 300;
+
 export type MinefieldSession = {
   id: string;
   roomId: string;
@@ -43,6 +46,7 @@ type RoundRow = {
   status: MinefieldRoundStatus;
   created_at: string;
   turn_ends_at: string | null;
+  out_player_ids: string[] | null;
 };
 
 type TileRow = {
@@ -105,6 +109,7 @@ function mapRound(
     status: row.status,
     createdAt: row.created_at,
     turnEndsAt: row.turn_ends_at,
+    outPlayerIds: row.out_player_ids ?? [],
   };
 }
 
@@ -851,35 +856,136 @@ export async function pickMinefieldTile(
       pickedTile as TileRow,
     );
 
+  /*
+   * Correct answer: score it, and end
+   * the round only once every safe
+   * answer has been found.
+   */
   if (
     selectedTile.isCorrect
   ) {
     await addScore(
       playerId,
-      500,
+      CORRECT_TILE_POINTS,
     );
+
+    const updatedTiles =
+      await getMinefieldTiles(
+        round.id,
+      );
+
+    const remainingCorrect =
+      updatedTiles.filter(
+        (item) =>
+          item.isCorrect &&
+          !item.revealed,
+      );
+
+    if (
+      remainingCorrect.length ===
+      0
+    ) {
+      await revealRemainingTiles(
+        round.id,
+      );
+
+      await updateRoundStatus(
+        round.id,
+        "reveal",
+      );
+
+      return;
+    }
+
+    const activePlayers =
+      players.filter(
+        (player) =>
+          !round.outPlayerIds.includes(
+            player.id,
+          ),
+      );
+
+    const nextPlayer =
+      getNextPlayer(
+        activePlayers,
+        playerId,
+      );
+
+    if (!nextPlayer) {
+      return;
+    }
+
+    const {
+      error: turnError,
+    } = await supabase
+      .from(
+        "minefield_rounds",
+      )
+      .update({
+        current_player_id:
+          nextPlayer.id,
+        turn_ends_at:
+          new Date(
+            Date.now() +
+              timerSeconds * 1000,
+          ).toISOString(),
+      })
+      .eq("id", round.id)
+      .eq(
+        "status",
+        "playing",
+      );
+
+    if (turnError) {
+      throw new Error(
+        `Could not change turn: ${turnError.message}`,
+      );
+    }
+
+    return;
   }
 
-  const updatedTiles =
-    await getMinefieldTiles(
-      round.id,
-    );
-
-  const remainingCorrect =
-    updatedTiles.filter(
-      (item) =>
-        item.isCorrect &&
-        !item.revealed,
-    );
-
   /*
-   * Player found the final safe
-   * answer.
+   * Mine selected: only this player is
+   * knocked out of the round, not the
+   * whole table. Whoever is still in
+   * keeps playing; if this was the last
+   * player left, the round ends since
+   * nobody remains to take a turn.
    */
-  if (
-    remainingCorrect.length ===
-    0
-  ) {
+  const outPlayerIds = Array.from(
+    new Set([
+      ...round.outPlayerIds,
+      playerId,
+    ]),
+  );
+
+  const activePlayers =
+    players.filter(
+      (player) =>
+        !outPlayerIds.includes(
+          player.id,
+        ),
+    );
+
+  if (activePlayers.length === 0) {
+    const { error: outError } =
+      await supabase
+        .from(
+          "minefield_rounds",
+        )
+        .update({
+          out_player_ids:
+            outPlayerIds,
+        })
+        .eq("id", round.id);
+
+    if (outError) {
+      throw new Error(
+        `Could not update Minefield round: ${outError.message}`,
+      );
+    }
+
     await revealRemainingTiles(
       round.id,
     );
@@ -893,27 +999,20 @@ export async function pickMinefieldTile(
   }
 
   /*
-   * Mine selected:
-   * end the round immediately.
+   * Exactly one player is left standing:
+   * reward them for outlasting everyone
+   * else, then let them keep playing.
    */
-  if (
-    !selectedTile.isCorrect
-  ) {
-    await revealRemainingTiles(
-      round.id,
+  if (activePlayers.length === 1) {
+    await addScore(
+      activePlayers[0].id,
+      LAST_STANDING_BONUS,
     );
-
-    await updateRoundStatus(
-      round.id,
-      "reveal",
-    );
-
-    return;
   }
 
   const nextPlayer =
     getNextPlayer(
-      players,
+      activePlayers,
       playerId,
     );
 
@@ -928,6 +1027,8 @@ export async function pickMinefieldTile(
       "minefield_rounds",
     )
     .update({
+      out_player_ids:
+        outPlayerIds,
       current_player_id:
         nextPlayer.id,
       turn_ends_at:
@@ -962,9 +1063,17 @@ export async function passMinefieldTurn(
     return;
   }
 
+  const activePlayers =
+    players.filter(
+      (player) =>
+        !round.outPlayerIds.includes(
+          player.id,
+        ),
+    );
+
   const nextPlayer =
     getNextPlayer(
-      players,
+      activePlayers,
       round.currentPlayerId,
     );
 

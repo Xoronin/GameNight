@@ -150,6 +150,33 @@ function MinefieldGame({
     round?.currentPlayerId ===
       localPlayer.id;
 
+  const outPlayerIds =
+    round?.outPlayerIds ?? [];
+
+  const activePlayers =
+    players.filter(
+      (player) =>
+        !outPlayerIds.includes(
+          player.id,
+        ),
+    );
+
+  const outPlayers =
+    players.filter((player) =>
+      outPlayerIds.includes(
+        player.id,
+      ),
+    );
+
+  const isLocalPlayerOut =
+    !!localPlayer &&
+    outPlayerIds.includes(
+      localPlayer.id,
+    );
+
+  const isLastPlayerStanding =
+    activePlayers.length === 1;
+
   const correctTiles =
     tiles.filter(
       (tile) => tile.isCorrect,
@@ -836,6 +863,49 @@ function MinefieldGame({
                   </>
                 )}
               </div>
+
+              {isLocalPlayerOut && (
+                <div className="minefieldOutBanner">
+                  <Bomb size={16} />
+
+                  {gameT(
+                    "minefield.youAreOut",
+                  )}
+                </div>
+              )}
+
+              {!isLocalPlayerOut &&
+                isLastPlayerStanding && (
+                  <div className="minefieldLastStanding">
+                    <Trophy
+                      size={16}
+                    />
+
+                    {gameT(
+                      "minefield.lastStanding",
+                    )}
+                  </div>
+                )}
+
+              {outPlayers.length >
+                0 && (
+                <div className="minefieldEliminated">
+                  <Bomb
+                    size={14}
+                  />
+
+                  {gameT(
+                    "minefield.playersOut",
+                  )}
+                  :{" "}
+                  {outPlayers
+                    .map(
+                      (player) =>
+                        player.name,
+                    )
+                    .join(", ")}
+                </div>
+              )}
 
               <div className="minefieldFound">
                 <Check size={17} />

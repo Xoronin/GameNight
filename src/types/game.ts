@@ -81,6 +81,7 @@ export type MinefieldRound = {
   createdAt: string;
   sessionId: string;
   turnEndsAt: string | null;
+  outPlayerIds: string[];
 };
 
 export type MinefieldTile = {

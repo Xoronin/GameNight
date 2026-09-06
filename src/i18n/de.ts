@@ -383,6 +383,11 @@ const de = {
     joinAgain: "Tritt dem Raum erneut bei.",
     questionMissing: "Frage fehlt",
     timerLabel: "Zugzeit",
+    youAreOut:
+      "Du hast eine Mine getroffen — du bist für diese Runde raus. Warte, bis die anderen fertig sind...",
+    lastStanding:
+      "Letzter Überlebender! Bonuspunkte erhalten.",
+    playersOut: "Raus in dieser Runde",
   },
 
   higherLower: {

@@ -383,6 +383,11 @@ const en = {
     noPlayerTitle: "No player found",
     questionMissing: "Question missing",
     timerLabel: "Turn time",
+    youAreOut:
+      "You hit a mine — you're out for this round. Waiting for the others to finish...",
+    lastStanding:
+      "Last one standing! Bonus points earned.",
+    playersOut: "Out this round",
   },
 
   higherLower: {
