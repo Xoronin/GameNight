@@ -10,6 +10,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import Header from "../components/Header";
+import AlphabetGame from "../games/alphabet/AlphabetGame";
 import BluffGame from "../games/bluff/BluffGame";
 import CategoriesGame from "../games/categories/CategoriesGame";
 import DrawingGame from "../games/draw-guess/DrawingGame";
@@ -28,6 +29,7 @@ const multiplayerGames = [
   "draw-guess",
   "higher-lower",
   "trivia",
+  "alphabet",
 ];
 
 function GamePage() {
@@ -251,6 +253,16 @@ function GamePage() {
     ) {
       return (
         <HigherLowerGame
+          roomCode={roomCode}
+        />
+      );
+    }
+
+    if (
+      gameId === "alphabet"
+    ) {
+      return (
+        <AlphabetGame
           roomCode={roomCode}
         />
       );

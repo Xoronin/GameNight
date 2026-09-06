@@ -102,6 +102,49 @@ export type MinefieldQuestion = {
   wrongAnswers: string[];
 };
 
+export type AlphabetRoundStatus =
+  | "playing"
+  | "reveal"
+  | "finished";
+
+export type AlphabetRound = {
+  id: string;
+  roomId: string;
+  sessionId: string;
+  roundNumber: number;
+  topic: string;
+  status: AlphabetRoundStatus;
+  currentPlayerId: string | null;
+  turnEndsAt: string | null;
+  outPlayerIds: string[];
+  playerLives: Record<string, number>;
+  createdAt: string;
+};
+
+export type AlphabetLetterStatus =
+  | "available"
+  | "pending"
+  | "valid"
+  | "invalid";
+
+export type AlphabetLetter = {
+  id: string;
+  roundId: string;
+  letter: string;
+  status: AlphabetLetterStatus;
+  claimedBy: string | null;
+  word: string | null;
+  createdAt: string;
+};
+
+export type AlphabetVote = {
+  id: string;
+  roundId: string;
+  letterId: string;
+  playerId: string;
+  createdAt: string;
+};
+
 export type DrawingRoundStatus =
   | "drawing"
   | "reveal"

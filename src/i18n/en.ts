@@ -75,6 +75,12 @@ const en = {
         "Draw secret words while your friends guess.",
     },
 
+    alphabet: {
+      name: "Alphabet",
+      description:
+        "Claim a letter, name a word from the topic, survive the vote.",
+    },
+
     codewords: {
       name: "Codewords",
       description:
@@ -388,6 +394,34 @@ const en = {
     lastStanding:
       "Last one standing! Bonus points earned.",
     playersOut: "Out this round",
+  },
+
+  alphabet: {
+    startTitle: "Pick a topic",
+    startDescription:
+      "Everyone takes turns naming a word from the topic for each letter of the alphabet. Get voted down or run out of time, and you lose a life.",
+    topicLabel: "Topic",
+    topicPlaceholder: "e.g. Animals",
+    yourTurn: "Your turn — pick a letter",
+    waitingFor: "Waiting for",
+    youAreOut:
+      "You're out of lives for this round. Waiting for the others...",
+    voteInvalid: "Doesn't count",
+    roundComplete: "Round complete",
+    alphabetCleared: "Alphabet cleared!",
+    everyoneOut: "Everyone's out of lives!",
+    allAnswersRevealed: "All letters are now revealed.",
+    nextRound: "Next round",
+    finishGame: "Finish game",
+    backToLobby: "Back to lobby",
+    waitingForHost: "Waiting for the host to continue...",
+    loading: "Loading Alphabet...",
+    loadError: "Could not load Alphabet",
+    joinAgain: "Join the room again.",
+    noPlayerTitle: "No player found",
+    timerLabel: "Turn time",
+    gameComplete: "GAME COMPLETE",
+    finalScores: "Final scores",
   },
 
   higherLower: {

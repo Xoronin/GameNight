@@ -3,6 +3,7 @@ import {
   Bomb,
   Brain,
   Brush,
+  CaseSensitive,
   Eye,
   Gavel,
   Heart,
@@ -96,6 +97,17 @@ export const gameLibrary: GameLibraryEntry[] = [
     players: "3–12",
     icon: <Brush />,
     className: "pink",
+    group: "solo",
+  },
+  {
+    id: "alphabet",
+    nameKey:
+      "games.alphabet.name",
+    descriptionKey:
+      "games.alphabet.description",
+    players: "2–10",
+    icon: <CaseSensitive />,
+    className: "purple",
     group: "solo",
   },
 

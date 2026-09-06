@@ -75,6 +75,12 @@ const de = {
         "Zeichne geheime Begriffe, während deine Freunde raten.",
     },
 
+    alphabet: {
+      name: "Alphabet",
+      description:
+        "Wähle einen Buchstaben, nenne ein passendes Wort, überlebe die Abstimmung.",
+    },
+
     codewords: {
       name: "Codewörter",
       description:
@@ -388,6 +394,34 @@ const de = {
     lastStanding:
       "Letzter Überlebender! Bonuspunkte erhalten.",
     playersOut: "Raus in dieser Runde",
+  },
+
+  alphabet: {
+    startTitle: "Wähle ein Thema",
+    startDescription:
+      "Reihum nennt ihr für jeden Buchstaben des Alphabets ein passendes Wort zum Thema. Wird euer Wort abgelehnt oder läuft die Zeit ab, verliert ihr ein Leben.",
+    topicLabel: "Thema",
+    topicPlaceholder: "z. B. Tiere",
+    yourTurn: "Dein Zug — wähle einen Buchstaben",
+    waitingFor: "Warte auf",
+    youAreOut:
+      "Du hast keine Leben mehr in dieser Runde. Warte, bis die anderen fertig sind...",
+    voteInvalid: "Zählt nicht",
+    roundComplete: "Runde beendet",
+    alphabetCleared: "Alphabet geklärt!",
+    everyoneOut: "Allen sind die Leben ausgegangen!",
+    allAnswersRevealed: "Alle Buchstaben sind jetzt sichtbar.",
+    nextRound: "Nächste Runde",
+    finishGame: "Spiel beenden",
+    backToLobby: "Zurück zur Lobby",
+    waitingForHost: "Warte darauf, dass der Host fortfährt...",
+    loading: "Alphabet wird geladen...",
+    loadError: "Alphabet konnte nicht geladen werden",
+    joinAgain: "Tritt dem Raum erneut bei.",
+    noPlayerTitle: "Kein Spieler gefunden",
+    timerLabel: "Zugzeit",
+    gameComplete: "SPIEL BEENDET",
+    finalScores: "Endstand",
   },
 
   higherLower: {
