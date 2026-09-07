@@ -108,4 +108,19 @@ export const gameRules: GameRules = {
       "Der/die Zeichnende bekommt ebenfalls Punkte, sobald jemand richtig rät.",
     ],
   },
+
+  timeline: {
+    en: [
+      "The host picks a category — a timeline of dates or a ranking by some number.",
+      "On your turn, you're shown one mystery item and the board built so far.",
+      "Slot it into the gap where you think it belongs.",
+      "Right and it joins the board; wrong (or too slow) costs one of your 3 lives.",
+    ],
+    de: [
+      "Der Host wählt eine Kategorie — eine Zeitleiste nach Datum oder eine Rangliste nach einer Zahl.",
+      "Wenn du dran bist, siehst du einen mysteriösen Eintrag und das bisherige Spielfeld.",
+      "Ordne ihn an der Stelle ein, an der er deiner Meinung nach hingehört.",
+      "Richtig eingeordnet kommt er aufs Feld; falsch (oder zu langsam) kostet eines deiner 3 Leben.",
+    ],
+  },
 };

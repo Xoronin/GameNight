@@ -16,6 +16,7 @@ import CategoriesGame from "../games/categories/CategoriesGame";
 import DrawingGame from "../games/draw-guess/DrawingGame";
 import HigherLowerGame from "../games/higher-lower/HigherLowerGame";
 import MinefieldGame from "../games/minefield/MinefieldGame";
+import TimelineGame from "../games/timeline/TimelineGame";
 import TriviaGame from "../games/trivia/TriviaGame";
 import { getGameLibraryEntry } from "../data/gameLibrary";
 import { gameRules } from "../data/gameRules";
@@ -30,6 +31,7 @@ const multiplayerGames = [
   "higher-lower",
   "trivia",
   "alphabet",
+  "timeline",
 ];
 
 function GamePage() {
@@ -263,6 +265,16 @@ function GamePage() {
     ) {
       return (
         <AlphabetGame
+          roomCode={roomCode}
+        />
+      );
+    }
+
+    if (
+      gameId === "timeline"
+    ) {
+      return (
+        <TimelineGame
           roomCode={roomCode}
         />
       );

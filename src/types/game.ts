@@ -151,6 +151,59 @@ export type AlphabetVote = {
   createdAt: string;
 };
 
+export type TimelineCategoryType =
+  | "timeline"
+  | "ranking";
+
+export type TimelineSortDirection =
+  | "asc"
+  | "desc";
+
+export type TimelineCategory = {
+  id: string;
+  name: string;
+  categoryType: TimelineCategoryType;
+  unit: string;
+  sortDirection: TimelineSortDirection;
+};
+
+export type TimelineItem = {
+  id: string;
+  categoryId: string;
+  name: string;
+  value: number;
+  valueLabel: string;
+};
+
+export type TimelineRoundStatus =
+  | "playing"
+  | "reveal"
+  | "finished";
+
+export type TimelineRound = {
+  id: string;
+  roomId: string;
+  sessionId: string;
+  roundNumber: number;
+  categoryId: string;
+  status: TimelineRoundStatus;
+  currentPlayerId: string | null;
+  currentItemId: string | null;
+  turnEndsAt: string | null;
+  usedItemIds: string[];
+  outPlayerIds: string[];
+  playerLives: Record<string, number>;
+  createdAt: string;
+};
+
+export type TimelinePlacement = {
+  id: string;
+  roundId: string;
+  itemId: string;
+  placedBy: string | null;
+  createdAt: string;
+};
+
 export type DrawingRoundStatus =
   | "drawing"
   | "reveal"

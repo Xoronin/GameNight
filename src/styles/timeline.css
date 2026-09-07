@@ -1,0 +1,414 @@
+.timelineGame {
+  width: min(100%, 980px);
+  margin: 0 auto;
+  padding: 24px 0 60px;
+}
+
+.timelineStart,
+.timelinePanel {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(16, 16, 24, 0.82);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
+}
+
+.timelineStart {
+  max-width: 620px;
+  margin: 40px auto 0;
+  text-align: center;
+}
+
+.timelineStart h1,
+.timelinePanel h1 {
+  margin: 10px 0 12px;
+}
+
+.timelineStart p {
+  opacity: 0.72;
+  line-height: 1.6;
+}
+
+.timelineHeroIcon {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 22px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+}
+
+.timelineCategoryField {
+  display: grid;
+  gap: 8px;
+  max-width: 420px;
+  margin: 24px auto 0;
+  text-align: left;
+}
+
+.timelineCategoryField label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.timelineCategoryRow {
+  display: flex;
+  gap: 10px;
+}
+
+.timelineCategoryRow select {
+  flex: 1;
+  appearance: none;
+  padding: 13px 42px 13px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.03)
+    ),
+    linear-gradient(
+      135deg,
+      transparent 50%,
+      rgba(255, 255, 255, 0.7) 50%
+    );
+  background-position:
+    center,
+    calc(100% - 18px) center;
+  background-repeat: no-repeat;
+  background-size: auto, 10px 10px;
+  color: #f5f5f5;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.timelineCategoryRow select:focus {
+  outline: none;
+  border-color: rgba(249, 115, 22, 0.9);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18);
+}
+
+.timelineCategoryRow button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.timelineHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.timelineHeader > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timelineHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.timelineScore {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border-radius: 999px;
+  background: rgba(250, 204, 21, 0.1);
+}
+
+.timelineProgress {
+  height: 5px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  margin-bottom: 24px;
+}
+
+.timelineProgress > div {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    #f97316,
+    #ef4444
+  );
+  transition: width 0.3s ease;
+}
+
+.timelineCategoryBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  opacity: 0.85;
+}
+
+.timelineLives {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.timelineLifeRow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+  opacity: 0.65;
+}
+
+.timelineLifeRow.current {
+  opacity: 1;
+  background: rgba(249, 115, 22, 0.12);
+  border-color: rgba(249, 115, 22, 0.3);
+}
+
+.timelineLifeRow.out {
+  opacity: 0.35;
+  text-decoration: line-through;
+}
+
+.timelineHearts {
+  display: inline-flex;
+  gap: 2px;
+  color: #ef4444;
+}
+
+.timelineHearts svg {
+  opacity: 0.3;
+}
+
+.timelineHearts svg.filled {
+  opacity: 1;
+}
+
+.timelineTurn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  padding: 12px;
+  margin: 8px 0 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.timelineMyTurn {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.timelineMysteryItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px;
+  margin-bottom: 22px;
+  border-radius: 16px;
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  text-align: center;
+}
+
+.timelineMysteryItem span {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.timelineMysteryItem strong {
+  font-size: 1.4rem;
+  font-weight: 750;
+}
+
+.timelineBoard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.timelineTileGroup {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.timelineTile {
+  min-width: 110px;
+  min-height: 66px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.055);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.timelineTile strong {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.timelineTile span {
+  font-size: 0.78rem;
+  opacity: 0.75;
+  font-weight: 650;
+  color: #34d399;
+}
+
+.timelineGap {
+  flex-shrink: 0;
+  width: 30px;
+  height: 66px;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  opacity: 0.55;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.timelineGap:not(:disabled):hover {
+  opacity: 1;
+  transform: translateY(-2px);
+  border-color: rgba(249, 115, 22, 0.6);
+  background: rgba(249, 115, 22, 0.14);
+}
+
+.timelineGap:disabled {
+  cursor: default;
+}
+
+.timelineRoundResult {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.timelineRoundResult > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timelineRoundResult span {
+  opacity: 0.65;
+}
+
+.timelineResultIcon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.timelineMainButton {
+  margin-top: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.timelineWaiting {
+  margin-top: 22px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  opacity: 0.75;
+}
+
+.timelineError {
+  padding: 12px 15px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+}
+
+.timelineScoreboard {
+  margin-top: 24px;
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.timelineScoreRow {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 720px) {
+  .timelineGame {
+    padding-top: 12px;
+  }
+
+  .timelinePanel,
+  .timelineStart {
+    padding: 22px 16px;
+  }
+
+  .timelineCategoryRow {
+    flex-direction: column;
+  }
+
+  .timelineTile {
+    min-width: 92px;
+    min-height: 58px;
+    padding: 8px 10px;
+  }
+
+  .timelineGap {
+    width: 24px;
+    height: 58px;
+  }
+}

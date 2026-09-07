@@ -110,6 +110,16 @@ export const gameLibrary: GameLibraryEntry[] = [
     className: "purple",
     group: "solo",
   },
+  {
+    id: "timeline",
+    nameKey: "games.timeline.name",
+    descriptionKey:
+      "games.timeline.description",
+    players: "2–10",
+    icon: <History />,
+    className: "orange",
+    group: "solo",
+  },
 
   /*
    * Placeholders for planned games — not yet
@@ -195,17 +205,6 @@ export const gameLibrary: GameLibraryEntry[] = [
     players: "3–10",
     icon: <ListOrdered />,
     className: "green",
-    group: "solo",
-    comingSoon: true,
-  },
-  {
-    id: "timeline",
-    nameKey: "games.timeline.name",
-    descriptionKey:
-      "games.timeline.description",
-    players: "2–10",
-    icon: <History />,
-    className: "orange",
     group: "solo",
     comingSoon: true,
   },

@@ -429,6 +429,37 @@ const de = {
     finalScores: "Endstand",
   },
 
+  timeline: {
+    startTitle: "Wähle eine Kategorie",
+    startDescription:
+      "Ordne nacheinander die mysteriösen Karten in die wachsende Zeitleiste oder Rangliste ein. Liegst du falsch oder läuft die Zeit ab, verlierst du ein Leben.",
+    categoryLabel: "Kategorie",
+    chooseCategory: "Kategorie wählen...",
+    timelineCategories: "Zeitleiste",
+    rankingCategories: "Rangliste",
+    randomCategory: "Zufällig",
+    yourTurn: "Dein Zug — platziere den Eintrag",
+    waitingFor: "Warte auf",
+    placeThis: "Platziere",
+    youAreOut:
+      "Du hast keine Leben mehr in dieser Runde. Warte, bis die anderen fertig sind...",
+    roundComplete: "Runde beendet",
+    categoryComplete: "Kategorie geschafft!",
+    everyoneOut: "Allen sind die Leben ausgegangen!",
+    allItemsRevealed: "Alle Einträge sind jetzt sichtbar.",
+    nextRound: "Nächste Runde",
+    finishGame: "Spiel beenden",
+    backToLobby: "Zurück zur Lobby",
+    waitingForHost: "Warte darauf, dass der Host fortfährt...",
+    loading: "Timeline wird geladen...",
+    loadError: "Timeline konnte nicht geladen werden",
+    joinAgain: "Tritt dem Raum erneut bei.",
+    noPlayerTitle: "Kein Spieler gefunden",
+    timerLabel: "Zugzeit",
+    gameComplete: "SPIEL BEENDET",
+    finalScores: "Endstand",
+  },
+
   higherLower: {
     loading: "Höher / Tiefer wird geladen...",
     loadError: "Höher / Tiefer konnte nicht geladen werden",

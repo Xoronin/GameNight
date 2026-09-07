@@ -429,6 +429,37 @@ const en = {
     finalScores: "Final scores",
   },
 
+  timeline: {
+    startTitle: "Pick a category",
+    startDescription:
+      "One item at a time, slot the mystery card into the growing timeline or ranking. Get it wrong or run out of time, and you lose a life.",
+    categoryLabel: "Category",
+    chooseCategory: "Choose a category...",
+    timelineCategories: "Timeline",
+    rankingCategories: "Ranking",
+    randomCategory: "Random",
+    yourTurn: "Your turn — place the item",
+    waitingFor: "Waiting for",
+    placeThis: "Place this",
+    youAreOut:
+      "You're out of lives for this round. Waiting for the others...",
+    roundComplete: "Round complete",
+    categoryComplete: "Category complete!",
+    everyoneOut: "Everyone's out of lives!",
+    allItemsRevealed: "All items are now revealed.",
+    nextRound: "Next round",
+    finishGame: "Finish game",
+    backToLobby: "Back to lobby",
+    waitingForHost: "Waiting for the host to continue...",
+    loading: "Loading Timeline...",
+    loadError: "Could not load Timeline",
+    joinAgain: "Join the room again.",
+    noPlayerTitle: "No player found",
+    timerLabel: "Turn time",
+    gameComplete: "GAME COMPLETE",
+    finalScores: "Final scores",
+  },
+
   higherLower: {
     loading: "Loading Higher / Lower...",
     loadError: "Could not load Higher / Lower",
