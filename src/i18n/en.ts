@@ -123,8 +123,8 @@ const en = {
         "Reconstruct another player's secret ranking of a set of options.",
     },
 
-    timeline: {
-      name: "Timeline",
+    spectrum: {
+      name: "Spectrum",
       description:
         "Slot a new card into a growing timeline or ranking — three wrong guesses and you're out.",
     },
@@ -429,13 +429,13 @@ const en = {
     finalScores: "Final scores",
   },
 
-  timeline: {
+  spectrum: {
     startTitle: "Pick a category",
     startDescription:
       "One item at a time, slot the mystery card into the growing timeline or ranking. Get it wrong or run out of time, and you lose a life.",
     categoryLabel: "Category",
     chooseCategory: "Choose a category...",
-    timelineCategories: "Timeline",
+    chronologicalCategories: "Timeline",
     rankingCategories: "Ranking",
     randomCategory: "Random",
     yourTurn: "Your turn — place the item",
@@ -451,8 +451,8 @@ const en = {
     finishGame: "Finish game",
     backToLobby: "Back to lobby",
     waitingForHost: "Waiting for the host to continue...",
-    loading: "Loading Timeline...",
-    loadError: "Could not load Timeline",
+    loading: "Loading Spectrum...",
+    loadError: "Could not load Spectrum",
     joinAgain: "Join the room again.",
     noPlayerTitle: "No player found",
     timerLabel: "Turn time",

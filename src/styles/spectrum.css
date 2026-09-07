@@ -1,11 +1,11 @@
-.timelineGame {
+.spectrumGame {
   width: min(100%, 980px);
   margin: 0 auto;
   padding: 24px 0 60px;
 }
 
-.timelineStart,
-.timelinePanel {
+.spectrumStart,
+.spectrumPanel {
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(16, 16, 24, 0.82);
   border-radius: 24px;
@@ -13,23 +13,23 @@
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
 }
 
-.timelineStart {
+.spectrumStart {
   max-width: 620px;
   margin: 40px auto 0;
   text-align: center;
 }
 
-.timelineStart h1,
-.timelinePanel h1 {
+.spectrumStart h1,
+.spectrumPanel h1 {
   margin: 10px 0 12px;
 }
 
-.timelineStart p {
+.spectrumStart p {
   opacity: 0.72;
   line-height: 1.6;
 }
 
-.timelineHeroIcon {
+.spectrumHeroIcon {
   width: 76px;
   height: 76px;
   margin: 0 auto 22px;
@@ -40,7 +40,7 @@
   border: 1px solid rgba(249, 115, 22, 0.25);
 }
 
-.timelineCategoryField {
+.spectrumCategoryField {
   display: grid;
   gap: 8px;
   max-width: 420px;
@@ -48,7 +48,7 @@
   text-align: left;
 }
 
-.timelineCategoryField label {
+.spectrumCategoryField label {
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -56,12 +56,12 @@
   opacity: 0.72;
 }
 
-.timelineCategoryRow {
+.spectrumCategoryRow {
   display: flex;
   gap: 10px;
 }
 
-.timelineCategoryRow select {
+.spectrumCategoryRow select {
   flex: 1;
   appearance: none;
   padding: 13px 42px 13px 14px;
@@ -89,39 +89,39 @@
   cursor: pointer;
 }
 
-.timelineCategoryRow select:focus {
+.spectrumCategoryRow select:focus {
   outline: none;
   border-color: rgba(249, 115, 22, 0.9);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18);
 }
 
-.timelineCategoryRow button {
+.spectrumCategoryRow button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   white-space: nowrap;
 }
 
-.timelineHeader {
+.spectrumHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
 }
 
-.timelineHeader > div:first-child {
+.spectrumHeader > div:first-child {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.timelineHeaderRight {
+.spectrumHeaderRight {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.timelineScore {
+.spectrumScore {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -130,7 +130,7 @@
   background: rgba(250, 204, 21, 0.1);
 }
 
-.timelineProgress {
+.spectrumProgress {
   height: 5px;
   border-radius: 999px;
   overflow: hidden;
@@ -138,7 +138,7 @@
   margin-bottom: 24px;
 }
 
-.timelineProgress > div {
+.spectrumProgress > div {
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(
@@ -149,7 +149,7 @@
   transition: width 0.3s ease;
 }
 
-.timelineCategoryBadge {
+.spectrumCategoryBadge {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -161,14 +161,14 @@
   opacity: 0.85;
 }
 
-.timelineLives {
+.spectrumLives {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin: 16px 0;
 }
 
-.timelineLifeRow {
+.spectrumLifeRow {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -180,32 +180,32 @@
   opacity: 0.65;
 }
 
-.timelineLifeRow.current {
+.spectrumLifeRow.current {
   opacity: 1;
   background: rgba(249, 115, 22, 0.12);
   border-color: rgba(249, 115, 22, 0.3);
 }
 
-.timelineLifeRow.out {
+.spectrumLifeRow.out {
   opacity: 0.35;
   text-decoration: line-through;
 }
 
-.timelineHearts {
+.spectrumHearts {
   display: inline-flex;
   gap: 2px;
   color: #ef4444;
 }
 
-.timelineHearts svg {
+.spectrumHearts svg {
   opacity: 0.3;
 }
 
-.timelineHearts svg.filled {
+.spectrumHearts svg.filled {
   opacity: 1;
 }
 
-.timelineTurn {
+.spectrumTurn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -216,12 +216,12 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
-.timelineMyTurn {
+.spectrumMyTurn {
   background: rgba(34, 197, 94, 0.1);
   border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
-.timelineMysteryItem {
+.spectrumMysteryItem {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -234,19 +234,19 @@
   text-align: center;
 }
 
-.timelineMysteryItem span {
+.spectrumMysteryItem span {
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   opacity: 0.65;
 }
 
-.timelineMysteryItem strong {
+.spectrumMysteryItem strong {
   font-size: 1.4rem;
   font-weight: 750;
 }
 
-.timelineBoard {
+.spectrumBoard {
   display: flex;
   flex-wrap: wrap;
   align-items: stretch;
@@ -254,13 +254,13 @@
   padding: 4px 0;
 }
 
-.timelineTileGroup {
+.spectrumTileGroup {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.timelineTile {
+.spectrumTile {
   min-width: 110px;
   min-height: 66px;
   border: 1px solid rgba(255, 255, 255, 0.11);
@@ -275,19 +275,19 @@
   text-align: center;
 }
 
-.timelineTile strong {
+.spectrumTile strong {
   font-size: 0.85rem;
   font-weight: 700;
 }
 
-.timelineTile span {
+.spectrumTile span {
   font-size: 0.78rem;
   opacity: 0.75;
   font-weight: 650;
   color: #34d399;
 }
 
-.timelineGap {
+.spectrumGap {
   flex-shrink: 0;
   width: 30px;
   height: 66px;
@@ -306,18 +306,18 @@
     opacity 0.15s ease;
 }
 
-.timelineGap:not(:disabled):hover {
+.spectrumGap:not(:disabled):hover {
   opacity: 1;
   transform: translateY(-2px);
   border-color: rgba(249, 115, 22, 0.6);
   background: rgba(249, 115, 22, 0.14);
 }
 
-.timelineGap:disabled {
+.spectrumGap:disabled {
   cursor: default;
 }
 
-.timelineRoundResult {
+.spectrumRoundResult {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -327,17 +327,17 @@
   background: rgba(255, 255, 255, 0.055);
 }
 
-.timelineRoundResult > div:last-child {
+.spectrumRoundResult > div:last-child {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.timelineRoundResult span {
+.spectrumRoundResult span {
   opacity: 0.65;
 }
 
-.timelineResultIcon {
+.spectrumResultIcon {
   width: 46px;
   height: 46px;
   border-radius: 14px;
@@ -346,7 +346,7 @@
   background: rgba(255, 255, 255, 0.07);
 }
 
-.timelineMainButton {
+.spectrumMainButton {
   margin-top: 24px;
   display: inline-flex;
   align-items: center;
@@ -354,7 +354,7 @@
   gap: 8px;
 }
 
-.timelineWaiting {
+.spectrumWaiting {
   margin-top: 22px;
   padding: 14px;
   border-radius: 12px;
@@ -362,7 +362,7 @@
   opacity: 0.75;
 }
 
-.timelineError {
+.spectrumError {
   padding: 12px 15px;
   margin-bottom: 16px;
   border-radius: 12px;
@@ -370,14 +370,14 @@
   border: 1px solid rgba(239, 68, 68, 0.22);
 }
 
-.timelineScoreboard {
+.spectrumScoreboard {
   margin-top: 24px;
   display: grid;
   gap: 8px;
   text-align: left;
 }
 
-.timelineScoreRow {
+.spectrumScoreRow {
   display: grid;
   grid-template-columns: 34px 1fr auto;
   align-items: center;
@@ -388,26 +388,26 @@
 }
 
 @media (max-width: 720px) {
-  .timelineGame {
+  .spectrumGame {
     padding-top: 12px;
   }
 
-  .timelinePanel,
-  .timelineStart {
+  .spectrumPanel,
+  .spectrumStart {
     padding: 22px 16px;
   }
 
-  .timelineCategoryRow {
+  .spectrumCategoryRow {
     flex-direction: column;
   }
 
-  .timelineTile {
+  .spectrumTile {
     min-width: 92px;
     min-height: 58px;
     padding: 8px 10px;
   }
 
-  .timelineGap {
+  .spectrumGap {
     width: 24px;
     height: 58px;
   }

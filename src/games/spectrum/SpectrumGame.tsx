@@ -24,39 +24,39 @@ import {
 } from "../../data/gameTimers";
 import { translate } from "../../i18n/i18n";
 import { useRoom } from "../../hooks/useRoom";
-import { useTimelineRound } from "../../hooks/useTimelineRound";
+import { useSpectrumRound } from "../../hooks/useSpectrumRound";
 import {
   STARTING_LIVES,
-  createTimelineRound,
-  createTimelineSession,
-  finishTimelineGame,
-  getTimelineCategories,
-  getTimelineUsedCategoryIds,
-  passTimelineTurn,
-  placeTimelineItem,
-  returnTimelineRoomToLobby,
-} from "../../services/timelineService";
+  createSpectrumRound,
+  createSpectrumSession,
+  finishSpectrumGame,
+  getSpectrumCategories,
+  getSpectrumUsedCategoryIds,
+  passSpectrumTurn,
+  placeSpectrumItem,
+  returnSpectrumRoomToLobby,
+} from "../../services/spectrumService";
 import { advanceTournament } from "../../services/roomService";
 import type {
-  TimelineCategory,
-  TimelineItem,
+  SpectrumCategory,
+  SpectrumItem,
 } from "../../types/game";
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
-import "../../styles/timeline.css";
+import "../../styles/spectrum.css";
 import {
   playReveal,
   playTick,
 } from "../../utils/sounds";
 import { getTournamentStatus } from "../../utils/tournament";
 
-type TimelineGameProps = {
+type SpectrumGameProps = {
   roomCode: string;
 };
 
-function TimelineGame({
+function SpectrumGame({
   roomCode,
-}: TimelineGameProps) {
+}: SpectrumGameProps) {
   const navigate = useNavigate();
 
   const [localPlayer] =
@@ -85,7 +85,7 @@ function TimelineGame({
     categories,
     setCategories,
   ] = useState<
-    TimelineCategory[]
+    SpectrumCategory[]
   >([]);
 
   const [
@@ -130,7 +130,7 @@ function TimelineGame({
   const ROUNDS_PER_GAME =
     getGameRoundCount(
       room?.gameSettings,
-      "timeline",
+      "spectrum",
     );
 
   const gameLanguage =
@@ -146,7 +146,7 @@ function TimelineGame({
     placements,
     loading: roundLoading,
     error: roundError,
-  } = useTimelineRound(
+  } = useSpectrumRound(
     room?.id,
     gameLanguage,
   );
@@ -163,7 +163,7 @@ function TimelineGame({
   useEffect(() => {
     let active = true;
 
-    void getTimelineCategories(
+    void getSpectrumCategories(
       gameLanguage,
     ).then((loaded) => {
       if (active) {
@@ -192,7 +192,7 @@ function TimelineGame({
         }
 
         const ids =
-          await getTimelineUsedCategoryIds(
+          await getSpectrumUsedCategoryIds(
             session.id,
           );
 
@@ -230,7 +230,7 @@ function TimelineGame({
     ],
   );
 
-  const timelineCategoryChoices =
+  const chronologicalCategoryChoices =
     categoryChoices.filter(
       (category) =>
         category.categoryType ===
@@ -355,7 +355,7 @@ function TimelineGame({
         .filter(
           (
             item,
-          ): item is TimelineItem =>
+          ): item is SpectrumItem =>
             !!item,
         )
         .sort(
@@ -428,12 +428,12 @@ function TimelineGame({
 
     if (!activeSession) {
       activeSession =
-        await createTimelineSession(
+        await createSpectrumSession(
           room.id,
         );
     }
 
-    await createTimelineRound(
+    await createSpectrumRound(
       activeSession.id,
       room.id,
       roundNumber,
@@ -441,7 +441,7 @@ function TimelineGame({
       selectedCategoryId,
       getGameTimerSeconds(
         room.gameSettings,
-        "timeline",
+        "spectrum",
       ),
     );
 
@@ -466,7 +466,7 @@ function TimelineGame({
           displayGapIndex
         : displayGapIndex;
 
-    await placeTimelineItem(
+    await placeSpectrumItem(
       round,
       gapIndex,
       boardItemsAscending,
@@ -476,7 +476,7 @@ function TimelineGame({
       items,
       getGameTimerSeconds(
         room?.gameSettings,
-        "timeline",
+        "spectrum",
       ),
     );
   };
@@ -494,7 +494,7 @@ function TimelineGame({
       round.roundNumber >=
       ROUNDS_PER_GAME
     ) {
-      await finishTimelineGame(
+      await finishSpectrumGame(
         round.id,
         session.id,
       );
@@ -512,7 +512,7 @@ function TimelineGame({
       return;
     }
 
-    await returnTimelineRoomToLobby(
+    await returnSpectrumRoomToLobby(
       room.id,
     );
   };
@@ -572,13 +572,13 @@ function TimelineGame({
         triggeredTurnRef.current =
           turnKey;
 
-        void passTimelineTurn(
+        void passSpectrumTurn(
           round,
           items,
           players,
           getGameTimerSeconds(
             room?.gameSettings,
-            "timeline",
+            "spectrum",
           ),
         );
       }
@@ -642,7 +642,7 @@ function TimelineGame({
       room?.status ===
         "playing" &&
       room.selectedGame !==
-        "timeline"
+        "spectrum"
     ) {
       navigate(
         `/game/${room.selectedGame}?room=${room.code}`,
@@ -659,14 +659,14 @@ function TimelineGame({
   const renderCategoryChooser = (
     selectId: string,
   ) => (
-    <div className="timelineCategoryField">
+    <div className="spectrumCategoryField">
       <label htmlFor={selectId}>
         {gameT(
-          "timeline.categoryLabel",
+          "spectrum.categoryLabel",
         )}
       </label>
 
-      <div className="timelineCategoryRow">
+      <div className="spectrumCategoryRow">
         <select
           id={selectId}
           value={
@@ -685,18 +685,18 @@ function TimelineGame({
             disabled
           >
             {gameT(
-              "timeline.chooseCategory",
+              "spectrum.chooseCategory",
             )}
           </option>
 
-          {timelineCategoryChoices.length >
+          {chronologicalCategoryChoices.length >
             0 && (
             <optgroup
               label={gameT(
-                "timeline.timelineCategories",
+                "spectrum.chronologicalCategories",
               )}
             >
-              {timelineCategoryChoices.map(
+              {chronologicalCategoryChoices.map(
                 (category) => (
                   <option
                     key={
@@ -719,7 +719,7 @@ function TimelineGame({
             0 && (
             <optgroup
               label={gameT(
-                "timeline.rankingCategories",
+                "spectrum.rankingCategories",
               )}
             >
               {rankingCategoryChoices.map(
@@ -756,7 +756,7 @@ function TimelineGame({
           <Shuffle size={16} />
 
           {gameT(
-            "timeline.randomCategory",
+            "spectrum.randomCategory",
           )}
         </button>
       </div>
@@ -766,11 +766,11 @@ function TimelineGame({
   const renderBoard = (
     interactive: boolean,
   ) => (
-    <div className="timelineBoard">
+    <div className="spectrumBoard">
       {interactive && (
         <button
           type="button"
-          className="timelineGap"
+          className="spectrumGap"
           disabled={working}
           onClick={() => {
             void runAction(() =>
@@ -786,9 +786,9 @@ function TimelineGame({
         (item, index) => (
           <div
             key={item.id}
-            className="timelineTileGroup"
+            className="spectrumTileGroup"
           >
-            <div className="timelineTile">
+            <div className="spectrumTile">
               <strong>
                 {item.name}
               </strong>
@@ -801,7 +801,7 @@ function TimelineGame({
             {interactive && (
               <button
                 type="button"
-                className="timelineGap"
+                className="spectrumGap"
                 disabled={
                   working
                 }
@@ -840,13 +840,13 @@ function TimelineGame({
           <div className="centerCard">
             <h1>
               {gameT(
-                "timeline.noPlayerTitle",
+                "spectrum.noPlayerTitle",
               )}
             </h1>
 
             <p>
               {gameT(
-                "timeline.joinAgain",
+                "spectrum.joinAgain",
               )}
             </p>
           </div>
@@ -871,7 +871,7 @@ function TimelineGame({
 
             <h1>
               {gameT(
-                "timeline.loading",
+                "spectrum.loading",
               )}
             </h1>
           </div>
@@ -893,7 +893,7 @@ function TimelineGame({
           <div className="centerCard">
             <h1>
               {gameT(
-                "timeline.loadError",
+                "spectrum.loadError",
               )}
             </h1>
 
@@ -913,9 +913,9 @@ function TimelineGame({
         <Header />
 
         <div className="page gamePage">
-        <div className="timelineGame">
-          <section className="timelineStart">
-            <div className="timelineHeroIcon">
+        <div className="spectrumGame">
+          <section className="spectrumStart">
+            <div className="spectrumHeroIcon">
               <History
                 size={42}
               />
@@ -923,30 +923,30 @@ function TimelineGame({
 
             <span className="eyebrow">
               {gameT(
-                "games.timeline.name",
+                "games.spectrum.name",
               ).toUpperCase()}
             </span>
 
             <h1>
               {gameT(
-                "timeline.startTitle",
+                "spectrum.startTitle",
               )}
             </h1>
 
             <p>
               {gameT(
-                "timeline.startDescription",
+                "spectrum.startDescription",
               )}
             </p>
 
             {isHost ? (
               <>
                 {renderCategoryChooser(
-                  "timelineCategory",
+                  "spectrumCategory",
                 )}
 
                 <button
-                  className="primaryButton timelineMainButton"
+                  className="primaryButton spectrumMainButton"
                   type="button"
                   disabled={
                     working ||
@@ -971,7 +971,7 @@ function TimelineGame({
                 </button>
               </>
             ) : (
-              <div className="timelineWaiting">
+              <div className="spectrumWaiting">
                 {gameT(
                   "bluff.waitingHost",
                 )}
@@ -992,25 +992,25 @@ function TimelineGame({
         <Header />
 
         <div className="page gamePage">
-        <div className="timelineGame">
-          <section className="timelineStart">
-            <div className="timelineHeroIcon">
+        <div className="spectrumGame">
+          <section className="spectrumStart">
+            <div className="spectrumHeroIcon">
               <Trophy size={42} />
             </div>
 
             <span className="eyebrow">
               {gameT(
-                "timeline.gameComplete",
+                "spectrum.gameComplete",
               )}
             </span>
 
             <h1>
               {gameT(
-                "timeline.finalScores",
+                "spectrum.finalScores",
               )}
             </h1>
 
-            <div className="timelineScoreboard">
+            <div className="spectrumScoreboard">
               {sortedPlayers.map(
                 (
                   player,
@@ -1020,7 +1020,7 @@ function TimelineGame({
                     key={
                       player.id
                     }
-                    className="timelineScoreRow"
+                    className="spectrumScoreRow"
                   >
                     <span>
                       {index + 1}
@@ -1042,7 +1042,7 @@ function TimelineGame({
 
             {isHost ? (
               <button
-                className="primaryButton timelineMainButton"
+                className="primaryButton spectrumMainButton"
                 disabled={working}
                 onClick={() => {
                   void runAction(
@@ -1079,7 +1079,7 @@ function TimelineGame({
                           : ""
                       }`
                   : gameT(
-                      "timeline.backToLobby",
+                      "spectrum.backToLobby",
                     )}
 
                 <ArrowRight
@@ -1087,9 +1087,9 @@ function TimelineGame({
                 />
               </button>
             ) : (
-              <div className="timelineWaiting">
+              <div className="spectrumWaiting">
                 {gameT(
-                  "timeline.waitingForHost",
+                  "spectrum.waitingForHost",
                 )}
               </div>
             )}
@@ -1110,12 +1110,12 @@ function TimelineGame({
         <Header />
 
         <div className="page gamePage">
-        <div className="timelineGame">
-          <header className="timelineHeader">
+        <div className="spectrumGame">
+          <header className="spectrumHeader">
             <div>
               <span className="eyebrow">
                 {gameT(
-                  "games.timeline.name",
+                  "games.spectrum.name",
                 ).toUpperCase()}
               </span>
 
@@ -1132,21 +1132,21 @@ function TimelineGame({
             </div>
           </header>
 
-          <section className="timelinePanel">
-            <div className="timelineCategoryBadge">
+          <section className="spectrumPanel">
+            <div className="spectrumCategoryBadge">
               {currentCategory?.name}
             </div>
 
             <h1>
               {gameT(
-                "timeline.roundComplete",
+                "spectrum.roundComplete",
               )}
             </h1>
 
             {renderBoard(false)}
 
-            <div className="timelineRoundResult">
-              <div className="timelineResultIcon">
+            <div className="spectrumRoundResult">
+              <div className="spectrumResultIcon">
                 {poolExhausted ? (
                   <Check
                     size={28}
@@ -1160,16 +1160,16 @@ function TimelineGame({
                 <strong>
                   {poolExhausted
                     ? gameT(
-                        "timeline.categoryComplete",
+                        "spectrum.categoryComplete",
                       )
                     : gameT(
-                        "timeline.everyoneOut",
+                        "spectrum.everyoneOut",
                       )}
                 </strong>
 
                 <span>
                   {gameT(
-                    "timeline.allItemsRevealed",
+                    "spectrum.allItemsRevealed",
                   )}
                 </span>
               </div>
@@ -1179,11 +1179,11 @@ function TimelineGame({
               <>
                 {!isLastRound &&
                   renderCategoryChooser(
-                    "timelineNextCategory",
+                    "spectrumNextCategory",
                   )}
 
                 <button
-                  className="primaryButton timelineMainButton"
+                  className="primaryButton spectrumMainButton"
                   disabled={
                     working ||
                     (!isLastRound &&
@@ -1197,10 +1197,10 @@ function TimelineGame({
                 >
                   {isLastRound
                     ? gameT(
-                        "timeline.finishGame",
+                        "spectrum.finishGame",
                       )
                     : gameT(
-                        "timeline.nextRound",
+                        "spectrum.nextRound",
                       )}
 
                   <ArrowRight
@@ -1209,9 +1209,9 @@ function TimelineGame({
                 </button>
               </>
             ) : (
-              <div className="timelineWaiting">
+              <div className="spectrumWaiting">
                 {gameT(
-                  "timeline.waitingForHost",
+                  "spectrum.waitingForHost",
                 )}
               </div>
             )}
@@ -1234,12 +1234,12 @@ function TimelineGame({
       <Header />
 
       <div className="page gamePage">
-      <div className="timelineGame">
-        <header className="timelineHeader">
+      <div className="spectrumGame">
+        <header className="spectrumHeader">
           <div>
             <span className="eyebrow">
               {gameT(
-                "games.timeline.name",
+                "games.spectrum.name",
               ).toUpperCase()}
             </span>
 
@@ -1255,7 +1255,7 @@ function TimelineGame({
             </strong>
           </div>
 
-          <div className="timelineHeaderRight">
+          <div className="spectrumHeaderRight">
             <div
               className={`gameTimerBadge ${
                 secondsLeft <= 10
@@ -1266,7 +1266,7 @@ function TimelineGame({
               {secondsLeft}s
             </div>
 
-            <div className="timelineScore">
+            <div className="spectrumScore">
               <Crown size={17} />
 
               {myScore.toLocaleString()}
@@ -1274,7 +1274,7 @@ function TimelineGame({
           </div>
         </header>
 
-        <div className="timelineProgress">
+        <div className="spectrumProgress">
           <div
             style={{
               width: `${
@@ -1287,13 +1287,13 @@ function TimelineGame({
         </div>
 
         {actionError && (
-          <div className="timelineError">
+          <div className="spectrumError">
             {actionError}
           </div>
         )}
 
-        <section className="timelinePanel">
-          <div className="timelineCategoryBadge">
+        <section className="spectrumPanel">
+          <div className="spectrumCategoryBadge">
             {currentCategory?.name}
 
             {currentCategory?.unit && (
@@ -1308,7 +1308,7 @@ function TimelineGame({
             )}
           </div>
 
-          <div className="timelineLives">
+          <div className="spectrumLives">
             {players.map(
               (player) => {
                 const lives =
@@ -1332,7 +1332,7 @@ function TimelineGame({
                     key={
                       player.id
                     }
-                    className={`timelineLifeRow ${
+                    className={`spectrumLifeRow ${
                       isOut
                         ? "out"
                         : ""
@@ -1348,7 +1348,7 @@ function TimelineGame({
                       }
                     </span>
 
-                    <span className="timelineHearts">
+                    <span className="spectrumHearts">
                       {Array.from(
                         {
                           length:
@@ -1389,24 +1389,24 @@ function TimelineGame({
           </div>
 
           <div
-            className={`timelineTurn ${
+            className={`spectrumTurn ${
               isMyTurn
-                ? "timelineMyTurn"
+                ? "spectrumMyTurn"
                 : ""
             }`}
           >
             {isLocalPlayerOut ? (
               gameT(
-                "timeline.youAreOut",
+                "spectrum.youAreOut",
               )
             ) : isMyTurn ? (
               gameT(
-                "timeline.yourTurn",
+                "spectrum.yourTurn",
               )
             ) : (
               <>
                 {gameT(
-                  "timeline.waitingFor",
+                  "spectrum.waitingFor",
                 )}{" "}
                 <strong>
                   {currentPlayer?.name ??
@@ -1419,10 +1419,10 @@ function TimelineGame({
           </div>
 
           {currentItem && (
-            <div className="timelineMysteryItem">
+            <div className="spectrumMysteryItem">
               <span>
                 {gameT(
-                  "timeline.placeThis",
+                  "spectrum.placeThis",
                 )}
               </span>
 
@@ -1442,4 +1442,4 @@ function TimelineGame({
   );
 }
 
-export default TimelineGame;
+export default SpectrumGame;

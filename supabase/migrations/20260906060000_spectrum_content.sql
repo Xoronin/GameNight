@@ -1,4 +1,4 @@
--- Timeline starter content: 5 chronological categories + 8 ranking
+-- Spectrum starter content: 5 chronological categories + 8 ranking
 -- categories, ~10 items each. Every item carries a real sortable
 -- value so placement is checked against facts, never a vote.
 --
@@ -11,17 +11,17 @@
 -- refreshing first.
 
 -- ------------------------------------------------------------------
--- Movie release dates (timeline)
+-- Movie release dates (chronological)
 -- ------------------------------------------------------------------
 with cat as (
-  insert into timeline_categories
+  insert into spectrum_categories
     (name_en, name_de, category_type, unit_en, unit_de, sort_direction)
   values
     ('Movie Release Dates', 'Filme nach Erscheinungsjahr', 'timeline',
      'release year', 'Erscheinungsjahr', 'asc')
   returning id
 )
-insert into timeline_items
+insert into spectrum_items
   (category_id, name_en, name_de, value, value_label_en, value_label_de)
 select id, v.name_en, v.name_de, v.value, v.value, v.value
 from cat, (values
@@ -39,17 +39,17 @@ from cat, (values
 ) as v(name_en, name_de, value, value_label);
 
 -- ------------------------------------------------------------------
--- Historical events (timeline)
+-- Historical events (chronological)
 -- ------------------------------------------------------------------
 with cat as (
-  insert into timeline_categories
+  insert into spectrum_categories
     (name_en, name_de, category_type, unit_en, unit_de, sort_direction)
   values
     ('Historical Events', 'Historische Ereignisse', 'timeline',
      'year', 'Jahr', 'asc')
   returning id
 )
-insert into timeline_items
+insert into spectrum_items
   (category_id, name_en, name_de, value, value_label_en, value_label_de)
 select id, v.name_en, v.name_de, v.value, v.value, v.value
 from cat, (values
@@ -66,17 +66,17 @@ from cat, (values
 ) as v(name_en, name_de, value, value_label);
 
 -- ------------------------------------------------------------------
--- Game releases (timeline)
+-- Game releases (chronological)
 -- ------------------------------------------------------------------
 with cat as (
-  insert into timeline_categories
+  insert into spectrum_categories
     (name_en, name_de, category_type, unit_en, unit_de, sort_direction)
   values
     ('Video Game Releases', 'Videospiele nach Erscheinungsjahr', 'timeline',
      'release year', 'Erscheinungsjahr', 'asc')
   returning id
 )
-insert into timeline_items
+insert into spectrum_items
   (category_id, name_en, name_de, value, value_label_en, value_label_de)
 select id, v.name_en, v.name_de, v.value, v.value, v.value
 from cat, (values
@@ -94,17 +94,17 @@ from cat, (values
 ) as v(name_en, name_de, value, value_label);
 
 -- ------------------------------------------------------------------
--- Inventions (timeline)
+-- Inventions (chronological)
 -- ------------------------------------------------------------------
 with cat as (
-  insert into timeline_categories
+  insert into spectrum_categories
     (name_en, name_de, category_type, unit_en, unit_de, sort_direction)
   values
     ('Inventions', 'Erfindungen', 'timeline',
      'year invented', 'Erfindungsjahr', 'asc')
   returning id
 )
-insert into timeline_items
+insert into spectrum_items
   (category_id, name_en, name_de, value, value_label_en, value_label_de)
 select id, v.name_en, v.name_de, v.value, v.value, v.value
 from cat, (values
@@ -121,17 +121,17 @@ from cat, (values
 ) as v(name_en, name_de, value, value_label);
 
 -- ------------------------------------------------------------------
--- Celebrity birth years (timeline)
+-- Celebrity birth years (chronological)
 -- ------------------------------------------------------------------
 with cat as (
-  insert into timeline_categories
+  insert into spectrum_categories
     (name_en, name_de, category_type, unit_en, unit_de, sort_direction)
   values
     ('Celebrity Birth Years', 'Geburtsjahre von Berühmtheiten', 'timeline',
      'birth year', 'Geburtsjahr', 'asc')
   returning id
 )
-insert into timeline_items
+insert into spectrum_items
   (category_id, name_en, name_de, value, value_label_en, value_label_de)
 select id, v.name_en, v.name_de, v.value, v.value, v.value
 from cat, (values
@@ -151,14 +151,14 @@ from cat, (values
 -- Instagram followers (ranking)
 -- ------------------------------------------------------------------
 with cat as (
-  insert into timeline_categories
+  insert into spectrum_categories
     (name_en, name_de, category_type, unit_en, unit_de, sort_direction)
   values
     ('Instagram Followers', 'Instagram-Follower', 'ranking',
      'Instagram followers', 'Instagram-Follower', 'desc')
   returning id
 )
-insert into timeline_items
+insert into spectrum_items
   (category_id, name_en, name_de, value, value_label_en, value_label_de)
 select id, v.name_en, v.name_de, v.value, v.value_label, v.value_label
 from cat, (values
@@ -178,14 +178,14 @@ from cat, (values
 -- Spotify monthly listeners (ranking)
 -- ------------------------------------------------------------------
 with cat as (
-  insert into timeline_categories
+  insert into spectrum_categories
     (name_en, name_de, category_type, unit_en, unit_de, sort_direction)
   values
     ('Spotify Monthly Listeners', 'Monatliche Spotify-Hörer', 'ranking',
      'Spotify monthly listeners', 'monatliche Spotify-Hörer', 'desc')
   returning id
 )
-insert into timeline_items
+insert into spectrum_items
   (category_id, name_en, name_de, value, value_label_en, value_label_de)
 select id, v.name_en, v.name_de, v.value, v.value_label, v.value_label
 from cat, (values
@@ -205,14 +205,14 @@ from cat, (values
 -- Country populations (ranking)
 -- ------------------------------------------------------------------
 with cat as (
-  insert into timeline_categories
+  insert into spectrum_categories
     (name_en, name_de, category_type, unit_en, unit_de, sort_direction)
   values
     ('Country Populations', 'Länder nach Bevölkerung', 'ranking',
      'population', 'Bevölkerung', 'desc')
   returning id
 )
-insert into timeline_items
+insert into spectrum_items
   (category_id, name_en, name_de, value, value_label_en, value_label_de)
 select id, v.name_en, v.name_de, v.value, v.value_label, v.value_label
 from cat, (values
@@ -232,14 +232,14 @@ from cat, (values
 -- Movie box office (ranking)
 -- ------------------------------------------------------------------
 with cat as (
-  insert into timeline_categories
+  insert into spectrum_categories
     (name_en, name_de, category_type, unit_en, unit_de, sort_direction)
   values
     ('Movie Box Office', 'Filme nach Einspielergebnis', 'ranking',
      'worldwide box office', 'weltweites Einspielergebnis', 'desc')
   returning id
 )
-insert into timeline_items
+insert into spectrum_items
   (category_id, name_en, name_de, value, value_label_en, value_label_de)
 select id, v.name_en, v.name_de, v.value, v.value_label, v.value_label
 from cat, (values
@@ -259,14 +259,14 @@ from cat, (values
 -- Game sales (ranking)
 -- ------------------------------------------------------------------
 with cat as (
-  insert into timeline_categories
+  insert into spectrum_categories
     (name_en, name_de, category_type, unit_en, unit_de, sort_direction)
   values
     ('Video Game Sales', 'Videospiele nach Verkäufen', 'ranking',
      'units sold', 'verkaufte Einheiten', 'desc')
   returning id
 )
-insert into timeline_items
+insert into spectrum_items
   (category_id, name_en, name_de, value, value_label_en, value_label_de)
 select id, v.name_en, v.name_de, v.value, v.value_label, v.value_label
 from cat, (values
@@ -286,14 +286,14 @@ from cat, (values
 -- Building heights (ranking)
 -- ------------------------------------------------------------------
 with cat as (
-  insert into timeline_categories
+  insert into spectrum_categories
     (name_en, name_de, category_type, unit_en, unit_de, sort_direction)
   values
     ('Building Heights', 'Gebäude nach Höhe', 'ranking',
      'height', 'Höhe', 'desc')
   returning id
 )
-insert into timeline_items
+insert into spectrum_items
   (category_id, name_en, name_de, value, value_label_en, value_label_de)
 select id, v.name_en, v.name_de, v.value, v.value_label, v.value_label
 from cat, (values
@@ -313,14 +313,14 @@ from cat, (values
 -- Football player market values (ranking)
 -- ------------------------------------------------------------------
 with cat as (
-  insert into timeline_categories
+  insert into spectrum_categories
     (name_en, name_de, category_type, unit_en, unit_de, sort_direction)
   values
     ('Football Player Values', 'Marktwerte von Fußballspielern', 'ranking',
      'market value', 'Marktwert', 'desc')
   returning id
 )
-insert into timeline_items
+insert into spectrum_items
   (category_id, name_en, name_de, value, value_label_en, value_label_de)
 select id, v.name_en, v.name_de, v.value, v.value_label, v.value_label
 from cat, (values
@@ -340,14 +340,14 @@ from cat, (values
 -- Company valuations (ranking)
 -- ------------------------------------------------------------------
 with cat as (
-  insert into timeline_categories
+  insert into spectrum_categories
     (name_en, name_de, category_type, unit_en, unit_de, sort_direction)
   values
     ('Company Valuations', 'Unternehmen nach Marktbewertung', 'ranking',
      'market valuation', 'Marktbewertung', 'desc')
   returning id
 )
-insert into timeline_items
+insert into spectrum_items
   (category_id, name_en, name_de, value, value_label_en, value_label_de)
 select id, v.name_en, v.name_de, v.value, v.value_label, v.value_label
 from cat, (values

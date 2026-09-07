@@ -151,23 +151,23 @@ export type AlphabetVote = {
   createdAt: string;
 };
 
-export type TimelineCategoryType =
+export type SpectrumCategoryType =
   | "timeline"
   | "ranking";
 
-export type TimelineSortDirection =
+export type SpectrumSortDirection =
   | "asc"
   | "desc";
 
-export type TimelineCategory = {
+export type SpectrumCategory = {
   id: string;
   name: string;
-  categoryType: TimelineCategoryType;
+  categoryType: SpectrumCategoryType;
   unit: string;
-  sortDirection: TimelineSortDirection;
+  sortDirection: SpectrumSortDirection;
 };
 
-export type TimelineItem = {
+export type SpectrumItem = {
   id: string;
   categoryId: string;
   name: string;
@@ -175,18 +175,18 @@ export type TimelineItem = {
   valueLabel: string;
 };
 
-export type TimelineRoundStatus =
+export type SpectrumRoundStatus =
   | "playing"
   | "reveal"
   | "finished";
 
-export type TimelineRound = {
+export type SpectrumRound = {
   id: string;
   roomId: string;
   sessionId: string;
   roundNumber: number;
   categoryId: string;
-  status: TimelineRoundStatus;
+  status: SpectrumRoundStatus;
   currentPlayerId: string | null;
   currentItemId: string | null;
   turnEndsAt: string | null;
@@ -196,7 +196,7 @@ export type TimelineRound = {
   createdAt: string;
 };
 
-export type TimelinePlacement = {
+export type SpectrumPlacement = {
   id: string;
   roundId: string;
   itemId: string;

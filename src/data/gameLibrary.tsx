@@ -111,10 +111,10 @@ export const gameLibrary: GameLibraryEntry[] = [
     group: "solo",
   },
   {
-    id: "timeline",
-    nameKey: "games.timeline.name",
+    id: "spectrum",
+    nameKey: "games.spectrum.name",
     descriptionKey:
-      "games.timeline.description",
+      "games.spectrum.description",
     players: "2–10",
     icon: <History />,
     className: "orange",

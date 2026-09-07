@@ -4,21 +4,21 @@ import {
 } from "react";
 import { supabase } from "../lib/supabase";
 import {
-  getActiveTimelineSession,
-  getLatestTimelineRound,
-  getTimelineItems,
-  getTimelinePlacements,
-} from "../services/timelineService";
+  getActiveSpectrumSession,
+  getLatestSpectrumRound,
+  getSpectrumItems,
+  getSpectrumPlacements,
+} from "../services/spectrumService";
 import type {
-  TimelineSession,
-} from "../services/timelineService";
+  SpectrumSession,
+} from "../services/spectrumService";
 import type {
-  TimelineItem,
-  TimelinePlacement,
-  TimelineRound,
+  SpectrumItem,
+  SpectrumPlacement,
+  SpectrumRound,
 } from "../types/game";
 
-export function useTimelineRound(
+export function useSpectrumRound(
   roomId: string | undefined,
   language: "en" | "de",
 ) {
@@ -26,7 +26,7 @@ export function useTimelineRound(
     session,
     setSession,
   ] =
-    useState<TimelineSession | null>(
+    useState<SpectrumSession | null>(
       null,
     );
 
@@ -34,12 +34,12 @@ export function useTimelineRound(
     round,
     setRound,
   ] =
-    useState<TimelineRound | null>(
+    useState<SpectrumRound | null>(
       null,
     );
 
   const [items, setItems] =
-    useState<TimelineItem[]>(
+    useState<SpectrumItem[]>(
       [],
     );
 
@@ -47,7 +47,7 @@ export function useTimelineRound(
     placements,
     setPlacements,
   ] = useState<
-    TimelinePlacement[]
+    SpectrumPlacement[]
   >([]);
 
   const [loading, setLoading] =
@@ -69,7 +69,7 @@ export function useTimelineRound(
       async () => {
         try {
           const latest =
-            await getActiveTimelineSession(
+            await getActiveSpectrumSession(
               roomId,
             );
 
@@ -97,7 +97,7 @@ export function useTimelineRound(
           setError(
             caughtError instanceof Error
               ? caughtError.message
-              : "Could not load Timeline.",
+              : "Could not load Spectrum.",
           );
 
           setLoading(false);
@@ -109,7 +109,7 @@ export function useTimelineRound(
     const channel =
       supabase
         .channel(
-          `timeline-sessions-${roomId}`,
+          `spectrum-sessions-${roomId}`,
         )
         .on(
           "postgres_changes",
@@ -118,7 +118,7 @@ export function useTimelineRound(
             schema:
               "public",
             table:
-              "timeline_sessions",
+              "spectrum_sessions",
             filter: `room_id=eq.${roomId}`,
           },
           () => {
@@ -143,7 +143,7 @@ export function useTimelineRound(
 
     let active = true;
 
-    void getTimelineItems(
+    void getSpectrumItems(
       round.categoryId,
       language,
     ).then((loaded) => {
@@ -171,7 +171,7 @@ export function useTimelineRound(
       async () => {
         try {
           const loaded =
-            await getTimelinePlacements(
+            await getSpectrumPlacements(
               round.id,
             );
 
@@ -194,7 +194,7 @@ export function useTimelineRound(
           setError(
             caughtError instanceof Error
               ? caughtError.message
-              : "Could not update Timeline.",
+              : "Could not update Spectrum.",
           );
         }
       };
@@ -204,7 +204,7 @@ export function useTimelineRound(
     const channel =
       supabase
         .channel(
-          `timeline-placements-${round.id}`,
+          `spectrum-placements-${round.id}`,
         )
         .on(
           "postgres_changes",
@@ -213,7 +213,7 @@ export function useTimelineRound(
             schema:
               "public",
             table:
-              "timeline_placements",
+              "spectrum_placements",
             filter: `round_id=eq.${round.id}`,
           },
           () => {
@@ -242,7 +242,7 @@ export function useTimelineRound(
       async () => {
         try {
           const latest =
-            await getLatestTimelineRound(
+            await getLatestSpectrumRound(
               session.id,
             );
 
@@ -268,7 +268,7 @@ export function useTimelineRound(
           setError(
             caughtError instanceof Error
               ? caughtError.message
-              : "Could not load Timeline round.",
+              : "Could not load Spectrum round.",
           );
         }
       };
@@ -278,7 +278,7 @@ export function useTimelineRound(
     const channel =
       supabase
         .channel(
-          `timeline-rounds-${session.id}`,
+          `spectrum-rounds-${session.id}`,
         )
         .on(
           "postgres_changes",
@@ -287,7 +287,7 @@ export function useTimelineRound(
             schema:
               "public",
             table:
-              "timeline_rounds",
+              "spectrum_rounds",
             filter: `session_id=eq.${session.id}`,
           },
           () => {

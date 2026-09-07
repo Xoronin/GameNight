@@ -16,7 +16,7 @@ import CategoriesGame from "../games/categories/CategoriesGame";
 import DrawingGame from "../games/draw-guess/DrawingGame";
 import HigherLowerGame from "../games/higher-lower/HigherLowerGame";
 import MinefieldGame from "../games/minefield/MinefieldGame";
-import TimelineGame from "../games/timeline/TimelineGame";
+import SpectrumGame from "../games/spectrum/SpectrumGame";
 import TriviaGame from "../games/trivia/TriviaGame";
 import { getGameLibraryEntry } from "../data/gameLibrary";
 import { gameRules } from "../data/gameRules";
@@ -31,7 +31,7 @@ const multiplayerGames = [
   "higher-lower",
   "trivia",
   "alphabet",
-  "timeline",
+  "spectrum",
 ];
 
 function GamePage() {
@@ -271,10 +271,10 @@ function GamePage() {
     }
 
     if (
-      gameId === "timeline"
+      gameId === "spectrum"
     ) {
       return (
-        <TimelineGame
+        <SpectrumGame
           roomCode={roomCode}
         />
       );

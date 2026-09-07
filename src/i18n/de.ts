@@ -123,8 +123,8 @@ const de = {
         "Rekonstruiere die geheime Rangliste eines anderen Spielers.",
     },
 
-    timeline: {
-      name: "Timeline",
+    spectrum: {
+      name: "Spectrum",
       description:
         "Ordne eine neue Karte in eine wachsende Zeitleiste oder Rangliste ein — drei Fehler und du scheidest aus.",
     },
@@ -429,13 +429,13 @@ const de = {
     finalScores: "Endstand",
   },
 
-  timeline: {
+  spectrum: {
     startTitle: "Wähle eine Kategorie",
     startDescription:
       "Ordne nacheinander die mysteriösen Karten in die wachsende Zeitleiste oder Rangliste ein. Liegst du falsch oder läuft die Zeit ab, verlierst du ein Leben.",
     categoryLabel: "Kategorie",
     chooseCategory: "Kategorie wählen...",
-    timelineCategories: "Zeitleiste",
+    chronologicalCategories: "Zeitleiste",
     rankingCategories: "Rangliste",
     randomCategory: "Zufällig",
     yourTurn: "Dein Zug — platziere den Eintrag",
@@ -451,8 +451,8 @@ const de = {
     finishGame: "Spiel beenden",
     backToLobby: "Zurück zur Lobby",
     waitingForHost: "Warte darauf, dass der Host fortfährt...",
-    loading: "Timeline wird geladen...",
-    loadError: "Timeline konnte nicht geladen werden",
+    loading: "Spectrum wird geladen...",
+    loadError: "Spectrum konnte nicht geladen werden",
     joinAgain: "Tritt dem Raum erneut bei.",
     noPlayerTitle: "Kein Spieler gefunden",
     timerLabel: "Zugzeit",

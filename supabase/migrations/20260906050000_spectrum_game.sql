@@ -1,4 +1,4 @@
--- Timeline: a shared, growing sequence for one category (chronological
+-- Spectrum: a shared, growing sequence for one category (chronological
 -- dates or a ranked magnitude like followers/population/box office).
 -- Players take turns being shown one mystery item and slot it into a
 -- gap in the current sequence. Get it right and it joins the board
@@ -10,7 +10,7 @@
 -- sortable value, so placement is checked against actual neighbors.
 -- Category content (with real data) ships in a separate migration.
 
-create table if not exists timeline_categories (
+create table if not exists spectrum_categories (
   id uuid primary key default gen_random_uuid(),
 
   name_en text not null,
@@ -35,9 +35,9 @@ create table if not exists timeline_categories (
   created_at timestamptz not null default now()
 );
 
-create table if not exists timeline_items (
+create table if not exists spectrum_items (
   id uuid primary key default gen_random_uuid(),
-  category_id uuid not null references timeline_categories(id) on delete cascade,
+  category_id uuid not null references spectrum_categories(id) on delete cascade,
 
   name_en text not null,
   name_de text not null,
@@ -50,10 +50,10 @@ create table if not exists timeline_items (
   created_at timestamptz not null default now()
 );
 
-create index if not exists timeline_items_category_idx
-  on timeline_items (category_id);
+create index if not exists spectrum_items_category_idx
+  on spectrum_items (category_id);
 
-create table if not exists timeline_sessions (
+create table if not exists spectrum_sessions (
   id uuid primary key default gen_random_uuid(),
   room_id uuid not null references rooms(id) on delete cascade,
 
@@ -64,19 +64,19 @@ create table if not exists timeline_sessions (
   finished_at timestamptz
 );
 
-create table if not exists timeline_rounds (
+create table if not exists spectrum_rounds (
   id uuid primary key default gen_random_uuid(),
   room_id uuid not null references rooms(id) on delete cascade,
-  session_id uuid not null references timeline_sessions(id) on delete cascade,
+  session_id uuid not null references spectrum_sessions(id) on delete cascade,
 
   round_number int not null,
-  category_id uuid not null references timeline_categories(id),
+  category_id uuid not null references spectrum_categories(id),
 
   status text not null default 'playing'
     check (status in ('playing', 'reveal', 'finished')),
 
   current_player_id uuid references players(id),
-  current_item_id uuid references timeline_items(id),
+  current_item_id uuid references spectrum_items(id),
   turn_ends_at timestamptz,
 
   used_item_ids uuid[] not null default '{}'::uuid[],
@@ -88,10 +88,10 @@ create table if not exists timeline_rounds (
   unique (session_id, round_number)
 );
 
-create table if not exists timeline_placements (
+create table if not exists spectrum_placements (
   id uuid primary key default gen_random_uuid(),
-  round_id uuid not null references timeline_rounds(id) on delete cascade,
-  item_id uuid not null references timeline_items(id),
+  round_id uuid not null references spectrum_rounds(id) on delete cascade,
+  item_id uuid not null references spectrum_items(id),
 
   -- Null for the seed items placed automatically when the round is
   -- created, so the board starts with some context.
@@ -102,38 +102,38 @@ create table if not exists timeline_placements (
   unique (round_id, item_id)
 );
 
-create index if not exists timeline_placements_round_idx
-  on timeline_placements (round_id);
+create index if not exists spectrum_placements_round_idx
+  on spectrum_placements (round_id);
 
-alter table timeline_categories enable row level security;
-alter table timeline_items enable row level security;
-alter table timeline_sessions enable row level security;
-alter table timeline_rounds enable row level security;
-alter table timeline_placements enable row level security;
+alter table spectrum_categories enable row level security;
+alter table spectrum_items enable row level security;
+alter table spectrum_sessions enable row level security;
+alter table spectrum_rounds enable row level security;
+alter table spectrum_placements enable row level security;
 
-create policy "Anyone can read Timeline categories"
-  on timeline_categories for select
+create policy "Anyone can read Spectrum categories"
+  on spectrum_categories for select
   using (true);
 
-create policy "Anyone can read Timeline items"
-  on timeline_items for select
+create policy "Anyone can read Spectrum items"
+  on spectrum_items for select
   using (true);
 
-create policy "Anyone can manage Timeline sessions"
-  on timeline_sessions for all
+create policy "Anyone can manage Spectrum sessions"
+  on spectrum_sessions for all
   using (true)
   with check (true);
 
-create policy "Anyone can manage Timeline rounds"
-  on timeline_rounds for all
+create policy "Anyone can manage Spectrum rounds"
+  on spectrum_rounds for all
   using (true)
   with check (true);
 
-create policy "Anyone can manage Timeline placements"
-  on timeline_placements for all
+create policy "Anyone can manage Spectrum placements"
+  on spectrum_placements for all
   using (true)
   with check (true);
 
-alter publication supabase_realtime add table timeline_sessions;
-alter publication supabase_realtime add table timeline_rounds;
-alter publication supabase_realtime add table timeline_placements;
+alter publication supabase_realtime add table spectrum_sessions;
+alter publication supabase_realtime add table spectrum_rounds;
+alter publication supabase_realtime add table spectrum_placements;

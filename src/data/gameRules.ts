@@ -109,7 +109,7 @@ export const gameRules: GameRules = {
     ],
   },
 
-  timeline: {
+  spectrum: {
     en: [
       "The host picks a category — a timeline of dates or a ranking by some number.",
       "On your turn, you're shown one mystery item and the board built so far.",

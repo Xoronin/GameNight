@@ -1,12 +1,12 @@
 import { supabase } from "../lib/supabase";
 import type {
-  TimelineCategory,
-  TimelineCategoryType,
-  TimelineItem,
-  TimelinePlacement,
-  TimelineRound,
-  TimelineRoundStatus,
-  TimelineSortDirection,
+  SpectrumCategory,
+  SpectrumCategoryType,
+  SpectrumItem,
+  SpectrumPlacement,
+  SpectrumRound,
+  SpectrumRoundStatus,
+  SpectrumSortDirection,
 } from "../types/game";
 import type {
   RoomPlayer,
@@ -16,7 +16,7 @@ export const STARTING_LIVES = 3;
 
 const CORRECT_PLACEMENT_POINTS = 150;
 
-export type TimelineSession = {
+export type SpectrumSession = {
   id: string;
   roomId: string;
   status: "playing" | "finished";
@@ -38,7 +38,7 @@ type RoundRow = {
   session_id: string;
   round_number: number;
   category_id: string;
-  status: TimelineRoundStatus;
+  status: SpectrumRoundStatus;
   current_player_id: string | null;
   current_item_id: string | null;
   turn_ends_at: string | null;
@@ -52,10 +52,10 @@ type CategoryRow = {
   id: string;
   name_en: string;
   name_de: string;
-  category_type: TimelineCategoryType;
+  category_type: SpectrumCategoryType;
   unit_en: string;
   unit_de: string;
-  sort_direction: TimelineSortDirection;
+  sort_direction: SpectrumSortDirection;
 };
 
 type ItemRow = {
@@ -78,7 +78,7 @@ type PlacementRow = {
 
 function mapSession(
   row: SessionRow,
-): TimelineSession {
+): SpectrumSession {
   return {
     id: row.id,
     roomId: row.room_id,
@@ -90,7 +90,7 @@ function mapSession(
 
 function mapRound(
   row: RoundRow,
-): TimelineRound {
+): SpectrumRound {
   return {
     id: row.id,
     roomId: row.room_id,
@@ -116,7 +116,7 @@ function mapRound(
 function mapCategory(
   row: CategoryRow,
   language: "en" | "de",
-): TimelineCategory {
+): SpectrumCategory {
   return {
     id: row.id,
     name:
@@ -137,7 +137,7 @@ function mapCategory(
 function mapItem(
   row: ItemRow,
   language: "en" | "de",
-): TimelineItem {
+): SpectrumItem {
   return {
     id: row.id,
     categoryId:
@@ -156,7 +156,7 @@ function mapItem(
 
 function mapPlacement(
   row: PlacementRow,
-): TimelinePlacement {
+): SpectrumPlacement {
   return {
     id: row.id,
     roundId: row.round_id,
@@ -224,22 +224,22 @@ async function addScore(
   }
 }
 
-export async function getTimelineCategories(
+export async function getSpectrumCategories(
   language: "en" | "de",
-): Promise<TimelineCategory[]> {
+): Promise<SpectrumCategory[]> {
   const {
     data,
     error,
   } = await supabase
     .from(
-      "timeline_categories",
+      "spectrum_categories",
     )
     .select("*")
     .eq("active", true);
 
   if (error) {
     throw new Error(
-      `Could not load Timeline categories: ${error.message}`,
+      `Could not load Spectrum categories: ${error.message}`,
     );
   }
 
@@ -250,7 +250,7 @@ export async function getTimelineCategories(
   );
 }
 
-export async function getTimelineUsedCategoryIds(
+export async function getSpectrumUsedCategoryIds(
   sessionId: string,
 ): Promise<string[]> {
   const {
@@ -258,7 +258,7 @@ export async function getTimelineUsedCategoryIds(
     error,
   } = await supabase
     .from(
-      "timeline_rounds",
+      "spectrum_rounds",
     )
     .select("category_id")
     .eq(
@@ -268,7 +268,7 @@ export async function getTimelineUsedCategoryIds(
 
   if (error) {
     throw new Error(
-      `Could not load used Timeline categories: ${error.message}`,
+      `Could not load used Spectrum categories: ${error.message}`,
     );
   }
 
@@ -282,15 +282,15 @@ export async function getTimelineUsedCategoryIds(
     .filter(Boolean);
 }
 
-export async function getTimelineItems(
+export async function getSpectrumItems(
   categoryId: string,
   language: "en" | "de",
-): Promise<TimelineItem[]> {
+): Promise<SpectrumItem[]> {
   const {
     data,
     error,
   } = await supabase
-    .from("timeline_items")
+    .from("spectrum_items")
     .select("*")
     .eq(
       "category_id",
@@ -299,7 +299,7 @@ export async function getTimelineItems(
 
   if (error) {
     throw new Error(
-      `Could not load Timeline items: ${error.message}`,
+      `Could not load Spectrum items: ${error.message}`,
     );
   }
 
@@ -310,22 +310,22 @@ export async function getTimelineItems(
   );
 }
 
-export async function getTimelinePlacements(
+export async function getSpectrumPlacements(
   roundId: string,
-): Promise<TimelinePlacement[]> {
+): Promise<SpectrumPlacement[]> {
   const {
     data,
     error,
   } = await supabase
     .from(
-      "timeline_placements",
+      "spectrum_placements",
     )
     .select("*")
     .eq("round_id", roundId);
 
   if (error) {
     throw new Error(
-      `Could not load Timeline placements: ${error.message}`,
+      `Could not load Spectrum placements: ${error.message}`,
     );
   }
 
@@ -334,18 +334,18 @@ export async function getTimelinePlacements(
   ).map(mapPlacement);
 }
 
-export async function createTimelineSession(
+export async function createSpectrumSession(
   roomId: string,
-): Promise<TimelineSession> {
+): Promise<SpectrumSession> {
   /*
-   * Close any old unfinished Timeline
+   * Close any old unfinished Spectrum
    * session first.
    */
   const {
     error: closeError,
   } = await supabase
     .from(
-      "timeline_sessions",
+      "spectrum_sessions",
     )
     .update({
       status: "finished",
@@ -357,7 +357,7 @@ export async function createTimelineSession(
 
   if (closeError) {
     throw new Error(
-      `Could not close old Timeline session: ${closeError.message}`,
+      `Could not close old Spectrum session: ${closeError.message}`,
     );
   }
 
@@ -366,7 +366,7 @@ export async function createTimelineSession(
     error,
   } = await supabase
     .from(
-      "timeline_sessions",
+      "spectrum_sessions",
     )
     .insert({
       room_id: roomId,
@@ -377,7 +377,7 @@ export async function createTimelineSession(
 
   if (error) {
     throw new Error(
-      `Could not create Timeline session: ${error.message}`,
+      `Could not create Spectrum session: ${error.message}`,
     );
   }
 
@@ -386,15 +386,15 @@ export async function createTimelineSession(
   );
 }
 
-export async function getActiveTimelineSession(
+export async function getActiveSpectrumSession(
   roomId: string,
-): Promise<TimelineSession | null> {
+): Promise<SpectrumSession | null> {
   const {
     data,
     error,
   } = await supabase
     .from(
-      "timeline_sessions",
+      "spectrum_sessions",
     )
     .select("*")
     .eq("room_id", roomId)
@@ -407,7 +407,7 @@ export async function getActiveTimelineSession(
 
   if (error) {
     throw new Error(
-      `Could not load Timeline session: ${error.message}`,
+      `Could not load Spectrum session: ${error.message}`,
     );
   }
 
@@ -420,13 +420,13 @@ export async function getActiveTimelineSession(
   );
 }
 
-export async function finishTimelineSession(
+export async function finishSpectrumSession(
   sessionId: string,
 ) {
   const { error } =
     await supabase
       .from(
-        "timeline_sessions",
+        "spectrum_sessions",
       )
       .update({
         status: "finished",
@@ -437,20 +437,20 @@ export async function finishTimelineSession(
 
   if (error) {
     throw new Error(
-      `Could not finish Timeline session: ${error.message}`,
+      `Could not finish Spectrum session: ${error.message}`,
     );
   }
 }
 
-export async function getLatestTimelineRound(
+export async function getLatestSpectrumRound(
   sessionId: string,
-): Promise<TimelineRound | null> {
+): Promise<SpectrumRound | null> {
   const {
     data,
     error,
   } = await supabase
     .from(
-      "timeline_rounds",
+      "spectrum_rounds",
     )
     .select("*")
     .eq(
@@ -468,7 +468,7 @@ export async function getLatestTimelineRound(
 
   if (error) {
     throw new Error(
-      `Could not load Timeline round: ${error.message}`,
+      `Could not load Spectrum round: ${error.message}`,
     );
   }
 
@@ -481,14 +481,14 @@ export async function getLatestTimelineRound(
   );
 }
 
-export async function createTimelineRound(
+export async function createSpectrumRound(
   sessionId: string,
   roomId: string,
   roundNumber: number,
   players: RoomPlayer[],
   categoryId: string,
   timerSeconds: number,
-): Promise<TimelineRound> {
+): Promise<SpectrumRound> {
   if (players.length === 0) {
     throw new Error(
       "No players in room.",
@@ -504,7 +504,7 @@ export async function createTimelineRound(
     error: existingError,
   } = await supabase
     .from(
-      "timeline_rounds",
+      "spectrum_rounds",
     )
     .select("*")
     .eq(
@@ -519,7 +519,7 @@ export async function createTimelineRound(
 
   if (existingError) {
     throw new Error(
-      `Could not check Timeline round: ${existingError.message}`,
+      `Could not check Spectrum round: ${existingError.message}`,
     );
   }
 
@@ -533,7 +533,7 @@ export async function createTimelineRound(
     data: itemRows,
     error: itemsError,
   } = await supabase
-    .from("timeline_items")
+    .from("spectrum_items")
     .select("id, value")
     .eq(
       "category_id",
@@ -542,7 +542,7 @@ export async function createTimelineRound(
 
   if (itemsError) {
     throw new Error(
-      `Could not load Timeline items: ${itemsError.message}`,
+      `Could not load Spectrum items: ${itemsError.message}`,
     );
   }
 
@@ -616,7 +616,7 @@ export async function createTimelineRound(
     error: roundError,
   } = await supabase
     .from(
-      "timeline_rounds",
+      "spectrum_rounds",
     )
     .insert({
       room_id: roomId,
@@ -644,7 +644,7 @@ export async function createTimelineRound(
 
   if (roundError) {
     throw new Error(
-      `Could not create Timeline round: ${roundError.message}`,
+      `Could not create Spectrum round: ${roundError.message}`,
     );
   }
 
@@ -663,7 +663,7 @@ export async function createTimelineRound(
     error: placementsError,
   } = await supabase
     .from(
-      "timeline_placements",
+      "spectrum_placements",
     )
     .insert(seedPlacements);
 
@@ -674,13 +674,13 @@ export async function createTimelineRound(
      */
     await supabase
       .from(
-        "timeline_rounds",
+        "spectrum_rounds",
       )
       .delete()
       .eq("id", round.id);
 
     throw new Error(
-      `Could not seed Timeline board: ${placementsError.message}`,
+      `Could not seed Spectrum board: ${placementsError.message}`,
     );
   }
 
@@ -695,14 +695,14 @@ export async function createTimelineRound(
  * player a life — either way the item is used up
  * and the turn moves on.
  */
-export async function placeTimelineItem(
-  round: TimelineRound,
+export async function placeSpectrumItem(
+  round: SpectrumRound,
   gapIndex: number,
-  boardItems: TimelineItem[],
-  currentItem: TimelineItem,
+  boardItems: SpectrumItem[],
+  currentItem: SpectrumItem,
   playerId: string,
   players: RoomPlayer[],
-  categoryItems: TimelineItem[],
+  categoryItems: SpectrumItem[],
   timerSeconds: number,
 ) {
   if (
@@ -827,7 +827,7 @@ export async function placeTimelineItem(
     error: roundError,
   } = await supabase
     .from(
-      "timeline_rounds",
+      "spectrum_rounds",
     )
     .update({
       used_item_ids:
@@ -878,7 +878,7 @@ export async function placeTimelineItem(
       error: placementError,
     } = await supabase
       .from(
-        "timeline_placements",
+        "spectrum_placements",
       )
       .insert({
         round_id: round.id,
@@ -904,9 +904,9 @@ export async function placeTimelineItem(
  * out without placing the item at all: costs them
  * a life, same as a wrong guess, and moves on.
  */
-export async function passTimelineTurn(
-  round: TimelineRound,
-  categoryItems: TimelineItem[],
+export async function passSpectrumTurn(
+  round: SpectrumRound,
+  categoryItems: SpectrumItem[],
   players: RoomPlayer[],
   timerSeconds: number,
 ) {
@@ -1006,7 +1006,7 @@ export async function passTimelineTurn(
   const { error } =
     await supabase
       .from(
-        "timeline_rounds",
+        "spectrum_rounds",
       )
       .update({
         used_item_ids:
@@ -1052,14 +1052,14 @@ export async function passTimelineTurn(
   }
 }
 
-export async function finishTimelineGame(
+export async function finishSpectrumGame(
   roundId: string,
   sessionId: string,
 ) {
   const { error } =
     await supabase
       .from(
-        "timeline_rounds",
+        "spectrum_rounds",
       )
       .update({
         status: "finished",
@@ -1068,16 +1068,16 @@ export async function finishTimelineGame(
 
   if (error) {
     throw new Error(
-      `Could not finish Timeline round: ${error.message}`,
+      `Could not finish Spectrum round: ${error.message}`,
     );
   }
 
-  await finishTimelineSession(
+  await finishSpectrumSession(
     sessionId,
   );
 }
 
-export async function returnTimelineRoomToLobby(
+export async function returnSpectrumRoomToLobby(
   roomId: string,
 ) {
   const { error } =
@@ -1086,7 +1086,7 @@ export async function returnTimelineRoomToLobby(
       .update({
         status: "lobby",
         selected_game:
-          "timeline",
+          "spectrum",
       })
       .eq("id", roomId);
 
