@@ -441,6 +441,10 @@ const en = {
     yourTurn: "Your turn — place the item",
     waitingFor: "Waiting for",
     placeThis: "Place this",
+    alreadyTried: "Already tried",
+    nobodyGotIt: "Nobody got it",
+    highLabel: "Higher",
+    lowLabel: "Lower",
     youAreOut:
       "You're out of lives for this round. Waiting for the others...",
     roundComplete: "Round complete",

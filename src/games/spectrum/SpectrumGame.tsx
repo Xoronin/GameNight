@@ -1,5 +1,7 @@
 import {
+  ArrowDown,
   ArrowRight,
+  ArrowUp,
   Check,
   Crown,
   Heart,
@@ -40,6 +42,7 @@ import { advanceTournament } from "../../services/roomService";
 import type {
   SpectrumCategory,
   SpectrumItem,
+  SpectrumPlacement,
 } from "../../types/game";
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
@@ -337,7 +340,7 @@ function SpectrumGame({
     round?.currentPlayerId ===
       localPlayer.id;
 
-  const boardItemsAscending =
+  const boardEntriesAscending =
     useMemo(() => {
       const itemsById = new Map(
         items.map((item) => [
@@ -347,30 +350,41 @@ function SpectrumGame({
       );
 
       return placements
-        .map((placement) =>
-          itemsById.get(
-            placement.itemId,
-          ),
-        )
+        .map((placement) => {
+          const item =
+            itemsById.get(
+              placement.itemId,
+            );
+
+          return item
+            ? {
+                item,
+                placement,
+              }
+            : null;
+        })
         .filter(
           (
-            item,
-          ): item is SpectrumItem =>
-            !!item,
+            entry,
+          ): entry is {
+            item: SpectrumItem;
+            placement: SpectrumPlacement;
+          } => !!entry,
         )
         .sort(
           (a, b) =>
-            a.value - b.value,
+            a.item.value -
+            b.item.value,
         );
     }, [placements, items]);
 
-  const displayBoardItems =
-    currentCategory?.sortDirection ===
-    "desc"
-      ? [
-          ...boardItemsAscending,
-        ].reverse()
-      : boardItemsAscending;
+  /*
+   * Always top = highest value, bottom =
+   * lowest — regardless of category type.
+   */
+  const displayBoardEntries = [
+    ...boardEntriesAscending,
+  ].reverse();
 
   const poolExhausted =
     items.length > 0 &&
@@ -460,16 +474,15 @@ function SpectrumGame({
     }
 
     const gapIndex =
-      currentCategory?.sortDirection ===
-      "desc"
-        ? boardItemsAscending.length -
-          displayGapIndex
-        : displayGapIndex;
+      boardEntriesAscending.length -
+      displayGapIndex;
 
     await placeSpectrumItem(
       round,
       gapIndex,
-      boardItemsAscending,
+      boardEntriesAscending.map(
+        (entry) => entry.item,
+      ),
       currentItem,
       localPlayer.id,
       players,
@@ -763,65 +776,132 @@ function SpectrumGame({
     </div>
   );
 
+  const playerNameById = (
+    playerId: string | null,
+  ) =>
+    playerId
+      ? players.find(
+          (player) =>
+            player.id ===
+            playerId,
+        )?.name ?? null
+      : null;
+
   const renderBoard = (
     interactive: boolean,
   ) => (
     <div className="spectrumBoard">
-      {interactive && (
-        <button
-          type="button"
-          className="spectrumGap"
-          disabled={working}
-          onClick={() => {
-            void runAction(() =>
-              placeItem(0),
-            );
-          }}
-        >
-          <Plus size={16} />
-        </button>
-      )}
+      <div className="spectrumScaleLabel spectrumScaleHigh">
+        <ArrowUp size={13} />
 
-      {displayBoardItems.map(
-        (item, index) => (
-          <div
-            key={item.id}
-            className="spectrumTileGroup"
+        {gameT(
+          "spectrum.highLabel",
+        )}
+      </div>
+
+      <div className="spectrumBoardTrack">
+        {interactive && (
+          <button
+            type="button"
+            className="spectrumGap"
+            disabled={working}
+            onClick={() => {
+              void runAction(() =>
+                placeItem(0),
+              );
+            }}
           >
-            <div className="spectrumTile">
-              <strong>
-                {item.name}
-              </strong>
+            <Plus size={16} />
+          </button>
+        )}
 
-              <span>
-                {item.valueLabel}
-              </span>
-            </div>
-
-            {interactive && (
-              <button
-                type="button"
-                className="spectrumGap"
-                disabled={
-                  working
-                }
-                onClick={() => {
-                  void runAction(
-                    () =>
-                      placeItem(
-                        index + 1,
-                      ),
-                  );
-                }}
+        {displayBoardEntries.map(
+          (entry, index) => (
+            <div
+              key={
+                entry.item.id
+              }
+              className="spectrumTileGroup"
+            >
+              <div
+                className={`spectrumTile ${entry.placement.outcome}`}
               >
-                <Plus
-                  size={16}
-                />
-              </button>
-            )}
-          </div>
-        ),
-      )}
+                <div className="spectrumTileTop">
+                  <strong>
+                    {
+                      entry.item
+                        .name
+                    }
+                  </strong>
+
+                  <span className="spectrumTileValue">
+                    {
+                      entry.item
+                        .valueLabel
+                    }
+                  </span>
+                </div>
+
+                {entry.placement
+                  .outcome ===
+                  "correct" && (
+                  <span className="spectrumTilePlacer">
+                    {playerNameById(
+                      entry
+                        .placement
+                        .placedBy,
+                    ) ??
+                      gameT(
+                        "common.player",
+                      )}
+                  </span>
+                )}
+
+                {entry.placement
+                  .outcome ===
+                  "failed" && (
+                  <span className="spectrumTilePlacer spectrumTileNoOne">
+                    {gameT(
+                      "spectrum.nobodyGotIt",
+                    )}
+                  </span>
+                )}
+              </div>
+
+              {interactive && (
+                <button
+                  type="button"
+                  className="spectrumGap"
+                  disabled={
+                    working
+                  }
+                  onClick={() => {
+                    void runAction(
+                      () =>
+                        placeItem(
+                          index +
+                            1,
+                        ),
+                    );
+                  }}
+                >
+                  <Plus
+                    size={16}
+                  />
+                </button>
+              )}
+            </div>
+          ),
+        )}
+      </div>
+
+      <div className="spectrumScaleLabel spectrumScaleLow">
+        <ArrowDown size={13} />
+
+        {gameT(
+          "spectrum.lowLabel",
+        )}
+      </div>
     </div>
   );
 
@@ -1175,6 +1255,36 @@ function SpectrumGame({
               </div>
             </div>
 
+            <div className="spectrumScoreboard">
+              {sortedPlayers.map(
+                (
+                  player,
+                  index,
+                ) => (
+                  <div
+                    key={
+                      player.id
+                    }
+                    className="spectrumScoreRow"
+                  >
+                    <span>
+                      {index + 1}
+                    </span>
+
+                    <strong>
+                      {
+                        player.name
+                      }
+                    </strong>
+
+                    <b>
+                      {player.score.toLocaleString()}
+                    </b>
+                  </div>
+                ),
+              )}
+            </div>
+
             {isHost ? (
               <>
                 {!isLastRound &&
@@ -1429,6 +1539,29 @@ function SpectrumGame({
               <strong>
                 {currentItem.name}
               </strong>
+
+              {round.attemptedPlayerIds
+                .length > 0 && (
+                <div className="spectrumAttempted">
+                  {gameT(
+                    "spectrum.alreadyTried",
+                  )}
+                  :{" "}
+                  {round.attemptedPlayerIds
+                    .map(
+                      (id) =>
+                        playerNameById(
+                          id,
+                        ),
+                    )
+                    .filter(
+                      Boolean,
+                    )
+                    .join(
+                      ", ",
+                    )}
+                </div>
+              )}
             </div>
           )}
 

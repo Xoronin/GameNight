@@ -441,6 +441,10 @@ const de = {
     yourTurn: "Dein Zug — platziere den Eintrag",
     waitingFor: "Warte auf",
     placeThis: "Platziere",
+    alreadyTried: "Bereits versucht",
+    nobodyGotIt: "Niemand hatte es richtig",
+    highLabel: "Höher",
+    lowLabel: "Niedriger",
     youAreOut:
       "Du hast keine Leben mehr in dieser Runde. Warte, bis die anderen fertig sind...",
     roundComplete: "Runde beendet",

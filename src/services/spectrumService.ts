@@ -4,6 +4,7 @@ import type {
   SpectrumCategoryType,
   SpectrumItem,
   SpectrumPlacement,
+  SpectrumPlacementOutcome,
   SpectrumRound,
   SpectrumRoundStatus,
   SpectrumSortDirection,
@@ -43,6 +44,7 @@ type RoundRow = {
   current_item_id: string | null;
   turn_ends_at: string | null;
   used_item_ids: string[] | null;
+  attempted_player_ids: string[] | null;
   out_player_ids: string[] | null;
   player_lives: Record<string, number> | null;
   created_at: string;
@@ -73,6 +75,7 @@ type PlacementRow = {
   round_id: string;
   item_id: string;
   placed_by: string | null;
+  outcome: SpectrumPlacementOutcome;
   created_at: string;
 };
 
@@ -105,6 +108,9 @@ function mapRound(
     turnEndsAt: row.turn_ends_at,
     usedItemIds:
       row.used_item_ids ?? [],
+    attemptedPlayerIds:
+      row.attempted_player_ids ??
+      [],
     outPlayerIds:
       row.out_player_ids ?? [],
     playerLives:
@@ -162,6 +168,7 @@ function mapPlacement(
     roundId: row.round_id,
     itemId: row.item_id,
     placedBy: row.placed_by,
+    outcome: row.outcome,
     createdAt: row.created_at,
   };
 }
@@ -185,6 +192,121 @@ function getNextPlayer(
     (index + 1) %
       players.length
   ];
+}
+
+/*
+ * A wrong guess (or a missed timer) costs the
+ * attempting player a life and adds them to this
+ * item's attempt list. The item only leaves play
+ * once every currently active player has had one
+ * failed shot at it (or everyone's out) — until
+ * then it just passes to the next active player.
+ */
+function computeFailedAttempt(
+  round: SpectrumRound,
+  playerId: string,
+  players: RoomPlayer[],
+) {
+  const attemptedPlayerIds =
+    Array.from(
+      new Set([
+        ...round.attemptedPlayerIds,
+        playerId,
+      ]),
+    );
+
+  const playerLives = {
+    ...round.playerLives,
+  };
+
+  const remainingLives = Math.max(
+    (playerLives[playerId] ??
+      STARTING_LIVES) - 1,
+    0,
+  );
+
+  playerLives[playerId] =
+    remainingLives;
+
+  let outPlayerIds =
+    round.outPlayerIds;
+
+  if (
+    remainingLives <= 0 &&
+    !outPlayerIds.includes(
+      playerId,
+    )
+  ) {
+    outPlayerIds = [
+      ...outPlayerIds,
+      playerId,
+    ];
+  }
+
+  const activeAfter =
+    players.filter(
+      (player) =>
+        !outPlayerIds.includes(
+          player.id,
+        ),
+    );
+
+  const cycleOver =
+    activeAfter.length === 0 ||
+    activeAfter.every((player) =>
+      attemptedPlayerIds.includes(
+        player.id,
+      ),
+    );
+
+  return {
+    attemptedPlayerIds,
+    outPlayerIds,
+    playerLives,
+    activeAfter,
+    cycleOver,
+  };
+}
+
+function pickNextItemAndPlayer(
+  usedItemIds: string[],
+  categoryItems: SpectrumItem[],
+  activeAfter: RoomPlayer[],
+  fromPlayerId: string,
+) {
+  const remainingPool =
+    categoryItems.filter(
+      (item) =>
+        !usedItemIds.includes(
+          item.id,
+        ),
+    );
+
+  const roundOver =
+    activeAfter.length === 0 ||
+    remainingPool.length === 0;
+
+  const nextItem = roundOver
+    ? null
+    : remainingPool[
+        Math.floor(
+          Math.random() *
+            remainingPool.length,
+        )
+      ];
+
+  const nextPlayer = roundOver
+    ? null
+    : getNextPlayer(
+        activeAfter,
+        fromPlayerId,
+      );
+
+  return {
+    roundOver,
+    nextItem,
+    nextPlayer,
+  };
 }
 
 async function addScore(
@@ -568,10 +690,12 @@ export async function createSpectrumRound(
     () => Math.random() - 0.5,
   );
 
-  const seedCount =
-    shuffled.length >= 6
-      ? 3
-      : 2;
+  /*
+   * Start with a single reference point so the
+   * very first turn is still a real guess, not a
+   * freebie.
+   */
+  const seedCount = 1;
 
   const seedItems = shuffled
     .slice(0, seedCount)
@@ -657,6 +781,7 @@ export async function createSpectrumRound(
       round_id: round.id,
       item_id: item.id,
       placed_by: null,
+      outcome: "seed",
     }));
 
   const {
@@ -690,10 +815,14 @@ export async function createSpectrumRound(
 /*
  * Places the round's current item into gap
  * `gapIndex` of `boardItems` (already sorted
- * ascending by value). Correct placements join
- * the board and score; wrong ones just cost the
- * player a life — either way the item is used up
- * and the turn moves on.
+ * ascending by value). A correct guess joins the
+ * board, scores, and hands a fresh item to the next
+ * active player. A wrong guess costs the player a
+ * life and passes the *same* item to the next
+ * active player — it only leaves play once every
+ * active player has had one failed shot at it, at
+ * which point it's auto-placed at its real
+ * position, grayed out, with nobody credited.
  */
 export async function placeSpectrumItem(
   round: SpectrumRound,
@@ -746,6 +875,173 @@ export async function placeSpectrumItem(
       currentItem.value <=
         right.value);
 
+  if (correct) {
+    const usedItemIds =
+      Array.from(
+        new Set([
+          ...round.usedItemIds,
+          currentItem.id,
+        ]),
+      );
+
+    const activeAfter =
+      players.filter(
+        (player) =>
+          !round.outPlayerIds.includes(
+            player.id,
+          ),
+      );
+
+    const {
+      roundOver,
+      nextItem,
+      nextPlayer,
+    } = pickNextItemAndPlayer(
+      usedItemIds,
+      categoryItems,
+      activeAfter,
+      playerId,
+    );
+
+    const {
+      data: updatedRound,
+      error: roundError,
+    } = await supabase
+      .from(
+        "spectrum_rounds",
+      )
+      .update({
+        used_item_ids:
+          usedItemIds,
+        attempted_player_ids:
+          [],
+        current_item_id:
+          nextItem?.id ?? null,
+        current_player_id:
+          nextPlayer?.id ??
+          round.currentPlayerId,
+        turn_ends_at: roundOver
+          ? round.turnEndsAt
+          : new Date(
+              Date.now() +
+                timerSeconds *
+                  1000,
+            ).toISOString(),
+        status: roundOver
+          ? "reveal"
+          : "playing",
+      })
+      .eq("id", round.id)
+      .eq(
+        "current_item_id",
+        currentItem.id,
+      )
+      .select("*")
+      .maybeSingle();
+
+    if (roundError) {
+      throw new Error(
+        `Could not resolve item: ${roundError.message}`,
+      );
+    }
+
+    /*
+     * Another client already resolved this
+     * exact item.
+     */
+    if (!updatedRound) {
+      return;
+    }
+
+    const {
+      error: placementError,
+    } = await supabase
+      .from(
+        "spectrum_placements",
+      )
+      .insert({
+        round_id: round.id,
+        item_id: currentItem.id,
+        placed_by: playerId,
+        outcome: "correct",
+      });
+
+    if (placementError) {
+      throw new Error(
+        `Could not place item: ${placementError.message}`,
+      );
+    }
+
+    await addScore(
+      playerId,
+      CORRECT_PLACEMENT_POINTS,
+    );
+
+    return;
+  }
+
+  const {
+    attemptedPlayerIds,
+    outPlayerIds,
+    playerLives,
+    activeAfter,
+    cycleOver,
+  } = computeFailedAttempt(
+    round,
+    playerId,
+    players,
+  );
+
+  if (!cycleOver) {
+    const nextPlayer =
+      getNextPlayer(
+        activeAfter,
+        playerId,
+      );
+
+    const {
+      error: roundError,
+    } = await supabase
+      .from(
+        "spectrum_rounds",
+      )
+      .update({
+        attempted_player_ids:
+          attemptedPlayerIds,
+        out_player_ids:
+          outPlayerIds,
+        player_lives:
+          playerLives,
+        current_player_id:
+          nextPlayer?.id ??
+          playerId,
+        turn_ends_at:
+          new Date(
+            Date.now() +
+              timerSeconds *
+                1000,
+          ).toISOString(),
+      })
+      .eq("id", round.id)
+      .eq(
+        "current_item_id",
+        currentItem.id,
+      );
+
+    if (roundError) {
+      throw new Error(
+        `Could not pass the item on: ${roundError.message}`,
+      );
+    }
+
+    return;
+  }
+
+  /*
+   * Everyone active has now failed this item:
+   * reveal where it really belonged, grayed
+   * out, with nobody credited.
+   */
   const usedItemIds =
     Array.from(
       new Set([
@@ -754,73 +1050,16 @@ export async function placeSpectrumItem(
       ]),
     );
 
-  let outPlayerIds =
-    round.outPlayerIds;
-  const playerLives = {
-    ...round.playerLives,
-  };
-
-  if (!correct) {
-    const remainingLives =
-      Math.max(
-        (playerLives[
-          playerId
-        ] ??
-          STARTING_LIVES) - 1,
-        0,
-      );
-
-    playerLives[playerId] =
-      remainingLives;
-
-    if (
-      remainingLives <= 0 &&
-      !outPlayerIds.includes(
-        playerId,
-      )
-    ) {
-      outPlayerIds = [
-        ...outPlayerIds,
-        playerId,
-      ];
-    }
-  }
-
-  const activeAfter =
-    players.filter(
-      (player) =>
-        !outPlayerIds.includes(
-          player.id,
-        ),
-    );
-
-  const remainingPool =
-    categoryItems.filter(
-      (item) =>
-        !usedItemIds.includes(
-          item.id,
-        ),
-    );
-
-  const roundOver =
-    activeAfter.length === 0 ||
-    remainingPool.length === 0;
-
-  const nextItem = roundOver
-    ? null
-    : remainingPool[
-        Math.floor(
-          Math.random() *
-            remainingPool.length,
-        )
-      ];
-
-  const nextPlayer = roundOver
-    ? null
-    : getNextPlayer(
-        activeAfter,
-        playerId,
-      );
+  const {
+    roundOver,
+    nextItem,
+    nextPlayer,
+  } = pickNextItemAndPlayer(
+    usedItemIds,
+    categoryItems,
+    activeAfter,
+    playerId,
+  );
 
   const {
     data: updatedRound,
@@ -832,6 +1071,7 @@ export async function placeSpectrumItem(
     .update({
       used_item_ids:
         usedItemIds,
+      attempted_player_ids: [],
       out_player_ids:
         outPlayerIds,
       player_lives: playerLives,
@@ -865,44 +1105,34 @@ export async function placeSpectrumItem(
     );
   }
 
-  /*
-   * Another client already resolved this
-   * exact item.
-   */
   if (!updatedRound) {
     return;
   }
 
-  if (correct) {
-    const {
-      error: placementError,
-    } = await supabase
-      .from(
-        "spectrum_placements",
-      )
-      .insert({
-        round_id: round.id,
-        item_id: currentItem.id,
-        placed_by: playerId,
-      });
+  const {
+    error: placementError,
+  } = await supabase
+    .from(
+      "spectrum_placements",
+    )
+    .insert({
+      round_id: round.id,
+      item_id: currentItem.id,
+      placed_by: null,
+      outcome: "failed",
+    });
 
-    if (placementError) {
-      throw new Error(
-        `Could not place item: ${placementError.message}`,
-      );
-    }
-
-    await addScore(
-      playerId,
-      CORRECT_PLACEMENT_POINTS,
+  if (placementError) {
+    throw new Error(
+      `Could not place item: ${placementError.message}`,
     );
   }
 }
 
 /*
  * The current player let their picking timer run
- * out without placing the item at all: costs them
- * a life, same as a wrong guess, and moves on.
+ * out without placing the item at all — treated
+ * exactly like a wrong guess.
  */
 export async function passSpectrumTurn(
   round: SpectrumRound,
@@ -924,6 +1154,76 @@ export async function passSpectrumTurn(
   const currentItemId =
     round.currentItemId;
 
+  const {
+    attemptedPlayerIds,
+    outPlayerIds,
+    playerLives,
+    activeAfter,
+    cycleOver,
+  } = computeFailedAttempt(
+    round,
+    currentPlayerId,
+    players,
+  );
+
+  if (!cycleOver) {
+    const nextPlayer =
+      getNextPlayer(
+        activeAfter,
+        currentPlayerId,
+      );
+
+    /*
+     * Guarded by the previous current_item_id
+     * and current_player_id so a concurrent
+     * placement can't be clobbered by a stale
+     * timeout.
+     */
+    const { error } =
+      await supabase
+        .from(
+          "spectrum_rounds",
+        )
+        .update({
+          attempted_player_ids:
+            attemptedPlayerIds,
+          out_player_ids:
+            outPlayerIds,
+          player_lives:
+            playerLives,
+          current_player_id:
+            nextPlayer?.id ??
+            currentPlayerId,
+          turn_ends_at:
+            new Date(
+              Date.now() +
+                timerSeconds *
+                  1000,
+            ).toISOString(),
+        })
+        .eq("id", round.id)
+        .eq(
+          "status",
+          "playing",
+        )
+        .eq(
+          "current_item_id",
+          currentItemId,
+        )
+        .eq(
+          "current_player_id",
+          currentPlayerId,
+        );
+
+    if (error) {
+      throw new Error(
+        `Could not pass the item on: ${error.message}`,
+      );
+    }
+
+    return;
+  }
+
   const usedItemIds =
     Array.from(
       new Set([
@@ -932,122 +1232,89 @@ export async function passSpectrumTurn(
       ]),
     );
 
-  const playerLives = {
-    ...round.playerLives,
-  };
-
-  const remainingLives = Math.max(
-    (playerLives[
-      currentPlayerId
-    ] ?? STARTING_LIVES) - 1,
-    0,
+  const {
+    roundOver,
+    nextItem,
+    nextPlayer,
+  } = pickNextItemAndPlayer(
+    usedItemIds,
+    categoryItems,
+    activeAfter,
+    currentPlayerId,
   );
 
-  playerLives[currentPlayerId] =
-    remainingLives;
-
-  let outPlayerIds =
-    round.outPlayerIds;
-
-  if (
-    remainingLives <= 0 &&
-    !outPlayerIds.includes(
+  const {
+    data: updatedRound,
+    error,
+  } = await supabase
+    .from(
+      "spectrum_rounds",
+    )
+    .update({
+      used_item_ids:
+        usedItemIds,
+      attempted_player_ids: [],
+      out_player_ids:
+        outPlayerIds,
+      player_lives: playerLives,
+      current_item_id:
+        nextItem?.id ?? null,
+      current_player_id:
+        nextPlayer?.id ??
+        currentPlayerId,
+      turn_ends_at: roundOver
+        ? round.turnEndsAt
+        : new Date(
+            Date.now() +
+              timerSeconds *
+                1000,
+          ).toISOString(),
+      status: roundOver
+        ? "reveal"
+        : "playing",
+    })
+    .eq("id", round.id)
+    .eq(
+      "status",
+      "playing",
+    )
+    .eq(
+      "current_item_id",
+      currentItemId,
+    )
+    .eq(
+      "current_player_id",
       currentPlayerId,
     )
-  ) {
-    outPlayerIds = [
-      ...outPlayerIds,
-      currentPlayerId,
-    ];
-  }
-
-  const activeAfter =
-    players.filter(
-      (player) =>
-        !outPlayerIds.includes(
-          player.id,
-        ),
-    );
-
-  const remainingPool =
-    categoryItems.filter(
-      (item) =>
-        !usedItemIds.includes(
-          item.id,
-        ),
-    );
-
-  const roundOver =
-    activeAfter.length === 0 ||
-    remainingPool.length === 0;
-
-  const nextItem = roundOver
-    ? null
-    : remainingPool[
-        Math.floor(
-          Math.random() *
-            remainingPool.length,
-        )
-      ];
-
-  const nextPlayer = roundOver
-    ? null
-    : getNextPlayer(
-        activeAfter,
-        currentPlayerId,
-      );
-
-  /*
-   * Guarded by the previous current_item_id
-   * and current_player_id so a concurrent
-   * placement can't be clobbered by a stale
-   * timeout.
-   */
-  const { error } =
-    await supabase
-      .from(
-        "spectrum_rounds",
-      )
-      .update({
-        used_item_ids:
-          usedItemIds,
-        out_player_ids:
-          outPlayerIds,
-        player_lives:
-          playerLives,
-        current_item_id:
-          nextItem?.id ?? null,
-        current_player_id:
-          nextPlayer?.id ??
-          currentPlayerId,
-        turn_ends_at: roundOver
-          ? round.turnEndsAt
-          : new Date(
-              Date.now() +
-                timerSeconds *
-                  1000,
-            ).toISOString(),
-        status: roundOver
-          ? "reveal"
-          : "playing",
-      })
-      .eq("id", round.id)
-      .eq(
-        "status",
-        "playing",
-      )
-      .eq(
-        "current_item_id",
-        currentItemId,
-      )
-      .eq(
-        "current_player_id",
-        currentPlayerId,
-      );
+    .select("*")
+    .maybeSingle();
 
   if (error) {
     throw new Error(
       `Could not pass turn: ${error.message}`,
+    );
+  }
+
+  if (!updatedRound) {
+    return;
+  }
+
+  const {
+    error: placementError,
+  } = await supabase
+    .from(
+      "spectrum_placements",
+    )
+    .insert({
+      round_id: round.id,
+      item_id: currentItemId,
+      placed_by: null,
+      outcome: "failed",
+    });
+
+  if (placementError) {
+    throw new Error(
+      `Could not place item: ${placementError.message}`,
     );
   }
 }

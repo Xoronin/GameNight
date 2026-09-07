@@ -112,15 +112,17 @@ export const gameRules: GameRules = {
   spectrum: {
     en: [
       "The host picks a category — a timeline of dates or a ranking by some number.",
-      "On your turn, you're shown one mystery item and the board built so far.",
+      "On your turn, you're shown one mystery item and the board built so far, high at the top and low at the bottom.",
       "Slot it into the gap where you think it belongs.",
-      "Right and it joins the board; wrong (or too slow) costs one of your 3 lives.",
+      "Right and it joins the board with your name on it; wrong (or too slow) costs one of your 3 lives and passes the same item to the next player.",
+      "If everyone fails it, it's revealed grayed out and nobody scores it.",
     ],
     de: [
       "Der Host wählt eine Kategorie — eine Zeitleiste nach Datum oder eine Rangliste nach einer Zahl.",
-      "Wenn du dran bist, siehst du einen mysteriösen Eintrag und das bisherige Spielfeld.",
+      "Wenn du dran bist, siehst du einen mysteriösen Eintrag und das bisherige Spielfeld — oben hoch, unten niedrig.",
       "Ordne ihn an der Stelle ein, an der er deiner Meinung nach hingehört.",
-      "Richtig eingeordnet kommt er aufs Feld; falsch (oder zu langsam) kostet eines deiner 3 Leben.",
+      "Richtig eingeordnet kommt er mit deinem Namen aufs Feld; falsch (oder zu langsam) kostet eines deiner 3 Leben und gibt denselben Eintrag an den nächsten Spieler weiter.",
+      "Scheitern alle daran, wird er ausgegraut aufgedeckt und niemand bekommt Punkte.",
     ],
   },
 };

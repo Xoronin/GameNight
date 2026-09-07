@@ -191,16 +191,23 @@ export type SpectrumRound = {
   currentItemId: string | null;
   turnEndsAt: string | null;
   usedItemIds: string[];
+  attemptedPlayerIds: string[];
   outPlayerIds: string[];
   playerLives: Record<string, number>;
   createdAt: string;
 };
+
+export type SpectrumPlacementOutcome =
+  | "seed"
+  | "correct"
+  | "failed";
 
 export type SpectrumPlacement = {
   id: string;
   roundId: string;
   itemId: string;
   placedBy: string | null;
+  outcome: SpectrumPlacementOutcome;
   createdAt: string;
 };
 
