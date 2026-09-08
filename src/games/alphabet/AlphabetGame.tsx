@@ -10,6 +10,7 @@ import {
   Trophy,
   X,
 } from "lucide-react";
+import type { CSSProperties } from "react";
 import {
   useEffect,
   useMemo,
@@ -1015,6 +1016,12 @@ function AlphabetGame({
                       player.id
                     }
                     className="alphabetScoreRow"
+                    style={
+                      {
+                        "--rowIndex":
+                          index,
+                      } as CSSProperties
+                    }
                   >
                     <span>
                       {index + 1}

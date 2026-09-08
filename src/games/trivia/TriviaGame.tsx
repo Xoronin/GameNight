@@ -8,6 +8,7 @@ import {
   Trophy,
   X,
 } from "lucide-react";
+import type { CSSProperties } from "react";
 import {
   useCallback,
   useEffect,
@@ -15,6 +16,10 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  AnimatePresence,
+  motion,
+} from "motion/react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import {
@@ -22,6 +27,10 @@ import {
   getGameTimerSeconds,
 } from "../../data/gameTimers";
 import { translate } from "../../i18n/i18n";
+import {
+  phaseVariants,
+  revealVariants,
+} from "../../lib/motion";
 import { useRoom } from "../../hooks/useRoom";
 import { useTriviaRound } from "../../hooks/useTriviaRound";
 import {
@@ -624,6 +633,12 @@ function TriviaGame({
                   <div
                     key={player.id}
                     className="triviaScoreRow"
+                    style={
+                      {
+                        "--rowIndex":
+                          index,
+                      } as CSSProperties
+                    }
                   >
                     <span>{index + 1}</span>
 
@@ -787,13 +802,27 @@ function TriviaGame({
         )}
 
         <section className="triviaPanel">
-          <div className="triviaCategory">
-            <ShieldQuestion size={16} />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={round.id}
+              variants={phaseVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <div className="triviaCategory">
+                <ShieldQuestion
+                  size={16}
+                />
 
-            {question.category}
-          </div>
+                {question.category}
+              </div>
 
-          <h1>{question.question}</h1>
+              <h1>
+                {question.question}
+              </h1>
+            </motion.div>
+          </AnimatePresence>
 
           <div className="triviaOptions">
             {question.options.map(
@@ -813,8 +842,14 @@ function TriviaGame({
 
                 return (
                   <button
-                    key={index}
+                    key={`${round.id}-${index}`}
                     type="button"
+                    style={
+                      {
+                        "--optionIndex":
+                          index,
+                      } as CSSProperties
+                    }
                     className={[
                       "triviaOption",
                       revealed &&
@@ -931,12 +966,17 @@ function TriviaGame({
           {revealed && (
             <>
               {myAnswer ? (
-                <div
+                <motion.div
                   className={`triviaResultBanner ${
                     myAnswer.isCorrect
                       ? "correct"
                       : "incorrect"
                   }`}
+                  variants={
+                    revealVariants
+                  }
+                  initial="initial"
+                  animate="animate"
                 >
                   {myAnswer.isCorrect ? (
                     <>
@@ -957,19 +997,26 @@ function TriviaGame({
                       )}
                     </>
                   )}
-                </div>
+                </motion.div>
               ) : (
-                <div className="triviaResultBanner incorrect">
+                <motion.div
+                  className="triviaResultBanner incorrect"
+                  variants={
+                    revealVariants
+                  }
+                  initial="initial"
+                  animate="animate"
+                >
                   <X size={20} />
                   {gameT(
                     "trivia.incorrect",
                   )}
-                </div>
+                </motion.div>
               )}
 
               <div className="triviaResults">
                 {sortedPlayers.map(
-                  (player) => {
+                  (player, rowIndex) => {
                     const answer =
                       answers.find(
                         (item) =>
@@ -980,6 +1027,12 @@ function TriviaGame({
                     return (
                       <div
                         key={player.id}
+                        style={
+                          {
+                            "--rowIndex":
+                              rowIndex,
+                          } as CSSProperties
+                        }
                         className={`triviaResultRow ${
                           answer?.isCorrect
                             ? "correct"
