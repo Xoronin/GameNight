@@ -10,11 +10,13 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import Header from "../components/Header";
+import AlphabetGame from "../games/alphabet/AlphabetGame";
 import BluffGame from "../games/bluff/BluffGame";
 import CategoriesGame from "../games/categories/CategoriesGame";
 import DrawingGame from "../games/draw-guess/DrawingGame";
 import HigherLowerGame from "../games/higher-lower/HigherLowerGame";
 import MinefieldGame from "../games/minefield/MinefieldGame";
+import SpectrumGame from "../games/spectrum/SpectrumGame";
 import TriviaGame from "../games/trivia/TriviaGame";
 import { getGameLibraryEntry } from "../data/gameLibrary";
 import { gameRules } from "../data/gameRules";
@@ -28,6 +30,8 @@ const multiplayerGames = [
   "draw-guess",
   "higher-lower",
   "trivia",
+  "alphabet",
+  "spectrum",
 ];
 
 function GamePage() {
@@ -251,6 +255,26 @@ function GamePage() {
     ) {
       return (
         <HigherLowerGame
+          roomCode={roomCode}
+        />
+      );
+    }
+
+    if (
+      gameId === "alphabet"
+    ) {
+      return (
+        <AlphabetGame
+          roomCode={roomCode}
+        />
+      );
+    }
+
+    if (
+      gameId === "spectrum"
+    ) {
+      return (
+        <SpectrumGame
           roomCode={roomCode}
         />
       );

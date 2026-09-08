@@ -124,6 +124,43 @@
   margin-bottom: 22px;
 }
 
+.minefieldOutBanner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+}
+
+.minefieldLastStanding {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.3);
+  font-weight: 650;
+}
+
+.minefieldEliminated {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  opacity: 0.6;
+  font-size: 0.85rem;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
 .minefieldGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

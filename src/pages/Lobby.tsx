@@ -64,6 +64,8 @@ const timerLabelKeys: Record<
   "higher-lower":
     "higherLower.timerLabel",
   trivia: "trivia.timerLabel",
+  alphabet: "alphabet.timerLabel",
+  spectrum: "spectrum.timerLabel",
 };
 
 function isTimedGame(
@@ -88,6 +90,10 @@ const roundCountLabelKeys: Record<
   "higher-lower":
     "lobby.roundCountLabel",
   trivia:
+    "lobby.roundCountLabel",
+  alphabet:
+    "lobby.roundCountLabel",
+  spectrum:
     "lobby.roundCountLabel",
 };
 

@@ -75,6 +75,12 @@ const de = {
         "Zeichne geheime Begriffe, während deine Freunde raten.",
     },
 
+    alphabet: {
+      name: "Alphabet",
+      description:
+        "Wähle einen Buchstaben, nenne ein passendes Wort, überlebe die Abstimmung.",
+    },
+
     codewords: {
       name: "Codewörter",
       description:
@@ -117,8 +123,8 @@ const de = {
         "Rekonstruiere die geheime Rangliste eines anderen Spielers.",
     },
 
-    timeline: {
-      name: "Timeline",
+    spectrum: {
+      name: "Spectrum",
       description:
         "Ordne eine neue Karte in eine wachsende Zeitleiste oder Rangliste ein — drei Fehler und du scheidest aus.",
     },
@@ -383,6 +389,79 @@ const de = {
     joinAgain: "Tritt dem Raum erneut bei.",
     questionMissing: "Frage fehlt",
     timerLabel: "Zugzeit",
+    youAreOut:
+      "Du hast eine Mine getroffen — du bist für diese Runde raus. Warte, bis die anderen fertig sind...",
+    lastStanding:
+      "Letzter Überlebender! Bonuspunkte erhalten.",
+    playersOut: "Raus in dieser Runde",
+  },
+
+  alphabet: {
+    startTitle: "Wähle ein Thema",
+    startDescription:
+      "Reihum nennt ihr für jeden Buchstaben des Alphabets ein passendes Wort zum Thema. Wird euer Wort abgelehnt oder läuft die Zeit ab, verliert ihr ein Leben.",
+    randomTopic: "Zufälliges Thema",
+    customTopic: "Eigenes Thema",
+    reroll: "Neues Thema",
+    noTopicsAvailable:
+      "Keine Themen verfügbar — nutze ein eigenes Thema.",
+    topicLabel: "Thema",
+    topicPlaceholder: "z. B. Tiere",
+    yourTurn: "Dein Zug — wähle einen Buchstaben",
+    waitingFor: "Warte auf",
+    youAreOut:
+      "Du hast keine Leben mehr in dieser Runde. Warte, bis die anderen fertig sind...",
+    voteInvalid: "Zählt nicht",
+    roundComplete: "Runde beendet",
+    alphabetCleared: "Alphabet geklärt!",
+    everyoneOut: "Allen sind die Leben ausgegangen!",
+    allAnswersRevealed: "Alle Buchstaben sind jetzt sichtbar.",
+    nextRound: "Nächste Runde",
+    finishGame: "Spiel beenden",
+    backToLobby: "Zurück zur Lobby",
+    waitingForHost: "Warte darauf, dass der Host fortfährt...",
+    loading: "Alphabet wird geladen...",
+    loadError: "Alphabet konnte nicht geladen werden",
+    joinAgain: "Tritt dem Raum erneut bei.",
+    noPlayerTitle: "Kein Spieler gefunden",
+    timerLabel: "Zugzeit",
+    gameComplete: "SPIEL BEENDET",
+    finalScores: "Endstand",
+  },
+
+  spectrum: {
+    startTitle: "Wähle eine Kategorie",
+    startDescription:
+      "Ordne nacheinander die mysteriösen Karten in die wachsende Zeitleiste oder Rangliste ein. Liegst du falsch oder läuft die Zeit ab, verlierst du ein Leben.",
+    categoryLabel: "Kategorie",
+    chooseCategory: "Kategorie wählen...",
+    chronologicalCategories: "Zeitleiste",
+    rankingCategories: "Rangliste",
+    randomCategory: "Zufällig",
+    yourTurn: "Dein Zug — platziere den Eintrag",
+    waitingFor: "Warte auf",
+    placeThis: "Platziere",
+    alreadyTried: "Bereits versucht",
+    nobodyGotIt: "Niemand hatte es richtig",
+    highLabel: "Höher",
+    lowLabel: "Niedriger",
+    youAreOut:
+      "Du hast keine Leben mehr in dieser Runde. Warte, bis die anderen fertig sind...",
+    roundComplete: "Runde beendet",
+    categoryComplete: "Kategorie geschafft!",
+    everyoneOut: "Allen sind die Leben ausgegangen!",
+    allItemsRevealed: "Alle Einträge sind jetzt sichtbar.",
+    nextRound: "Nächste Runde",
+    finishGame: "Spiel beenden",
+    backToLobby: "Zurück zur Lobby",
+    waitingForHost: "Warte darauf, dass der Host fortfährt...",
+    loading: "Spectrum wird geladen...",
+    loadError: "Spectrum konnte nicht geladen werden",
+    joinAgain: "Tritt dem Raum erneut bei.",
+    noPlayerTitle: "Kein Spieler gefunden",
+    timerLabel: "Zugzeit",
+    gameComplete: "SPIEL BEENDET",
+    finalScores: "Endstand",
   },
 
   higherLower: {

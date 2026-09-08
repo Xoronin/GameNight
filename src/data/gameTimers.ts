@@ -4,7 +4,9 @@ export type TimedGameId =
   | "minefield"
   | "draw-guess"
   | "higher-lower"
-  | "trivia";
+  | "trivia"
+  | "alphabet"
+  | "spectrum";
 
 export type CustomCategory = {
   key: string;
@@ -33,6 +35,8 @@ export const GAME_TIMER_DEFAULTS: Record<
   "draw-guess": 90,
   "higher-lower": 20,
   trivia: 20,
+  alphabet: 30,
+  spectrum: 30,
 };
 
 export const GAME_TIMER_OPTIONS: Record<
@@ -45,6 +49,8 @@ export const GAME_TIMER_OPTIONS: Record<
   "draw-guess": [45, 60, 90, 120, 150],
   "higher-lower": [10, 15, 20, 30, 45],
   trivia: [10, 15, 20, 30, 45],
+  alphabet: [15, 20, 30, 45, 60],
+  spectrum: [15, 20, 30, 45, 60],
 };
 
 export function getGameTimerSeconds(
@@ -88,6 +94,8 @@ export const GAME_ROUND_COUNT_DEFAULTS: Record<
   "draw-guess": 2,
   "higher-lower": 8,
   trivia: 8,
+  alphabet: 3,
+  spectrum: 5,
 };
 
 export const GAME_ROUND_COUNT_OPTIONS: Record<
@@ -100,6 +108,8 @@ export const GAME_ROUND_COUNT_OPTIONS: Record<
   "draw-guess": [1, 2, 3, 4],
   "higher-lower": [4, 6, 8, 10, 12],
   trivia: [4, 6, 8, 10, 12],
+  alphabet: [1, 2, 3, 5],
+  spectrum: [3, 5, 8, 13],
 };
 
 export function getGameRoundCount(

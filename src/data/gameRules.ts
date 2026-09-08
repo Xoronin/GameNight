@@ -23,14 +23,29 @@ export const gameRules: GameRules = {
     en: [
       "A category and a board of answer tiles appear.",
       "Players take turns picking a tile they believe is correct.",
-      "A correct tile is safe and passes the turn; a wrong tile is a mine and ends the round.",
-      "Find every correct tile to clear the board for full points.",
+      "A correct tile is safe and passes the turn; a wrong tile is a mine and knocks you out of the round.",
+      "The last player left keeps playing solo for a bonus — clear every tile for full points.",
     ],
     de: [
       "Eine Kategorie und ein Spielfeld mit Antwort-Kacheln erscheinen.",
       "Die Spieler wählen abwechselnd eine Kachel, die sie für richtig halten.",
-      "Eine richtige Kachel ist sicher und gibt den Zug weiter; eine falsche ist eine Mine und beendet die Runde.",
-      "Findet alle richtigen Kacheln, um das Feld für die volle Punktzahl zu räumen.",
+      "Eine richtige Kachel ist sicher und gibt den Zug weiter; eine falsche ist eine Mine und wirft dich aus der Runde.",
+      "Der letzte verbliebene Spieler spielt allein weiter und bekommt einen Bonus — räumt alle Kacheln für die volle Punktzahl.",
+    ],
+  },
+
+  alphabet: {
+    en: [
+      "The host picks a topic and a shared A–Z board appears.",
+      "On your turn, pick any free letter and type a word from the topic that starts with it.",
+      "Everyone else can vote your word down — majority rejection or running out of time costs you a life.",
+      "3 lives each. Clear the whole alphabet before everyone busts.",
+    ],
+    de: [
+      "Der Host wählt ein Thema, dann erscheint ein gemeinsames A-Z-Feld.",
+      "Wenn du dran bist, wähle einen freien Buchstaben und tippe ein passendes Wort zum Thema ein.",
+      "Alle anderen können dein Wort ablehnen — eine Mehrheit dagegen oder abgelaufene Zeit kostet ein Leben.",
+      "Jeder hat 3 Leben. Räumt das ganze Alphabet, bevor alle ausgeschieden sind.",
     ],
   },
 
@@ -91,6 +106,23 @@ export const gameRules: GameRules = {
       "Ratende sehen ein Buchstabenmuster und tippen ihre Vermutungen.",
       "Richtiges Raten gibt Punkte, abhängig davon, wie schnell du warst.",
       "Der/die Zeichnende bekommt ebenfalls Punkte, sobald jemand richtig rät.",
+    ],
+  },
+
+  spectrum: {
+    en: [
+      "The host picks a category — a timeline of dates or a ranking by some number.",
+      "On your turn, you're shown one mystery item and the board built so far, high at the top and low at the bottom.",
+      "Slot it into the gap where you think it belongs.",
+      "Right and it joins the board with your name on it; wrong (or too slow) costs one of your 3 lives and passes the same item to the next player.",
+      "If everyone fails it, it's revealed grayed out and nobody scores it.",
+    ],
+    de: [
+      "Der Host wählt eine Kategorie — eine Zeitleiste nach Datum oder eine Rangliste nach einer Zahl.",
+      "Wenn du dran bist, siehst du einen mysteriösen Eintrag und das bisherige Spielfeld — oben hoch, unten niedrig.",
+      "Ordne ihn an der Stelle ein, an der er deiner Meinung nach hingehört.",
+      "Richtig eingeordnet kommt er mit deinem Namen aufs Feld; falsch (oder zu langsam) kostet eines deiner 3 Leben und gibt denselben Eintrag an den nächsten Spieler weiter.",
+      "Scheitern alle daran, wird er ausgegraut aufgedeckt und niemand bekommt Punkte.",
     ],
   },
 };

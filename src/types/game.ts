@@ -81,6 +81,7 @@ export type MinefieldRound = {
   createdAt: string;
   sessionId: string;
   turnEndsAt: string | null;
+  outPlayerIds: string[];
 };
 
 export type MinefieldTile = {
@@ -99,6 +100,115 @@ export type MinefieldQuestion = {
   question: string;
   correctAnswers: string[];
   wrongAnswers: string[];
+};
+
+export type AlphabetRoundStatus =
+  | "playing"
+  | "reveal"
+  | "finished";
+
+export type AlphabetRound = {
+  id: string;
+  roomId: string;
+  sessionId: string;
+  roundNumber: number;
+  topic: string;
+  topicId: string | null;
+  status: AlphabetRoundStatus;
+  currentPlayerId: string | null;
+  turnEndsAt: string | null;
+  outPlayerIds: string[];
+  playerLives: Record<string, number>;
+  createdAt: string;
+};
+
+export type AlphabetTopic = {
+  id: string;
+  topic: string;
+};
+
+export type AlphabetLetterStatus =
+  | "available"
+  | "pending"
+  | "valid"
+  | "invalid";
+
+export type AlphabetLetter = {
+  id: string;
+  roundId: string;
+  letter: string;
+  status: AlphabetLetterStatus;
+  claimedBy: string | null;
+  word: string | null;
+  createdAt: string;
+};
+
+export type AlphabetVote = {
+  id: string;
+  roundId: string;
+  letterId: string;
+  playerId: string;
+  createdAt: string;
+};
+
+export type SpectrumCategoryType =
+  | "timeline"
+  | "ranking";
+
+export type SpectrumSortDirection =
+  | "asc"
+  | "desc";
+
+export type SpectrumCategory = {
+  id: string;
+  name: string;
+  categoryType: SpectrumCategoryType;
+  unit: string;
+  sortDirection: SpectrumSortDirection;
+};
+
+export type SpectrumItem = {
+  id: string;
+  categoryId: string;
+  name: string;
+  value: number;
+  valueLabel: string;
+};
+
+export type SpectrumRoundStatus =
+  | "playing"
+  | "reveal"
+  | "finished";
+
+export type SpectrumRound = {
+  id: string;
+  roomId: string;
+  sessionId: string;
+  roundNumber: number;
+  categoryId: string;
+  status: SpectrumRoundStatus;
+  currentPlayerId: string | null;
+  currentItemId: string | null;
+  turnEndsAt: string | null;
+  usedItemIds: string[];
+  attemptedPlayerIds: string[];
+  outPlayerIds: string[];
+  playerLives: Record<string, number>;
+  createdAt: string;
+};
+
+export type SpectrumPlacementOutcome =
+  | "seed"
+  | "correct"
+  | "failed";
+
+export type SpectrumPlacement = {
+  id: string;
+  roundId: string;
+  itemId: string;
+  placedBy: string | null;
+  outcome: SpectrumPlacementOutcome;
+  createdAt: string;
 };
 
 export type DrawingRoundStatus =

@@ -1,0 +1,466 @@
+.spectrumGame {
+  width: min(100%, 980px);
+  margin: 0 auto;
+  padding: 24px 0 60px;
+}
+
+.spectrumStart,
+.spectrumPanel {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(16, 16, 24, 0.82);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
+}
+
+.spectrumStart {
+  max-width: 620px;
+  margin: 40px auto 0;
+  text-align: center;
+}
+
+.spectrumStart h1,
+.spectrumPanel h1 {
+  margin: 10px 0 12px;
+}
+
+.spectrumStart p {
+  opacity: 0.72;
+  line-height: 1.6;
+}
+
+.spectrumHeroIcon {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 22px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+}
+
+.spectrumCategoryField {
+  display: grid;
+  gap: 8px;
+  max-width: 420px;
+  margin: 24px auto 0;
+  text-align: left;
+}
+
+.spectrumCategoryField label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.spectrumCategoryRow {
+  display: flex;
+  gap: 10px;
+}
+
+.spectrumCategoryRow select {
+  flex: 1;
+  appearance: none;
+  padding: 13px 42px 13px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.03)
+    ),
+    linear-gradient(
+      135deg,
+      transparent 50%,
+      rgba(255, 255, 255, 0.7) 50%
+    );
+  background-position:
+    center,
+    calc(100% - 18px) center;
+  background-repeat: no-repeat;
+  background-size: auto, 10px 10px;
+  color: #f5f5f5;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.spectrumCategoryRow select:focus {
+  outline: none;
+  border-color: rgba(249, 115, 22, 0.9);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18);
+}
+
+.spectrumCategoryRow button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.spectrumHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.spectrumHeader > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spectrumHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.spectrumScore {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border-radius: 999px;
+  background: rgba(250, 204, 21, 0.1);
+}
+
+.spectrumProgress {
+  height: 5px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  margin-bottom: 24px;
+}
+
+.spectrumProgress > div {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    #f97316,
+    #ef4444
+  );
+  transition: width 0.3s ease;
+}
+
+.spectrumCategoryBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  opacity: 0.85;
+}
+
+.spectrumLives {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.spectrumLifeRow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+  opacity: 0.65;
+}
+
+.spectrumLifeRow.current {
+  opacity: 1;
+  background: rgba(249, 115, 22, 0.12);
+  border-color: rgba(249, 115, 22, 0.3);
+}
+
+.spectrumLifeRow.out {
+  opacity: 0.35;
+  text-decoration: line-through;
+}
+
+.spectrumHearts {
+  display: inline-flex;
+  gap: 2px;
+  color: #ef4444;
+}
+
+.spectrumHearts svg {
+  opacity: 0.3;
+}
+
+.spectrumHearts svg.filled {
+  opacity: 1;
+}
+
+.spectrumTurn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  padding: 12px;
+  margin: 8px 0 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.spectrumMyTurn {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.spectrumMysteryItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px;
+  margin-bottom: 22px;
+  border-radius: 16px;
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  text-align: center;
+}
+
+.spectrumMysteryItem span {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.spectrumMysteryItem strong {
+  font-size: 1.4rem;
+  font-weight: 750;
+}
+
+.spectrumAttempted {
+  margin-top: 6px;
+  font-size: 0.72rem;
+  opacity: 0.7;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.spectrumBoard {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.spectrumScaleLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 18px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+.spectrumBoardTrack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-left: 3px solid rgba(249, 115, 22, 0.3);
+  padding-left: 14px;
+  margin-left: 4px;
+}
+
+.spectrumTileGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spectrumTile {
+  min-height: 54px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.055);
+  padding: 9px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.spectrumTileTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.spectrumTileTop strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.spectrumTileValue {
+  font-size: 0.8rem;
+  font-weight: 750;
+  color: #34d399;
+  white-space: nowrap;
+}
+
+.spectrumTilePlacer {
+  font-size: 0.7rem;
+  opacity: 0.65;
+}
+
+.spectrumTile.seed {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+.spectrumTile.failed {
+  opacity: 0.45;
+}
+
+.spectrumTile.failed .spectrumTileValue {
+  color: #9ca3af;
+}
+
+.spectrumTileNoOne {
+  color: #ef4444;
+  opacity: 0.9;
+}
+
+.spectrumGap {
+  align-self: stretch;
+  height: 24px;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  opacity: 0.55;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.spectrumGap:not(:disabled):hover {
+  opacity: 1;
+  border-color: rgba(249, 115, 22, 0.6);
+  background: rgba(249, 115, 22, 0.14);
+}
+
+.spectrumGap:disabled {
+  cursor: default;
+}
+
+.spectrumRoundResult {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.spectrumRoundResult > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spectrumRoundResult span {
+  opacity: 0.65;
+}
+
+.spectrumResultIcon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.spectrumMainButton {
+  margin-top: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.spectrumWaiting {
+  margin-top: 22px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  opacity: 0.75;
+}
+
+.spectrumError {
+  padding: 12px 15px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+}
+
+.spectrumScoreboard {
+  margin-top: 24px;
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.spectrumScoreRow {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 720px) {
+  .spectrumGame {
+    padding-top: 12px;
+  }
+
+  .spectrumPanel,
+  .spectrumStart {
+    padding: 22px 16px;
+  }
+
+  .spectrumCategoryRow {
+    flex-direction: column;
+  }
+
+  .spectrumTile {
+    min-height: 50px;
+    padding: 8px 10px;
+  }
+
+  .spectrumBoardTrack {
+    padding-left: 10px;
+  }
+}

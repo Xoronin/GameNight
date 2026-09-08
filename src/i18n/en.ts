@@ -75,6 +75,12 @@ const en = {
         "Draw secret words while your friends guess.",
     },
 
+    alphabet: {
+      name: "Alphabet",
+      description:
+        "Claim a letter, name a word from the topic, survive the vote.",
+    },
+
     codewords: {
       name: "Codewords",
       description:
@@ -117,8 +123,8 @@ const en = {
         "Reconstruct another player's secret ranking of a set of options.",
     },
 
-    timeline: {
-      name: "Timeline",
+    spectrum: {
+      name: "Spectrum",
       description:
         "Slot a new card into a growing timeline or ranking — three wrong guesses and you're out.",
     },
@@ -383,6 +389,79 @@ const en = {
     noPlayerTitle: "No player found",
     questionMissing: "Question missing",
     timerLabel: "Turn time",
+    youAreOut:
+      "You hit a mine — you're out for this round. Waiting for the others to finish...",
+    lastStanding:
+      "Last one standing! Bonus points earned.",
+    playersOut: "Out this round",
+  },
+
+  alphabet: {
+    startTitle: "Pick a topic",
+    startDescription:
+      "Everyone takes turns naming a word from the topic for each letter of the alphabet. Get voted down or run out of time, and you lose a life.",
+    randomTopic: "Random Topic",
+    customTopic: "Custom Topic",
+    reroll: "New topic",
+    noTopicsAvailable:
+      "No topics available — try Custom Topic.",
+    topicLabel: "Topic",
+    topicPlaceholder: "e.g. Animals",
+    yourTurn: "Your turn — pick a letter",
+    waitingFor: "Waiting for",
+    youAreOut:
+      "You're out of lives for this round. Waiting for the others...",
+    voteInvalid: "Doesn't count",
+    roundComplete: "Round complete",
+    alphabetCleared: "Alphabet cleared!",
+    everyoneOut: "Everyone's out of lives!",
+    allAnswersRevealed: "All letters are now revealed.",
+    nextRound: "Next round",
+    finishGame: "Finish game",
+    backToLobby: "Back to lobby",
+    waitingForHost: "Waiting for the host to continue...",
+    loading: "Loading Alphabet...",
+    loadError: "Could not load Alphabet",
+    joinAgain: "Join the room again.",
+    noPlayerTitle: "No player found",
+    timerLabel: "Turn time",
+    gameComplete: "GAME COMPLETE",
+    finalScores: "Final scores",
+  },
+
+  spectrum: {
+    startTitle: "Pick a category",
+    startDescription:
+      "One item at a time, slot the mystery card into the growing timeline or ranking. Get it wrong or run out of time, and you lose a life.",
+    categoryLabel: "Category",
+    chooseCategory: "Choose a category...",
+    chronologicalCategories: "Timeline",
+    rankingCategories: "Ranking",
+    randomCategory: "Random",
+    yourTurn: "Your turn — place the item",
+    waitingFor: "Waiting for",
+    placeThis: "Place this",
+    alreadyTried: "Already tried",
+    nobodyGotIt: "Nobody got it",
+    highLabel: "Higher",
+    lowLabel: "Lower",
+    youAreOut:
+      "You're out of lives for this round. Waiting for the others...",
+    roundComplete: "Round complete",
+    categoryComplete: "Category complete!",
+    everyoneOut: "Everyone's out of lives!",
+    allItemsRevealed: "All items are now revealed.",
+    nextRound: "Next round",
+    finishGame: "Finish game",
+    backToLobby: "Back to lobby",
+    waitingForHost: "Waiting for the host to continue...",
+    loading: "Loading Spectrum...",
+    loadError: "Could not load Spectrum",
+    joinAgain: "Join the room again.",
+    noPlayerTitle: "No player found",
+    timerLabel: "Turn time",
+    gameComplete: "GAME COMPLETE",
+    finalScores: "Final scores",
   },
 
   higherLower: {

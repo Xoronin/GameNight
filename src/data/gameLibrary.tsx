@@ -3,6 +3,7 @@ import {
   Bomb,
   Brain,
   Brush,
+  CaseSensitive,
   Eye,
   Gavel,
   Heart,
@@ -98,6 +99,27 @@ export const gameLibrary: GameLibraryEntry[] = [
     className: "pink",
     group: "solo",
   },
+  {
+    id: "alphabet",
+    nameKey:
+      "games.alphabet.name",
+    descriptionKey:
+      "games.alphabet.description",
+    players: "2–10",
+    icon: <CaseSensitive />,
+    className: "purple",
+    group: "solo",
+  },
+  {
+    id: "spectrum",
+    nameKey: "games.spectrum.name",
+    descriptionKey:
+      "games.spectrum.description",
+    players: "2–10",
+    icon: <History />,
+    className: "orange",
+    group: "solo",
+  },
 
   /*
    * Placeholders for planned games — not yet
@@ -183,17 +205,6 @@ export const gameLibrary: GameLibraryEntry[] = [
     players: "3–10",
     icon: <ListOrdered />,
     className: "green",
-    group: "solo",
-    comingSoon: true,
-  },
-  {
-    id: "timeline",
-    nameKey: "games.timeline.name",
-    descriptionKey:
-      "games.timeline.description",
-    players: "2–10",
-    icon: <History />,
-    className: "orange",
     group: "solo",
     comingSoon: true,
   },
