@@ -2,6 +2,7 @@ import {
   ChevronRight,
   Users,
 } from "lucide-react";
+import type { CSSProperties } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { gameLibrary } from "../data/gameLibrary";
@@ -28,12 +29,18 @@ function Home() {
 
   const renderGameCard = (
     game: (typeof games)[number],
+    index: number,
   ) => {
+    const cardStyle = {
+      "--cardIndex": index,
+    } as CSSProperties;
+
     if (game.comingSoon) {
       return (
         <div
           className={`gameCard comingSoonCard ${game.className}`}
           key={game.id}
+          style={cardStyle}
         >
           <div className="cardTop">
             <div className="gameIcon">
@@ -70,6 +77,7 @@ function Home() {
       <button
         className={`gameCard ${game.className}`}
         key={game.id}
+        style={cardStyle}
         onClick={() =>
           navigate(
             `/game/${game.id}`,
@@ -181,7 +189,11 @@ function Home() {
 
           <div className="gameGrid">
             {soloGames.map(
-              renderGameCard,
+              (game, index) =>
+                renderGameCard(
+                  game,
+                  index,
+                ),
             )}
           </div>
 
@@ -191,7 +203,11 @@ function Home() {
 
           <div className="gameGrid">
             {teamGames.map(
-              renderGameCard,
+              (game, index) =>
+                renderGameCard(
+                  game,
+                  index,
+                ),
             )}
           </div>
         </section>

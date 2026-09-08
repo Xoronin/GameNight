@@ -9,6 +9,7 @@
   background: #111117;
 
   text-align: center;
+  animation: scaleIn 440ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .authCard h1 {
@@ -53,10 +54,12 @@
   color: #f7f7fb;
 
   outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .authForm input:focus {
   border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
 }
 
 .authSubmitButton {
@@ -78,6 +81,11 @@
   font-weight: 700;
 
   cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.authSwitchButton:hover {
+  color: #c4b5fd;
 }
 
 @media (max-width: 560px) {

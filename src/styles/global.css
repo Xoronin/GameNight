@@ -12,6 +12,53 @@
     box-sizing: border-box;
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.94);
+    }
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    70% {
+        transform: scale(1.08);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 html,
 body,
 #root {
@@ -60,6 +107,7 @@ button {
     width: min(1600px, calc(100% - 40px));
     margin: 0 auto;
     padding: 16px 0 40px;
+    animation: fadeInUp 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .backButton {
@@ -70,7 +118,17 @@ button {
     background: transparent;
     color: #9b9baa;
     cursor: pointer;
+    transition: color 160ms ease, gap 160ms ease, transform 160ms ease;
 }
+
+    .backButton:hover {
+        color: #d4d4dc;
+        gap: 11px;
+    }
+
+    .backButton:active {
+        transform: scale(0.97);
+    }
 
 .primaryButton,
 .secondaryButton {
@@ -80,7 +138,13 @@ button {
     border: 0;
     font-weight: 700;
     cursor: pointer;
+    transition: background 160ms ease, border-color 160ms ease, transform 120ms ease, box-shadow 160ms ease;
 }
+
+    .primaryButton:active:not(:disabled),
+    .secondaryButton:active:not(:disabled) {
+        transform: scale(0.97);
+    }
 
 .primaryButton {
     display: flex;
@@ -89,8 +153,10 @@ button {
     background: #7c3aed;
 }
 
-    .primaryButton:hover {
+    .primaryButton:hover:not(:disabled) {
         background: #8b5cf6;
+        box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+        transform: translateY(-1px);
     }
 
     .primaryButton:disabled {
@@ -105,6 +171,8 @@ button {
 
     .secondaryButton:hover {
         background: #ffffff0d;
+        border-color: #ffffff26;
+        transform: translateY(-1px);
     }
 
 .centerCard {
@@ -115,6 +183,7 @@ button {
     border-radius: 20px;
     background: #111117;
     text-align: center;
+    animation: scaleIn 440ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
     .centerCard h1 {
@@ -207,3 +276,14 @@ button {
         background-color: #5c5c68;
         background-clip: padding-box;
     }
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}

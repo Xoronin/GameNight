@@ -23,9 +23,9 @@ const en = {
 
   home: {
     title1: "Pick a game.",
-    title2: "Beat your friends.",
+    title2: "Have fun with your friends.",
     description:
-      "Quick party games for your next game night. Grab some friends, choose a game and start playing.",
+      "Quick party games for your next game night. Invite your friends, choose a game and start playing.",
     createRoom: "Create Room",
     joinRoom: "Join Room",
     enterRoomCode: "Enter Room Code",

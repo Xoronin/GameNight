@@ -10,6 +10,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import {
   useNavigate,
@@ -538,6 +539,11 @@ function Lobby() {
                 <div
                   key={player.id}
                   className="tournamentScoreRow"
+                  style={
+                    {
+                      "--rowIndex": index,
+                    } as CSSProperties
+                  }
                 >
                   <span>
                     {index + 1}
@@ -1128,10 +1134,15 @@ function Lobby() {
             <div className="lobbyPanelBody">
             <div className="playerList">
               {players.map(
-                (player) => (
+                (player, index) => (
                   <div
                     className="playerRow"
                     key={player.id}
+                    style={
+                      {
+                        "--rowIndex": index,
+                      } as CSSProperties
+                    }
                   >
                     <div className="playerAvatar">
                       {player.name
