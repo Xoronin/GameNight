@@ -103,6 +103,8 @@
 }
 
 .higherLowerCard {
+  animation: scaleIn 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: border-color 260ms ease, background 260ms ease;
   border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.05);
@@ -160,6 +162,7 @@
 }
 
 .higherLowerVs {
+  animation: popIn 520ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
   width: 46px;
   height: 46px;
   border-radius: 50%;

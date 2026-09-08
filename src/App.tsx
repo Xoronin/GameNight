@@ -1,3 +1,4 @@
+import { MotionConfig } from "motion/react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import CreateRoom from "./pages/CreateRoom";
 import GamePage from "./pages/GamePage";
@@ -9,18 +10,20 @@ import Register from "./pages/Register";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+    <MotionConfig reducedMotion="user">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        <Route path="/create" element={<CreateRoom />} />
-        <Route path="/join" element={<JoinRoom />} />
-        <Route path="/lobby/:roomCode" element={<Lobby />} />
-        <Route path="/game/:gameId" element={<GamePage />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="/create" element={<CreateRoom />} />
+          <Route path="/join" element={<JoinRoom />} />
+          <Route path="/lobby/:roomCode" element={<Lobby />} />
+          <Route path="/game/:gameId" element={<GamePage />} />
+        </Routes>
+      </BrowserRouter>
+    </MotionConfig>
   );
 }
 

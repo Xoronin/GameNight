@@ -7,6 +7,7 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
+import type { CSSProperties } from "react";
 import {
   useCallback,
   useEffect,
@@ -807,6 +808,12 @@ function CategoriesGame({
                       player.id
                     }
                     className="categoriesScoreRow"
+                    style={
+                      {
+                        "--rowIndex":
+                          index,
+                      } as CSSProperties
+                    }
                   >
                     <span>
                       {index + 1}
@@ -1258,11 +1265,20 @@ function CategoriesGame({
 
           <div className="categoriesReveal">
             {grouped.map(
-              (category) => (
+              (
+                category,
+                blockIndex,
+              ) => (
                 <div
                   className="categoryRevealBlock"
                   key={
                     category.key
+                  }
+                  style={
+                    {
+                      "--blockIndex":
+                        blockIndex,
+                    } as CSSProperties
                   }
                 >
                   <h2>
@@ -1272,18 +1288,27 @@ function CategoriesGame({
                   </h2>
 
                   {category.answers.map(
-                    ({
-                      player,
-                      answerId,
-                      answer,
-                      valid,
-                      points,
-                      rejectVotes,
-                      myVote,
-                    }) => (
+                    (
+                      {
+                        player,
+                        answerId,
+                        answer,
+                        valid,
+                        points,
+                        rejectVotes,
+                        myVote,
+                      },
+                      rowIndex,
+                    ) => (
                       <div
                         key={
                           player.id
+                        }
+                        style={
+                          {
+                            "--rowIndex":
+                              rowIndex,
+                          } as CSSProperties
                         }
                         className={`categoryRevealRow ${
                           answer

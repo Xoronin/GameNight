@@ -10,6 +10,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import type { CSSProperties } from "react";
 import {
   useEffect,
   useMemo,
@@ -1000,6 +1001,12 @@ function BluffGame({
                 ) => (
                   <div
                     className="bluffScoreRow"
+                    style={
+                      {
+                        "--rowIndex":
+                          index,
+                      } as CSSProperties
+                    }
                     key={
                       player.id
                     }
@@ -1365,6 +1372,12 @@ function BluffGame({
                         }
                         type="button"
                         className="bluffOption"
+                        style={
+                          {
+                            "--optionIndex":
+                              index,
+                          } as CSSProperties
+                        }
                         disabled={
                           isOwn ||
                           working

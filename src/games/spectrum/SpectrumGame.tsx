@@ -12,12 +12,14 @@ import {
   Trophy,
   X,
 } from "lucide-react";
+import type { CSSProperties } from "react";
 import {
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import {
@@ -25,6 +27,10 @@ import {
   getGameTimerSeconds,
 } from "../../data/gameTimers";
 import { translate } from "../../i18n/i18n";
+import {
+  listItemVariants,
+  softSpring,
+} from "../../lib/motion";
 import { useRoom } from "../../hooks/useRoom";
 import { useSpectrumRound } from "../../hooks/useSpectrumRound";
 import {
@@ -817,11 +823,19 @@ function SpectrumGame({
 
         {displayBoardEntries.map(
           (entry, index) => (
-            <div
+            <motion.div
               key={
                 entry.item.id
               }
               className="spectrumTileGroup"
+              layout
+              variants={
+                listItemVariants
+              }
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={softSpring}
             >
               <div
                 className={`spectrumTile ${entry.placement.outcome}`}
@@ -890,7 +904,7 @@ function SpectrumGame({
                   />
                 </button>
               )}
-            </div>
+            </motion.div>
           ),
         )}
       </div>
@@ -1101,6 +1115,12 @@ function SpectrumGame({
                       player.id
                     }
                     className="spectrumScoreRow"
+                    style={
+                      {
+                        "--rowIndex":
+                          index,
+                      } as CSSProperties
+                    }
                   >
                     <span>
                       {index + 1}
@@ -1266,6 +1286,12 @@ function SpectrumGame({
                       player.id
                     }
                     className="spectrumScoreRow"
+                    style={
+                      {
+                        "--rowIndex":
+                          index,
+                      } as CSSProperties
+                    }
                   >
                     <span>
                       {index + 1}

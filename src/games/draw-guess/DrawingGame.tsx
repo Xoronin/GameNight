@@ -8,12 +8,17 @@ import {
   Send,
   Trophy,
 } from "lucide-react";
+import type { CSSProperties } from "react";
 import {
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+import {
+  AnimatePresence,
+  motion,
+} from "motion/react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import {
@@ -22,6 +27,7 @@ import {
 } from "../../data/gameTimers";
 import { useDrawingRound } from "../../hooks/useDrawingRound";
 import { translate } from "../../i18n/i18n";
+import { listItemVariants } from "../../lib/motion";
 import { useRoom } from "../../hooks/useRoom";
 import {
   addDrawingStroke,
@@ -1009,6 +1015,12 @@ function DrawingGame({
                 ) => (
                   <div
                     className="drawingScoreRow"
+                    style={
+                      {
+                        "--rowIndex":
+                          index,
+                      } as CSSProperties
+                    }
                     key={
                       player.id
                     }
@@ -1379,6 +1391,9 @@ function DrawingGame({
             )}
 
           <div className="drawingGuesses">
+            <AnimatePresence
+              initial={false}
+            >
             {guesses
               .filter(
                 (item) =>
@@ -1397,9 +1412,16 @@ function DrawingGame({
                     );
 
                   return (
-                    <div
+                    <motion.div
                       key={item.id}
                       className="drawingGuessItem"
+                      layout
+                      variants={
+                        listItemVariants
+                      }
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
                     >
                       <strong>
                         {player?.name ?? "?"}
@@ -1408,10 +1430,11 @@ function DrawingGame({
                       <span>
                         {item.guess}
                       </span>
-                    </div>
+                    </motion.div>
                   );
                 },
               )}
+            </AnimatePresence>
           </div>
 
           {round.status ===
