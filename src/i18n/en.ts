@@ -579,6 +579,13 @@ const en = {
     playersAnswered: "players answered",
     youScored: "You got",
     noAnswer: "No answer",
+    yourTurn: "Your turn — place a capital",
+    waitingFor: "Waiting for",
+    outOfLives: "Out",
+    placedBy: "by",
+    dragOne: "Drag one capital onto its country",
+    waitYourTurn: "Wait for your turn",
+    youSolved: "You solved",
     correctFlag: "Correct flag",
     correctAnswerWas: "The answer was",
     countriesExhausted:

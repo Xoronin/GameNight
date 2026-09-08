@@ -416,6 +416,11 @@ export type AtlasRoundPayload =
       optionIds: string[];
     }
   | {
+      /*
+       * A shared, turn-based board rather than a private puzzle: every
+       * player sees the same ten countries and takes turns placing one
+       * capital each.
+       */
       type: "capital_match";
       /** Countries shown as drop targets, in display order. */
       countryIds: string[];
@@ -436,17 +441,6 @@ export type AtlasResponse =
       type: "choice";
       /** The country id the player picked. */
       choiceId: string | null;
-    }
-  | {
-      type: "capital_match";
-      /**
-       * Country id → the country id whose capital was dropped on it.
-       * A correct pair maps a country to itself.
-       */
-      pairs: Record<
-        string,
-        string
-      >;
     };
 
 export type AtlasRound = {
@@ -459,6 +453,29 @@ export type AtlasRound = {
   status: AtlasRoundStatus;
   createdAt: string;
   endsAt: string;
+
+  /*
+   * Turn state, used only by capital_match rounds. The other round
+   * types are answered by everyone at once and leave these null/empty.
+   */
+  currentPlayerId: string | null;
+  turnEndsAt: string | null;
+  outPlayerIds: string[];
+  playerLives: Record<
+    string,
+    number
+  >;
+};
+
+/** One attempt at placing a capital on the shared match board. */
+export type AtlasPlacement = {
+  id: string;
+  roundId: string;
+  countryId: string;
+  capitalCountryId: string;
+  placedBy: string;
+  isCorrect: boolean;
+  createdAt: string;
 };
 
 export type AtlasAnswer = {
