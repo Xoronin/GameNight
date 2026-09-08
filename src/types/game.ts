@@ -371,3 +371,103 @@ export type TriviaAnswer = {
   points: number;
   createdAt: string;
 };
+
+export type AtlasRoundType =
+  | "flag_paint"
+  | "flag_choice"
+  | "country_from_flag"
+  | "capital_choice"
+  | "capital_match";
+
+export type AtlasRoundStatus =
+  | "playing"
+  | "reveal"
+  | "finished";
+
+export type AtlasSessionStatus =
+  | "playing"
+  | "finished";
+
+/*
+ * What the host generated for a round. Country ids reference
+ * src/data/atlasCountries.ts; storing the ids (rather than the rendered
+ * task) keeps every client showing the same options in the same order.
+ */
+export type AtlasRoundPayload =
+  | {
+      type: "flag_paint";
+      countryId: string;
+    }
+  | {
+      type: "flag_choice";
+      countryId: string;
+      /** Country ids whose flags are offered, already shuffled. */
+      optionIds: string[];
+    }
+  | {
+      type: "country_from_flag";
+      countryId: string;
+      optionIds: string[];
+    }
+  | {
+      type: "capital_choice";
+      countryId: string;
+      /** Country ids whose capitals are offered, already shuffled. */
+      optionIds: string[];
+    }
+  | {
+      type: "capital_match";
+      /** Countries shown as drop targets, in display order. */
+      countryIds: string[];
+      /** The same countries, reshuffled, as the draggable capitals. */
+      capitalOrder: string[];
+    };
+
+export type AtlasResponse =
+  | {
+      type: "flag_paint";
+      /** Region id → colour the player painted it. */
+      regions: Record<
+        string,
+        string
+      >;
+    }
+  | {
+      type: "choice";
+      /** The country id the player picked. */
+      choiceId: string | null;
+    }
+  | {
+      type: "capital_match";
+      /**
+       * Country id → the country id whose capital was dropped on it.
+       * A correct pair maps a country to itself.
+       */
+      pairs: Record<
+        string,
+        string
+      >;
+    };
+
+export type AtlasRound = {
+  id: string;
+  roomId: string;
+  sessionId: string;
+  roundNumber: number;
+  roundType: AtlasRoundType;
+  payload: AtlasRoundPayload;
+  status: AtlasRoundStatus;
+  createdAt: string;
+  endsAt: string;
+};
+
+export type AtlasAnswer = {
+  id: string;
+  roundId: string;
+  playerId: string;
+  response: AtlasResponse;
+  correctCount: number;
+  totalCount: number;
+  points: number;
+  createdAt: string;
+};

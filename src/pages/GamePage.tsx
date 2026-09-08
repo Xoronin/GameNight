@@ -11,6 +11,7 @@ import {
 } from "react-router-dom";
 import Header from "../components/Header";
 import AlphabetGame from "../games/alphabet/AlphabetGame";
+import AtlasGame from "../games/atlas/AtlasGame";
 import BluffGame from "../games/bluff/BluffGame";
 import CategoriesGame from "../games/categories/CategoriesGame";
 import DrawingGame from "../games/draw-guess/DrawingGame";
@@ -32,6 +33,7 @@ const multiplayerGames = [
   "trivia",
   "alphabet",
   "spectrum",
+  "atlas",
 ];
 
 function GamePage() {
@@ -285,6 +287,14 @@ function GamePage() {
     ) {
       return (
         <TriviaGame
+          roomCode={roomCode}
+        />
+      );
+    }
+
+    if (gameId === "atlas") {
+      return (
+        <AtlasGame
           roomCode={roomCode}
         />
       );

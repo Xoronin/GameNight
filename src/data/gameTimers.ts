@@ -6,7 +6,8 @@ export type TimedGameId =
   | "higher-lower"
   | "trivia"
   | "alphabet"
-  | "spectrum";
+  | "spectrum"
+  | "atlas";
 
 export type CustomCategory = {
   key: string;
@@ -37,6 +38,7 @@ export const GAME_TIMER_DEFAULTS: Record<
   trivia: 20,
   alphabet: 30,
   spectrum: 30,
+  atlas: 30,
 };
 
 export const GAME_TIMER_OPTIONS: Record<
@@ -51,6 +53,7 @@ export const GAME_TIMER_OPTIONS: Record<
   trivia: [10, 15, 20, 30, 45],
   alphabet: [15, 20, 30, 45, 60],
   spectrum: [15, 20, 30, 45, 60],
+  atlas: [15, 20, 30, 45, 60],
 };
 
 export function getGameTimerSeconds(
@@ -96,6 +99,7 @@ export const GAME_ROUND_COUNT_DEFAULTS: Record<
   trivia: 8,
   alphabet: 3,
   spectrum: 5,
+  atlas: 8,
 };
 
 export const GAME_ROUND_COUNT_OPTIONS: Record<
@@ -110,6 +114,7 @@ export const GAME_ROUND_COUNT_OPTIONS: Record<
   trivia: [4, 6, 8, 10, 12],
   alphabet: [1, 2, 3, 5],
   spectrum: [3, 5, 8, 13],
+  atlas: [5, 8, 10, 12],
 };
 
 export function getGameRoundCount(
