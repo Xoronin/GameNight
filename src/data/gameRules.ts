@@ -109,6 +109,21 @@ export const gameRules: GameRules = {
     ],
   },
 
+  atlas: {
+    en: [
+      "Every round asks a different kind of geography question.",
+      "Paint a country's flag, pick the right flag, name the country, or choose the capital.",
+      "Matching rounds ask you to drag each capital onto the country it belongs to.",
+      "Painting and matching score partial credit; answer fully correct and fast for the speed bonus.",
+    ],
+    de: [
+      "Jede Runde stellt eine andere Art von Geografie-Frage.",
+      "Male die Flagge eines Landes aus, wähle die richtige Flagge, nenne das Land oder die Hauptstadt.",
+      "In Zuordnungsrunden ziehst du jede Hauptstadt auf das passende Land.",
+      "Malen und Zuordnen geben Teilpunkte; wer komplett richtig und schnell antwortet, bekommt den Zeitbonus.",
+    ],
+  },
+
   spectrum: {
     en: [
       "The host picks a category — a timeline of dates or a ranking by some number.",

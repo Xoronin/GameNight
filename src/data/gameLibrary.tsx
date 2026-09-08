@@ -6,6 +6,7 @@ import {
   CaseSensitive,
   Eye,
   Gavel,
+  Globe2,
   Heart,
   HelpCircle,
   History,
@@ -118,6 +119,16 @@ export const gameLibrary: GameLibraryEntry[] = [
     players: "2–10",
     icon: <History />,
     className: "orange",
+    group: "solo",
+  },
+  {
+    id: "atlas",
+    nameKey: "games.atlas.name",
+    descriptionKey:
+      "games.atlas.description",
+    players: "2–12",
+    icon: <Globe2 />,
+    className: "green",
     group: "solo",
   },
 

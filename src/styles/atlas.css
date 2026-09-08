@@ -1,0 +1,675 @@
+/*
+ * Atlas — flags, countries and capitals.
+ *
+ * Keyframes are declared locally rather than relying on the shared set
+ * in global.css, so this game stays self-contained.
+ */
+
+@keyframes atlasPop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes atlasShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-6px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+}
+
+/* --- flag rendering ---------------------------------------------- */
+
+.atlasFlag {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 6px;
+}
+
+.atlasFlagFrame {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.flagRegion {
+  transition: fill 160ms ease;
+}
+
+.flagRegionInteractive {
+  cursor: pointer;
+}
+
+.flagRegionInteractive:hover {
+  opacity: 0.85;
+}
+
+/*
+ * An unpainted region: a hatched fill would fight the flag's own
+ * colours, so it is simply left dark with a dashed outline.
+ */
+.flagRegionEmpty {
+  fill: rgba(255, 255, 255, 0.04);
+  stroke: rgba(255, 255, 255, 0.3);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+
+/* --- shell ------------------------------------------------------- */
+
+.atlasGame {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.atlasStart,
+.atlasPanel {
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  background: #111117;
+  animation: fadeInUp 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.atlasStart {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.atlasStart h1 {
+  margin: 10px 0;
+  font-size: 34px;
+}
+
+.atlasStart p {
+  max-width: 520px;
+  margin: 0 auto;
+  color: #8f8f9e;
+  line-height: 1.6;
+}
+
+.atlasHeroIcon {
+  width: 78px;
+  height: 78px;
+  margin: 0 auto 6px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: rgba(0, 132, 74, 0.14);
+  border: 1px solid rgba(0, 132, 74, 0.3);
+  color: #4ade80;
+  animation: popIn 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.atlasHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  animation: fadeInDown 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.atlasHeader > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.atlasHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.atlasScore {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 700;
+  color: #fcd116;
+}
+
+.atlasProgress {
+  height: 5px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  margin-bottom: 22px;
+}
+
+.atlasProgress > div {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #00844a, #4ade80);
+  transition: width 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.atlasTask {
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 750;
+}
+
+.atlasError {
+  margin: 12px 0;
+  padding: 11px 14px;
+  border-radius: 11px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  font-size: 0.9rem;
+}
+
+/* --- prompts and multiple choice --------------------------------- */
+
+.atlasPrompt {
+  display: grid;
+  place-items: center;
+  margin-bottom: 22px;
+}
+
+.atlasPromptCountry {
+  display: block;
+  text-align: center;
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.atlasPromptFlag {
+  width: 210px;
+  height: 140px;
+  animation: atlasPop 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.atlasOptions {
+  display: grid;
+  gap: 12px;
+}
+
+.atlasOptionsFlags {
+  grid-template-columns: 1fr 1fr;
+}
+
+.atlasOptionsText {
+  grid-template-columns: 1fr 1fr;
+}
+
+.atlasOption {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 66px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+  animation: fadeInUp 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--optionIndex, 0) * 60ms);
+}
+
+.atlasOption:not(:disabled):hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.atlasOption:not(:disabled):active {
+  transform: scale(0.985);
+}
+
+.atlasOption:disabled {
+  cursor: default;
+}
+
+.atlasOption.selected {
+  border-color: #4ade80;
+  background: rgba(0, 132, 74, 0.16);
+}
+
+.atlasOption.correct {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.16);
+  animation: atlasPop 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.atlasOption.incorrect {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.15);
+  animation: atlasShake 420ms ease-in-out both;
+}
+
+.atlasOptionFlag {
+  width: 100%;
+  max-width: 190px;
+  aspect-ratio: 3 / 2;
+  display: block;
+}
+
+.atlasOptionText {
+  font-size: 1.02rem;
+}
+
+.atlasOptionMark {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+}
+
+/* --- paint round -------------------------------------------------- */
+
+.atlasPaintRound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.atlasPaintStage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  flex-wrap: wrap;
+}
+
+.atlasPaintFlag {
+  width: 260px;
+  height: 173px;
+}
+
+.atlasPaintCompare {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: atlasPop 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.atlasPaintCompareLabel {
+  color: #8f8f9e;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.atlasPalette {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.atlasSwatch {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.atlasSwatch:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.atlasSwatch.selected {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
+}
+
+.atlasSwatch:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.atlasSwatchClear {
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  color: #d4d4dc;
+}
+
+.atlasPaintProgress {
+  color: #8f8f9e;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* --- capital match ------------------------------------------------ */
+
+.atlasMatchRound {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.atlasMatchSlots {
+  display: grid;
+  gap: 10px;
+}
+
+.atlasMatchSlot {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) minmax(0, 1.1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  transition:
+    border-color 200ms ease,
+    background 200ms ease;
+}
+
+.atlasMatchSlot.correct {
+  border-style: solid;
+  border-color: rgba(34, 197, 94, 0.45);
+  background: rgba(34, 197, 94, 0.13);
+}
+
+.atlasMatchSlot.incorrect {
+  border-style: solid;
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.atlasMatchFlag {
+  width: 46px;
+  height: 31px;
+  display: block;
+}
+
+.atlasMatchCountry {
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.atlasMatchDrop {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+}
+
+.atlasMatchEmpty {
+  width: 100%;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.atlasMatchTruth {
+  grid-column: 3;
+  color: #4ade80;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.atlasMatchPool {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.atlasCapitalChip {
+  padding: 10px 15px;
+  border-radius: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #1c1c24;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: grab;
+  /* Stops the browser scrolling the page instead of dragging a chip. */
+  touch-action: none;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+  animation: fadeInUp 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.atlasCapitalChip:not(:disabled):hover {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: #23232c;
+}
+
+.atlasCapitalChip.selected {
+  border-color: #4ade80;
+  background: rgba(0, 132, 74, 0.2);
+}
+
+.atlasCapitalChip.inSlot {
+  width: 100%;
+  animation: none;
+}
+
+/*
+ * While dragging, the chip follows the pointer and must not intercept
+ * the hit test that finds the slot underneath it.
+ */
+.atlasCapitalChip.dragging {
+  cursor: grabbing;
+  pointer-events: none;
+  position: relative;
+  z-index: 20;
+  transition: none;
+  border-color: #4ade80;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.45);
+}
+
+.atlasCapitalChip:disabled {
+  cursor: default;
+}
+
+/* --- results ------------------------------------------------------ */
+
+.atlasLocked,
+.atlasWaiting,
+.atlasFound {
+  margin-top: 16px;
+  text-align: center;
+  color: #8f8f9e;
+  font-size: 0.92rem;
+}
+
+.atlasLocked {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #4ade80;
+  font-weight: 700;
+}
+
+.atlasMainButton {
+  width: 100%;
+  margin-top: 22px;
+  justify-content: center;
+}
+
+.atlasRevealButton {
+  width: 100%;
+  margin-top: 10px;
+  justify-content: center;
+}
+
+.atlasResultBanner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  margin-top: 22px;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  animation: atlasPop 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.atlasResultBanner.correct {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+}
+
+.atlasResultBanner.incorrect {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+}
+
+.atlasAnswerNote {
+  margin-top: 10px;
+  text-align: center;
+  color: #8f8f9e;
+}
+
+.atlasResults {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.atlasResultRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  animation: fadeInUp 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--rowIndex, 0) * 50ms);
+}
+
+.atlasResultRow.correct {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.28);
+}
+
+.atlasResultTally {
+  opacity: 0.8;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.atlasResultPoints {
+  font-weight: 800;
+  color: #4ade80;
+}
+
+.atlasScoreboard {
+  display: grid;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.atlasScoreRow {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+  animation: fadeInUp 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--rowIndex, 0) * 50ms);
+}
+
+@media (max-width: 620px) {
+  .atlasOptionsFlags,
+  .atlasOptionsText {
+    grid-template-columns: 1fr;
+  }
+
+  .atlasMatchSlot {
+    grid-template-columns: 38px minmax(0, 1fr);
+    grid-template-areas:
+      "flag country"
+      "drop drop";
+    row-gap: 8px;
+  }
+
+  .atlasMatchFlag {
+    grid-area: flag;
+    width: 38px;
+    height: 26px;
+  }
+
+  .atlasMatchCountry {
+    grid-area: country;
+  }
+
+  .atlasMatchDrop {
+    grid-area: drop;
+  }
+
+  .atlasPaintFlag {
+    width: 210px;
+    height: 140px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlasOption,
+  .atlasCapitalChip,
+  .atlasResultRow,
+  .atlasScoreRow,
+  .atlasPromptFlag,
+  .atlasResultBanner {
+    animation: none !important;
+  }
+}

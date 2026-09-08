@@ -123,6 +123,12 @@ const de = {
         "Rekonstruiere die geheime Rangliste eines anderen Spielers.",
     },
 
+    atlas: {
+      name: "Atlas",
+      description:
+        "Flaggen, Länder und Hauptstädte — jede Runde eine andere Aufgabe.",
+    },
+
     spectrum: {
       name: "Spectrum",
       description:
@@ -549,6 +555,41 @@ const de = {
     waitingContinue: "Warte darauf, dass der Host fortfährt...",
     timerLabel: "Zeichenzeit",
     roundsPerPlayerLabel: "Runden pro Spieler",
+  },
+
+  atlas: {
+    loading: "Atlas wird geladen...",
+    loadError: "Atlas konnte nicht geladen werden",
+    noPlayerTitle: "Kein Spieler gefunden",
+    joinAgain: "Tritt dem Raum erneut bei.",
+    startTitle: "Einmal um die Welt",
+    startDescription:
+      "Flaggen, Länder und Hauptstädte. Jede Runde stellt eine andere Aufgabe — male eine Flagge aus, wähle die richtige oder ordne Hauptstädte ihren Ländern zu.",
+    startGame: "Spiel starten",
+    waitingHost: "Warte auf den Host...",
+    round: "Runde",
+    taskFlagPaint: "Male die Flagge dieses Landes aus",
+    taskFlagChoice: "Wähle die Flagge dieses Landes",
+    taskCountryFromFlag: "Zu welchem Land gehört diese Flagge?",
+    taskCapitalChoice: "Was ist die Hauptstadt dieses Landes?",
+    taskCapitalMatch: "Ziehe jede Hauptstadt auf ihr Land",
+    submit: "Antwort abgeben",
+    reveal: "Auflösen",
+    answerLocked: "Antwort abgegeben",
+    playersAnswered: "Spieler haben geantwortet",
+    youScored: "Du hattest",
+    noAnswer: "Keine Antwort",
+    correctFlag: "Richtige Flagge",
+    correctAnswerWas: "Die Antwort war",
+    countriesExhausted:
+      "Keine weiteren Länder für dieses Spiel verfügbar.",
+    nextRound: "Nächste Runde",
+    finishGame: "Spiel beenden",
+    gameComplete: "SPIEL BEENDET",
+    finalScores: "Endstand",
+    backToLobby: "Zurück zur Lobby",
+    waitingForHost: "Warte auf den Host...",
+    timerLabel: "Antwortzeit",
   },
 
   gamePage: {

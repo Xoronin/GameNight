@@ -123,6 +123,12 @@ const en = {
         "Reconstruct another player's secret ranking of a set of options.",
     },
 
+    atlas: {
+      name: "Atlas",
+      description:
+        "Flags, countries and capitals — a different task every round.",
+    },
+
     spectrum: {
       name: "Spectrum",
       description:
@@ -549,6 +555,41 @@ const en = {
     waitingContinue: "Waiting for the host to continue...",
     timerLabel: "Drawing time",
     roundsPerPlayerLabel: "Rounds per player",
+  },
+
+  atlas: {
+    loading: "Loading Atlas...",
+    loadError: "Could not load Atlas",
+    noPlayerTitle: "No player found",
+    joinAgain: "Join the room again.",
+    startTitle: "Around the world",
+    startDescription:
+      "Flags, countries and capitals. Every round asks something different — paint a flag, pick the right one, or match capitals to their countries.",
+    startGame: "Start game",
+    waitingHost: "Waiting for the host...",
+    round: "Round",
+    taskFlagPaint: "Paint this country's flag",
+    taskFlagChoice: "Pick the flag of this country",
+    taskCountryFromFlag: "Which country has this flag?",
+    taskCapitalChoice: "What is the capital of this country?",
+    taskCapitalMatch: "Drag each capital onto its country",
+    submit: "Submit answer",
+    reveal: "Reveal",
+    answerLocked: "Answer locked in",
+    playersAnswered: "players answered",
+    youScored: "You got",
+    noAnswer: "No answer",
+    correctFlag: "Correct flag",
+    correctAnswerWas: "The answer was",
+    countriesExhausted:
+      "No more countries available for this game.",
+    nextRound: "Next round",
+    finishGame: "Finish game",
+    gameComplete: "GAME COMPLETE",
+    finalScores: "Final scores",
+    backToLobby: "Back to lobby",
+    waitingForHost: "Waiting for the host to continue...",
+    timerLabel: "Answer time",
   },
 
   gamePage: {
