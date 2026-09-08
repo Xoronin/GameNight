@@ -140,6 +140,8 @@
 }
 
 .categoryInputs input {
+  transition: border-color 160ms ease, background 160ms ease;
+
   min-height: 50px;
 
   padding: 0 14px;
@@ -299,6 +301,9 @@
 }
 
 .categoryRevealBlock {
+  animation: fadeInUp 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--blockIndex, 0) * 70ms);
+
   overflow: hidden;
 
   border: 1px solid #ffffff10;
@@ -322,6 +327,11 @@
 }
 
 .categoryRevealRow {
+  animation: fadeInUp 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--rowIndex, 0) * 45ms);
+  /* Validity flips live as players vote, so ease the colour change. */
+  transition: background 260ms ease, border-color 260ms ease;
+
   min-height: 64px;
   padding: 13px 18px;
 

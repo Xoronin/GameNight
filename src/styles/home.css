@@ -8,11 +8,36 @@ main {
     overflow: hidden;
 }
 
+@keyframes heroGradient {
+    to {
+        background-position: 300% 0;
+    }
+}
+
 .hero {
     flex-shrink: 0;
     padding: 20px 0 16px;
     text-align: center;
     animation: fadeInUp 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Hero copy arrives a beat after the section itself. */
+.hero h1,
+.hero p,
+.heroActions {
+    animation: fadeInUp 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero h1 {
+    animation-delay: 60ms;
+}
+
+.hero p {
+    animation-delay: 140ms;
+}
+
+.heroActions {
+    animation-delay: 220ms;
 }
 
 .hero h1 {
@@ -24,10 +49,12 @@ main {
 }
 
     .hero h1 span {
-        background: linear-gradient(90deg, #a78bfa, #60a5fa, #22d3ee);
+        background: linear-gradient(90deg, #a78bfa, #60a5fa, #22d3ee, #a78bfa);
+        background-size: 300% 100%;
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
+        animation: heroGradient 9s linear infinite;
     }
 
 .hero p {
@@ -310,5 +337,11 @@ footer {
     footer {
         flex-direction: column;
         gap: 8px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .hero h1 span {
+        animation: none !important;
+        background-position: 0 0;
     }
 }

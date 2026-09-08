@@ -198,6 +198,13 @@
 
 .playerList {
     margin-top: 20px;
+    /*
+     * The rows themselves are driven by Motion, which owns their
+     * opacity and transform. Fading the container covers the first
+     * paint without competing for those properties, and animating
+     * opacity only leaves Motion's layout measurements untouched.
+     */
+    animation: fadeIn 420ms ease both;
 }
 
 .playerRow {
@@ -208,8 +215,6 @@
     border: 1px solid #ffffff0b;
     border-radius: 12px;
     background: #ffffff05;
-    animation: fadeInUp 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
-    animation-delay: calc(var(--rowIndex, 0) * 55ms);
     transition: border-color 160ms ease, background 160ms ease;
 }
 
@@ -312,6 +317,7 @@
 
 .lobbyGameOption {
     appearance: none;
+    position: relative;
     width: 100%;
     min-height: 76px;
     padding: 12px 14px;
@@ -335,8 +341,26 @@
 
     .lobbyGameOption.selected {
         background: #1c1728;
-        border-color: #7c3aed;
         transform: translateX(3px);
+    }
+
+/*
+ * Selection ring shared via layoutId, so picking a different game
+ * slides the highlight across the list instead of cutting to it.
+ * The tournament picker allows several games at once and keeps a
+ * plain border instead.
+ */
+.lobbyGameSelectionRing {
+    position: absolute;
+    inset: -1px;
+    border: 1px solid #7c3aed;
+    border-radius: 14px;
+    background: #7c3aed14;
+    pointer-events: none;
+}
+
+    .tournamentPickOption.selected {
+        border-color: #7c3aed;
     }
 
 .lobbyGameIcon {

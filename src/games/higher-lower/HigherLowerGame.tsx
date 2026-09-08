@@ -9,6 +9,7 @@ import {
   Trophy,
   X,
 } from "lucide-react";
+import type { CSSProperties } from "react";
 import {
   useCallback,
   useEffect,
@@ -16,6 +17,10 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  AnimatePresence,
+  motion,
+} from "motion/react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import {
@@ -23,6 +28,7 @@ import {
   getGameTimerSeconds,
 } from "../../data/gameTimers";
 import { translate } from "../../i18n/i18n";
+import { revealVariants } from "../../lib/motion";
 import { useRoom } from "../../hooks/useRoom";
 import { useHigherLowerRound } from "../../hooks/useHigherLowerRound";
 import {
@@ -628,6 +634,12 @@ function HigherLowerGame({
                   <div
                     key={player.id}
                     className="higherLowerScoreRow"
+                    style={
+                      {
+                        "--rowIndex":
+                          index,
+                      } as CSSProperties
+                    }
                   >
                     <span>{index + 1}</span>
 
@@ -842,24 +854,48 @@ function HigherLowerGame({
               <h2>{nextItem.label}</h2>
 
               <div className="higherLowerValue">
-                {revealed ? (
-                  <>
-                    {nextItem.value.toLocaleString(
-                      gameLanguage,
-                    )}
+                <AnimatePresence
+                  mode="wait"
+                  initial={false}
+                >
+                  {revealed ? (
+                    <motion.span
+                      key="value"
+                      variants={
+                        revealVariants
+                      }
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
+                      {nextItem.value.toLocaleString(
+                        gameLanguage,
+                      )}
 
-                    {nextItem.unit && (
-                      <span>
-                        {" "}
-                        {nextItem.unit}
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <span className="higherLowerHidden">
-                    ???
-                  </span>
-                )}
+                      {nextItem.unit && (
+                        <span>
+                          {" "}
+                          {
+                            nextItem.unit
+                          }
+                        </span>
+                      )}
+                    </motion.span>
+                  ) : (
+                    <motion.span
+                      key="hidden"
+                      className="higherLowerHidden"
+                      variants={
+                        revealVariants
+                      }
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
+                      ???
+                    </motion.span>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>

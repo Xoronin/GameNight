@@ -85,7 +85,7 @@
     #3b82f6,
     #60a5fa
   );
-  transition: width 0.3s ease;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .triviaCategory {
@@ -124,6 +124,12 @@
     transform 0.15s ease,
     border-color 0.15s ease,
     background 0.15s ease;
+  animation: fadeInUp 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--optionIndex, 0) * 60ms);
+}
+
+.triviaOption:not(:disabled):active {
+  transform: scale(0.985);
 }
 
 .triviaOption:not(:disabled):hover {
@@ -155,6 +161,18 @@
 .triviaOption.selected {
   background: rgba(59, 130, 246, 0.14);
   border-color: rgba(59, 130, 246, 0.4);
+}
+
+/*
+ * The reveal states run a one-shot animation on top of the entrance
+ * one, so they are declared after it and win the cascade.
+ */
+.triviaOption.correct {
+  animation: correctPop 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.triviaOption.incorrect {
+  animation: shakeX 420ms ease-in-out both;
 }
 
 .triviaOption.correct {
@@ -214,6 +232,8 @@
 }
 
 .triviaResultRow {
+  animation: fadeInUp 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--rowIndex, 0) * 55ms);
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr) auto;
   align-items: center;

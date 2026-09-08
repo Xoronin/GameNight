@@ -59,6 +59,97 @@
     }
 }
 
+/* Draws attention to a value that just changed (score, streak). */
+@keyframes scoreBump {
+    0% {
+        transform: scale(1);
+    }
+    40% {
+        transform: scale(1.22);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Rejects an action: wrong answer, invalid word, failed guess. */
+@keyframes shakeX {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateX(-7px);
+    }
+    40% {
+        transform: translateX(6px);
+    }
+    60% {
+        transform: translateX(-4px);
+    }
+    80% {
+        transform: translateX(2px);
+    }
+}
+
+/* Urgency on a timer that is nearly out. */
+@keyframes urgentPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+    50% {
+        transform: scale(1.06);
+        box-shadow: 0 0 0 7px rgba(239, 68, 68, 0);
+    }
+}
+
+/* A correct answer settling into place. */
+@keyframes correctPop {
+    0% {
+        transform: scale(1);
+    }
+    45% {
+        transform: scale(1.04);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-18px);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(18px);
+    }
+}
+
+/* Idle motion for hero art and empty-state icons. */
+@keyframes floatY {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+/* Sweeps across a surface that is waiting on other players. */
+@keyframes shimmer {
+    from {
+        background-position: -160% 0;
+    }
+    to {
+        background-position: 260% 0;
+    }
+}
+
 html,
 body,
 #root {
@@ -240,6 +331,131 @@ button {
     color: rgba(255, 107, 107, 1);
 }
 
+    .gameTimerBadge.gameTimerBadgeLow {
+        animation: urgentPulse 1s ease-in-out infinite;
+    }
+
+/*
+ * Animation helpers shared by the game screens. `--rowIndex`
+ * staggers a list; set it inline where the row is rendered.
+ */
+.animateIn {
+    animation: fadeInUp 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animatePop {
+    animation: popIn 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animateShake {
+    animation: shakeX 420ms ease-in-out both;
+}
+
+.animateBump {
+    animation: scoreBump 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.floatIdle {
+    animation: floatY 4.5s ease-in-out infinite;
+}
+
+.staggerRow {
+    animation: fadeInUp 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--rowIndex, 0) * 45ms);
+}
+
+/*
+ * Shared game-screen choreography. Every game screen follows the same
+ * naming pattern, so the entrances live here once rather than being
+ * repeated in each game's stylesheet. Individual games override these
+ * from their own file, which is loaded after this one.
+ */
+.alphabetPanel,
+.bluffPanel,
+.categoriesPanel,
+.drawingPanel,
+.higherLowerPanel,
+.minefieldPanel,
+.spectrumPanel,
+.triviaPanel {
+    animation: fadeInUp 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.alphabetStart,
+.categoriesStart,
+.drawingStart,
+.higherLowerStart,
+.minefieldStart,
+.spectrumStart,
+.triviaStart {
+    animation: scaleIn 440ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.alphabetHeroIcon,
+.categoriesStartIcon,
+.drawingStartIcon,
+.higherLowerHeroIcon,
+.minefieldHeroIcon,
+.spectrumHeroIcon,
+.triviaHeroIcon {
+    animation: popIn 520ms cubic-bezier(0.16, 1, 0.3, 1) both,
+               floatY 4.5s ease-in-out 520ms infinite;
+}
+
+.alphabetHeader,
+.bluffGameHeader,
+.categoriesHeader,
+.drawingHeader,
+.higherLowerHeader,
+.minefieldHeader,
+.spectrumHeader,
+.triviaHeader {
+    animation: fadeInDown 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Round progress should glide to its new width, not jump. */
+.alphabetProgress > div,
+.higherLowerProgress > div,
+.minefieldProgress > div,
+.spectrumProgress > div,
+.triviaProgress > div,
+.bluffProgressFill {
+    transition: width 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Scoreboards deal their rows in. */
+.alphabetScoreRow,
+.bluffRoundScoreRow,
+.bluffScoreRow,
+.categoriesScoreRow,
+.drawingScoreRow,
+.higherLowerScoreRow,
+.minefieldScoreRow,
+.spectrumScoreRow,
+.triviaScoreRow {
+    animation: fadeInUp 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--rowIndex, 0) * 50ms);
+}
+
+.alphabetScore,
+.bluffScore,
+.categoriesScore,
+.drawingScore,
+.higherLowerScore,
+.minefieldScore,
+.spectrumScore,
+.triviaScore {
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Placed on a block that is waiting for other players to act. */
+.waitingShimmer {
+    background-image: linear-gradient(100deg, transparent 20%, #ffffff0f 45%, transparent 70%);
+    background-size: 220% 100%;
+    background-repeat: no-repeat;
+    animation: shimmer 2.1s ease-in-out infinite;
+}
+
 /*
  * Shared scrollbar styling for internally-scrolling
  * regions (the Home game grid, Lobby panel bodies).
@@ -285,5 +501,24 @@ button {
         animation-iteration-count: 1 !important;
         transition-duration: 0.001ms !important;
         scroll-behavior: auto !important;
+    }
+
+    /*
+     * The rules above collapse a loop to a single 0.001ms pass, which
+     * leaves the element on the keyframe's final frame. For the looping
+     * decorations that is a scaled or offset resting state, so drop the
+     * animation entirely instead.
+     */
+    .gameTimerBadge.gameTimerBadgeLow,
+    .waitingShimmer,
+    .floatIdle,
+    .alphabetHeroIcon,
+    .categoriesStartIcon,
+    .drawingStartIcon,
+    .higherLowerHeroIcon,
+    .minefieldHeroIcon,
+    .spectrumHeroIcon,
+    .triviaHeroIcon {
+        animation: none !important;
     }
 }

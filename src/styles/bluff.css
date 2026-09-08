@@ -222,6 +222,13 @@
 }
 
 .bluffOption {
+  animation: fadeInUp 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--optionIndex, 0) * 55ms);
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    background 150ms ease;
+
   width: 100%;
   min-height: 68px;
 
@@ -248,6 +255,11 @@
 .bluffOption:hover:not(:disabled) {
   border-color: #ffffff1c;
   background: #1c1c24;
+  transform: translateY(-2px);
+}
+
+.bluffOption:active:not(:disabled) {
+  transform: scale(0.985);
 }
 
 .bluffOption:disabled {

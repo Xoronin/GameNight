@@ -9,6 +9,7 @@ import {
   Trophy,
   X,
 } from "lucide-react";
+import type { CSSProperties } from "react";
 import {
   useEffect,
   useMemo,
@@ -656,6 +657,12 @@ function MinefieldGame({
                       player.id
                     }
                     className="minefieldScoreRow"
+                    style={
+                      {
+                        "--rowIndex":
+                          index,
+                      } as CSSProperties
+                    }
                   >
                     <span>
                       {index + 1}
@@ -925,7 +932,7 @@ function MinefieldGame({
             {shuffleStable(
               tiles,
               round.id,
-            ).map((tile) => {
+            ).map((tile, tileIndex) => {
               const revealed =
                 tile.revealed;
 
@@ -933,6 +940,12 @@ function MinefieldGame({
                 <button
                   key={tile.id}
                   type="button"
+                  style={
+                    {
+                      "--tileIndex":
+                        tileIndex,
+                    } as CSSProperties
+                  }
                   disabled={
                     revealed ||
                     !isMyTurn ||

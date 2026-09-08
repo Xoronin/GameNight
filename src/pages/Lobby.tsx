@@ -10,8 +10,15 @@ import {
   Users,
   X,
 } from "lucide-react";
+import {
+  AnimatePresence,
+  motion,
+} from "motion/react";
 import type { CSSProperties } from "react";
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 import {
   useNavigate,
   useParams,
@@ -36,6 +43,12 @@ import {
   getGameLibraryEntry,
 } from "../data/gameLibrary";
 import { useLanguage } from "../hooks/useLanguage";
+import {
+  listItemVariants,
+  quickFade,
+  revealVariants,
+  softSpring,
+} from "../lib/motion";
 import { useRoom } from "../hooks/useRoom";
 import {
   exitTournament,
@@ -116,6 +129,7 @@ const playableGames = games.filter(
 
 function Lobby() {
   const navigate = useNavigate();
+
   const { roomCode } = useParams();
   const { t } = useLanguage();
 
@@ -683,16 +697,16 @@ function Lobby() {
       );
     }
 
+    const isSelected =
+      room.selectedGame === game.id;
+
     return (
       <button
         key={game.id}
         className={`lobbyGameOption ${
           game.className
         } ${
-          room.selectedGame ===
-          game.id
-            ? "selected"
-            : ""
+          isSelected ? "selected" : ""
         }`}
         onClick={() => {
           void selectGame(game.id);
@@ -700,6 +714,15 @@ function Lobby() {
         disabled={!isHost}
         type="button"
       >
+        {isSelected && (
+          <motion.span
+            aria-hidden
+            className="lobbyGameSelectionRing"
+            layoutId="lobbyGameSelectionRing"
+            transition={softSpring}
+          />
+        )}
+
         <div className="lobbyGameIcon">
           {game.icon}
         </div>
@@ -714,17 +737,42 @@ function Lobby() {
           </span>
         </div>
 
-        {room.selectedGame ===
-        game.id ? (
-          <div className="selectedIndicator">
-            <Check size={16} />
-          </div>
-        ) : (
-          <ChevronRight
-            className="gameChevron"
-            size={18}
-          />
-        )}
+        <AnimatePresence
+          mode="wait"
+          initial={false}
+        >
+          {isSelected ? (
+            <motion.div
+              key="check"
+              className="selectedIndicator"
+              variants={
+                revealVariants
+              }
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <Check size={16} />
+            </motion.div>
+          ) : (
+            <motion.span
+              key="chevron"
+              initial={{
+                opacity: 0,
+              }}
+              animate={{
+                opacity: 1,
+              }}
+              exit={{ opacity: 0 }}
+              transition={quickFade}
+            >
+              <ChevronRight
+                className="gameChevron"
+                size={18}
+              />
+            </motion.span>
+          )}
+        </AnimatePresence>
       </button>
     );
   };
@@ -1142,16 +1190,25 @@ function Lobby() {
 
             <div className="lobbyPanelBody">
             <div className="playerList">
+              {/*
+                * `initial={false}` renders the players already in the
+                * room without an entrance, so only an actual join or
+                * leave animates. `layout` slides the remaining rows up
+                * to close the gap when somebody leaves.
+                */}
+              <AnimatePresence initial={false}>
               {players.map(
-                (player, index) => (
-                  <div
+                (player) => (
+                  <motion.div
                     className="playerRow"
                     key={player.id}
-                    style={
-                      {
-                        "--rowIndex": index,
-                      } as CSSProperties
+                    layout
+                    variants={
+                      listItemVariants
                     }
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
                   >
                     <div className="playerAvatar">
                       {player.name
@@ -1192,9 +1249,10 @@ function Lobby() {
                         )}
                       </span>
                     )}
-                  </div>
+                  </motion.div>
                 ),
               )}
+              </AnimatePresence>
             </div>
 
             <div className="waitingBox">
