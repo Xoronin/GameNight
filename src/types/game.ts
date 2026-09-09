@@ -374,6 +374,13 @@ export type TriviaAnswer = {
 
 import type { MapRegionId } from "../data/atlasMapPaths";
 
+/*
+ * Adding a value here also needs a migration widening the
+ * atlas_rounds_round_type_check constraint — the database pins this
+ * list too, and a mode missing from it fails at round creation with
+ * "violates check constraint". See
+ * supabase/migrations/20260909000000_atlas_map_round_types.sql.
+ */
 export type AtlasRoundType =
   | "flag_paint"
   | "flag_choice"
