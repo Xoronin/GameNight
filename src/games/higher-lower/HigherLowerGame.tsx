@@ -30,6 +30,7 @@ import {
 } from "../../data/gameTimers";
 import { translate } from "../../i18n/i18n";
 import { revealVariants } from "../../lib/motion";
+import { useAutoReveal } from "../../hooks/useAutoReveal";
 import { useRoom } from "../../hooks/useRoom";
 import { useHigherLowerRound } from "../../hooks/useHigherLowerRound";
 import {
@@ -284,6 +285,18 @@ function HigherLowerGame({
       guesses,
     ],
   );
+
+  useAutoReveal({
+    roundId: round?.id ?? null,
+    ready:
+      round?.status ===
+        "guessing" &&
+      allPlayersGuessed,
+    isHost,
+    onReveal: () => {
+      void reveal();
+    },
+  });
 
   const nextRound = async () => {
     if (!round || !isHost) {
@@ -986,33 +999,13 @@ function HigherLowerGame({
                 )}
               </div>
 
-              {isHost && (
-                <button
-                  className="primaryButton higherLowerMainButton"
-                  disabled={
-                    working ||
-                    !allPlayersGuessed
-                  }
-                  onClick={() => {
-                    void runAction(reveal);
-                  }}
-                >
+              {allPlayersGuessed && (
+                <div className="higherLowerWaiting">
                   {gameT(
-                    "higherLower.reveal",
+                    "common.revealing",
                   )}
-
-                  <ArrowRight size={18} />
-                </button>
+                </div>
               )}
-
-              {!isHost &&
-                allPlayersGuessed && (
-                  <div className="higherLowerWaiting">
-                    {gameT(
-                      "higherLower.waitingForHost",
-                    )}
-                  </div>
-                )}
             </>
           )}
 

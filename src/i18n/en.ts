@@ -1,5 +1,6 @@
 const en = {
   common: {
+    revealing: "Everyone answered — revealing...",
     yourTurn: "Your turn!",
     yourTurnHint: "Everyone is waiting on you",
     timeRunningOut: "Time running out",
@@ -492,7 +493,6 @@ const en = {
     guessLower: "Lower",
     guessLocked: "Guess locked in",
     playersGuessed: "players guessed",
-    reveal: "Reveal",
     itemsMissing: "Items missing",
     itemsExhausted:
       "No more items available for this game.",
@@ -521,7 +521,6 @@ const en = {
     answerLocked: "Answer locked in",
     playersAnswered: "players answered",
     noAnswer: "No answer",
-    reveal: "Reveal",
     correct: "Correct!",
     incorrect: "Incorrect",
     questionMissing: "Question missing",
@@ -591,7 +590,6 @@ const en = {
     modeMapPlace: "Map board",
     taskCapitalMatch: "Drag each capital onto its country",
     submit: "Submit answer",
-    reveal: "Reveal",
     answerLocked: "Answer locked in",
     playersAnswered: "players answered",
     youScored: "You got",
@@ -617,6 +615,35 @@ const en = {
     timerLabel: "Answer time",
   },
 
+  feedback: {
+    button: "Feedback",
+    title: "Send feedback",
+    intro:
+      "Found a bug or have an idea? It goes straight to the issue tracker.",
+    kindBug: "Bug",
+    kindIdea: "Idea",
+    placeholderBug:
+      "What happened, and what did you expect instead?",
+    placeholderIdea:
+      "What would you like to see in Game Night?",
+    send: "Send",
+    sending: "Sending...",
+    close: "Close",
+    thanks: "Thanks — that is filed.",
+    viewIssue: "View it on GitHub",
+    hintPublic:
+      "Your message is posted publicly on GitHub, so leave out anything private.",
+    errorTooShort:
+      "Please write a little more so it can be acted on.",
+    errorRateLimited:
+      "That is a few reports in a row — try again in a minute.",
+    errorUnavailable:
+      "Feedback is not set up on this deployment yet.",
+    errorNetwork:
+      "Could not reach the server. Check your connection and try again.",
+    errorFailed:
+      "Could not file that. Please try again.",
+  },
   gamePage: {
     noRoomSelected: "No room selected",
     joinRoomFirst: "Create or join a room first.",

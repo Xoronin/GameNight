@@ -26,6 +26,7 @@ import {
   getGameTimerSeconds,
 } from "../../data/gameTimers";
 import { useAtlasRound } from "../../hooks/useAtlasRound";
+import { useAutoReveal } from "../../hooks/useAutoReveal";
 import { useRoom } from "../../hooks/useRoom";
 import { translate } from "../../i18n/i18n";
 import {
@@ -482,6 +483,23 @@ function AtlasGame({
       allPlayersAnswered,
     ],
   );
+
+  /*
+   * Board rounds run on turns rather than one answer each, so they end
+   * when the board is solved or the clock runs out, not on this count.
+   */
+  useAutoReveal({
+    roundId: round?.id ?? null,
+    ready:
+      round?.status ===
+        "playing" &&
+      !isMatchRound &&
+      allPlayersAnswered,
+    isHost,
+    onReveal: () => {
+      void reveal();
+    },
+  });
 
   const nextRound = async () => {
     if (!round || !isHost) {
@@ -1285,24 +1303,12 @@ function AtlasGame({
                   )}
                 </div>
 
-                {isHost && (
-                  <button
-                    className="secondaryButton atlasRevealButton"
-                    disabled={
-                      working ||
-                      !allPlayersAnswered
-                    }
-                    onClick={() => {
-                      void runAction(
-                        () =>
-                          reveal(),
-                      );
-                    }}
-                  >
+                {allPlayersAnswered && (
+                  <div className="atlasWaiting">
                     {gameT(
-                      "atlas.reveal",
+                      "common.revealing",
                     )}
-                  </button>
+                  </div>
                 )}
               </>
             )}

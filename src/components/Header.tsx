@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../hooks/useLanguage";
+import FeedbackButton from "./FeedbackButton";
 import LanguageSwitcher from "./LanguageSwitcher";
 import ProfileButton from "./ProfileButton";
 import SoundToggle from "./SoundToggle";
@@ -47,6 +48,8 @@ function Header({
 
         <div className="headerActions">
           {children}
+
+          <FeedbackButton />
 
           <SoundToggle />
 

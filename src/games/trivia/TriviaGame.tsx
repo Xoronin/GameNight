@@ -32,6 +32,7 @@ import {
   phaseVariants,
   revealVariants,
 } from "../../lib/motion";
+import { useAutoReveal } from "../../hooks/useAutoReveal";
 import { useRoom } from "../../hooks/useRoom";
 import { useTriviaRound } from "../../hooks/useTriviaRound";
 import {
@@ -282,6 +283,18 @@ function TriviaGame({
       allPlayersAnswered,
     ],
   );
+
+  useAutoReveal({
+    roundId: round?.id ?? null,
+    ready:
+      round?.status ===
+        "answering" &&
+      allPlayersAnswered,
+    isHost,
+    onReveal: () => {
+      void reveal();
+    },
+  });
 
   const nextRound = async () => {
     if (!round || !isHost) {
@@ -945,33 +958,13 @@ function TriviaGame({
                 )}
               </div>
 
-              {isHost && (
-                <button
-                  className="primaryButton triviaMainButton"
-                  disabled={
-                    working ||
-                    !allPlayersAnswered
-                  }
-                  onClick={() => {
-                    void runAction(() =>
-                      reveal(),
-                    );
-                  }}
-                >
-                  {gameT("trivia.reveal")}
-
-                  <ArrowRight size={18} />
-                </button>
+              {allPlayersAnswered && (
+                <div className="triviaWaiting">
+                  {gameT(
+                    "common.revealing",
+                  )}
+                </div>
               )}
-
-              {!isHost &&
-                allPlayersAnswered && (
-                  <div className="triviaWaiting">
-                    {gameT(
-                      "trivia.waitingForHost",
-                    )}
-                  </div>
-                )}
             </>
           )}
 

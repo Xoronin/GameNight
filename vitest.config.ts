@@ -2,9 +2,16 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    /* Pure logic tests — no DOM needed, so no jsdom dependency. */
+    /*
+     * Node by default — most tests are pure logic. Files that render a
+     * component or hook opt into jsdom with a @vitest-environment docblock.
+     */
     environment: "node",
-    include: ["src/**/*.test.ts"],
+    include: [
+      "src/**/*.test.ts",
+      "src/**/*.test.tsx",
+      "api/**/*.test.ts",
+    ],
 
     /*
      * src/lib/supabase.ts throws at import time when these are missing,
