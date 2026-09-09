@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { reportChannelStatus } from "../lib/realtime";
 import { supabase } from "../lib/supabase";
 import {
   getActiveBluffSession,
@@ -18,10 +19,14 @@ import type {
 import type {
   BluffSessionRow,
 } from "../services/bluffService";
+import { useRealtimeGeneration } from "./useConnection";
 
 export function useBluffRound(
   roomId: string | undefined,
 ) {
+  const generation =
+    useRealtimeGeneration();
+
   const [
     session,
     setSession,
@@ -149,7 +154,9 @@ export function useBluffRound(
             void loadSession();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -158,7 +165,7 @@ export function useBluffRound(
         channel,
       );
     };
-  }, [roomId]);
+  }, [roomId, generation]);
 
   /*
    * --------------------------------------------------------------
@@ -241,7 +248,9 @@ export function useBluffRound(
             void loadRound();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -250,7 +259,7 @@ export function useBluffRound(
         channel,
       );
     };
-  }, [session?.id]);
+  }, [session?.id, generation]);
 
   /*
    * --------------------------------------------------------------
@@ -330,7 +339,9 @@ export function useBluffRound(
             void loadRoundData();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     const votesChannel =
       supabase
@@ -351,7 +362,9 @@ export function useBluffRound(
             void loadRoundData();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -364,7 +377,7 @@ export function useBluffRound(
         votesChannel,
       );
     };
-  }, [round?.id]);
+  }, [round?.id, generation]);
 
   return {
     session,

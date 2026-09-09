@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { reportChannelStatus } from "../lib/realtime";
 import { supabase } from "../lib/supabase";
 import {
   getActiveHigherLowerSession,
@@ -17,11 +18,15 @@ import type {
   HigherLowerItem,
   HigherLowerRound,
 } from "../types/game";
+import { useRealtimeGeneration } from "./useConnection";
 
 export function useHigherLowerRound(
   roomId: string | undefined,
   language: "en" | "de",
 ) {
+  const generation =
+    useRealtimeGeneration();
+
   const [session, setSession] =
     useState<HigherLowerSession | null>(
       null,
@@ -119,7 +124,9 @@ export function useHigherLowerRound(
           void loadSession();
         },
       )
-      .subscribe();
+      .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -128,7 +135,7 @@ export function useHigherLowerRound(
         channel,
       );
     };
-  }, [roomId]);
+  }, [roomId, generation]);
 
   useEffect(() => {
     if (!session?.id) {
@@ -190,7 +197,9 @@ export function useHigherLowerRound(
           void loadRound();
         },
       )
-      .subscribe();
+      .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -199,7 +208,7 @@ export function useHigherLowerRound(
         channel,
       );
     };
-  }, [session?.id]);
+  }, [session?.id, generation]);
 
   useEffect(() => {
     if (
@@ -283,7 +292,9 @@ export function useHigherLowerRound(
           void loadData();
         },
       )
-      .subscribe();
+      .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -297,6 +308,7 @@ export function useHigherLowerRound(
     round?.currentItemId,
     round?.nextItemId,
     language,
+    generation,
   ]);
 
   return {

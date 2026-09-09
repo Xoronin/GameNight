@@ -82,3 +82,19 @@
         gap: 6px;
     }
 }
+
+/*
+ * Below this the wordmark and four controls no longer both fit, and the
+ * overflow scrolls the whole page sideways. The dice keeps its job as the
+ * home button; the button carries the name for screen readers.
+ */
+@media (max-width: 460px) {
+    .brand strong {
+        display: none;
+    }
+
+    .brandDice {
+        width: 36px;
+        height: 36px;
+    }
+}

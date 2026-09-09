@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { reportChannelStatus } from "../lib/realtime";
 import { supabase } from "../lib/supabase";
 import {
   getActiveMinefieldSession,
@@ -17,11 +18,15 @@ import type {
   MinefieldRound,
   MinefieldTile,
 } from "../types/game";
+import { useRealtimeGeneration } from "./useConnection";
 
 export function useMinefieldRound(
   roomId: string | undefined,
   language: "en" | "de",
 ) {
+  const generation =
+    useRealtimeGeneration();
+
   const [
     round,
     setRound,
@@ -132,7 +137,9 @@ export function useMinefieldRound(
           void loadSession();
         },
       )
-      .subscribe();
+      .subscribe(
+        reportChannelStatus,
+      );
 
   return () => {
     active = false;
@@ -218,7 +225,9 @@ export function useMinefieldRound(
             void loadData();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -231,6 +240,7 @@ export function useMinefieldRound(
     round?.id,
     round?.questionId,
     language,
+    generation,
   ]);
 
   useEffect(() => {
@@ -294,7 +304,9 @@ export function useMinefieldRound(
           void loadRound();
         },
       )
-      .subscribe();
+      .subscribe(
+        reportChannelStatus,
+      );
 
   return () => {
     active = false;

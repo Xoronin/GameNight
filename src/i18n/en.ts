@@ -1,5 +1,7 @@
 const en = {
   common: {
+    reconnecting: "Reconnecting...",
+    offline: "No connection",
     revealing: "Everyone answered — revealing...",
     yourTurn: "Your turn!",
     yourTurnHint: "Everyone is waiting on you",
@@ -226,6 +228,12 @@ const en = {
   },
 
   lobby: {
+    shareLink: "Share link",
+    linkCopied: "Link copied",
+    copyCode: "Copy the room code",
+    showQr: "QR code",
+    qrHint: "Point a camera at this to join the room.",
+    shareMessage: "Join my Game Night room!",
     badge: "GAME LOBBY",
     ready: "Ready to play?",
     shareCode: "Share this room code with your friends.",

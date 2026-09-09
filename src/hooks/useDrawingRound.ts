@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { reportChannelStatus } from "../lib/realtime";
 import { supabase } from "../lib/supabase";
 import {
   getActiveDrawingSession,
@@ -17,11 +18,15 @@ import type {
   DrawingStroke,
   DrawingWord,
 } from "../types/game";
+import { useRealtimeGeneration } from "./useConnection";
 
 export function useDrawingRound(
   roomId: string | undefined,
   language: "en" | "de",
 ) {
+  const generation =
+    useRealtimeGeneration();
+
   const [
     session,
     setSession,
@@ -145,7 +150,9 @@ export function useDrawingRound(
             void loadSession();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -154,7 +161,7 @@ export function useDrawingRound(
         channel,
       );
     };
-  }, [roomId]);
+  }, [roomId, generation]);
 
   /*
    * ROUND
@@ -222,7 +229,9 @@ export function useDrawingRound(
             void loadRound();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -231,7 +240,7 @@ export function useDrawingRound(
         channel,
       );
     };
-  }, [session?.id]);
+  }, [session?.id, generation]);
 
   /*
    * WORD + STROKES + GUESSES
@@ -319,7 +328,9 @@ export function useDrawingRound(
             void loadRoundData();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     const guessesChannel =
       supabase
@@ -340,7 +351,9 @@ export function useDrawingRound(
             void loadRoundData();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -357,6 +370,7 @@ export function useDrawingRound(
     round?.id,
     round?.wordId,
     language,
+    generation,
   ]);
 
   return {

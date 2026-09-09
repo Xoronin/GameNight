@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { reportChannelStatus } from "../lib/realtime";
 import { supabase } from "../lib/supabase";
 import {
   getCategoriesAnswers,
@@ -13,10 +14,14 @@ import type {
   CategoriesRound,
   CategoriesVote,
 } from "../types/game";
+import { useRealtimeGeneration } from "./useConnection";
 
 export function useCategoriesRound(
   roomId?: string,
 ) {
+  const generation =
+    useRealtimeGeneration();
+
   const [round, setRound] =
     useState<CategoriesRound | null>(
       null,
@@ -141,7 +146,9 @@ export function useCategoriesRound(
               );
             },
           )
-          .subscribe();
+          .subscribe(
+        reportChannelStatus,
+      );
     };
 
     const subscribeToVotes = (
@@ -174,7 +181,9 @@ export function useCategoriesRound(
               );
             },
           )
-          .subscribe();
+          .subscribe(
+        reportChannelStatus,
+      );
     };
 
     const loadRound =
@@ -262,7 +271,9 @@ export function useCategoriesRound(
             void loadRound();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       cancelled = true;
@@ -283,7 +294,7 @@ export function useCategoriesRound(
         );
       }
     };
-  }, [roomId]);
+  }, [roomId, generation]);
 
   return {
     round,

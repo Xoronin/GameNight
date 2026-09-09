@@ -1,5 +1,7 @@
 const de = {
   common: {
+    reconnecting: "Verbinde neu...",
+    offline: "Keine Verbindung",
     revealing: "Alle haben geantwortet — Auflösung...",
     yourTurn: "Du bist dran!",
     yourTurnHint: "Alle warten auf dich",
@@ -226,6 +228,12 @@ const de = {
   },
 
   lobby: {
+    shareLink: "Link teilen",
+    linkCopied: "Link kopiert",
+    copyCode: "Raumcode kopieren",
+    showQr: "QR-Code",
+    qrHint: "Scanne das mit der Kamera, um dem Raum beizutreten.",
+    shareMessage: "Komm in meinen Game-Night-Raum!",
     badge: "SPIELLOBBY",
     ready: "Bereit zu spielen?",
     shareCode: "Teile diesen Raumcode mit deinen Freunden.",
