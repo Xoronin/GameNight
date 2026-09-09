@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Tests
+        run: npm test
+
+      # Runs `tsc -b` first, so this covers typechecking too.
+      - name: Build
+        run: npm run build
+        env:
+          # The build only needs these to exist — src/lib/supabase.ts
+          # throws at import time without them. Nothing is contacted.
+          VITE_SUPABASE_URL: https://ci.invalid
+          VITE_SUPABASE_ANON_KEY: ci-anon-key
