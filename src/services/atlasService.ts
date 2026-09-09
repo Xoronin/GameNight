@@ -393,16 +393,22 @@ const QUICK_ROUND_TYPES =
 /**
  * Chooses the task for a round.
  *
- * The capital board is scheduled rather than rolled for. Leaving it to
- * a plain random draw meant it turned up in barely half of the default
- * eight-round games — a coin flip on whether anyone saw the mode at
- * all. Instead every game gets exactly one, on a round picked
- * uniformly at random: taking it with probability 1/(rounds left,
- * including this one) spreads the slot evenly and makes it a certainty
- * by the final round if it has not landed yet.
+ * Every mode is guaranteed to come up at least once per game before
+ * anything repeats. A plain random draw does not give that: at one in
+ * five per round, a default eight-round game would often never show
+ * some modes at all.
  *
- * Exactly one also keeps the pacing honest — the board runs ten-plus
- * turns where the other types take a single answer.
+ * The guarantee comes from one rule — if the modes still unseen would
+ * no longer fit in the rounds that remain, this round must take one of
+ * them. Above that floor the pick is random, weighted by how much room
+ * is left, so the unseen modes spread out instead of all bunching at
+ * the end. That invariant (unseen never exceeds rounds remaining) holds
+ * every round, so coverage can never be missed.
+ *
+ * Once every mode has been seen the rest of the game is a free draw —
+ * except for the capital board, which is deliberately left out of it.
+ * It runs ten-plus turns where the other modes take a single answer, so
+ * a second one would unbalance the game rather than vary it.
  */
 export function pickRoundType(
   roundNumber: number,
@@ -417,21 +423,38 @@ export function pickRoundType(
     return "flag_choice";
   }
 
-  if (
-    !usedTypes.includes(
-      "capital_match",
-    )
-  ) {
-    const roundsLeft = Math.max(
-      0,
-      totalRounds - roundNumber,
-    );
+  const seen = new Set(usedTypes);
 
+  const unseen = ROUND_TYPES.filter(
+    (type) => !seen.has(type),
+  );
+
+  /* Rounds still to be dealt, this one included. */
+  const roundsLeft = Math.max(
+    1,
+    totalRounds - roundNumber + 1,
+  );
+
+  if (unseen.length > 0) {
+    /*
+     * At the floor: every remaining round is needed for a mode nobody
+     * has seen yet, so there is no freedom left.
+     */
+    if (
+      unseen.length >= roundsLeft
+    ) {
+      return pickRandom(unseen);
+    }
+
+    /*
+     * Above the floor, take an unseen mode with the probability that
+     * keeps them evenly spread over the rounds that remain.
+     */
     if (
       Math.random() <
-      1 / (roundsLeft + 1)
+      unseen.length / roundsLeft
     ) {
-      return "capital_match";
+      return pickRandom(unseen);
     }
   }
 
