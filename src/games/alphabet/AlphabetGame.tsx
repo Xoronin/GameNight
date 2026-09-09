@@ -18,6 +18,7 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import Fireworks from "../../components/Fireworks";
 import Header from "../../components/Header";
 import LowTimeBanner from "../../components/LowTimeBanner";
 import TurnFlash from "../../components/TurnFlash";
@@ -499,6 +500,14 @@ function AlphabetGame({
         letter.status !==
         "available",
     );
+
+  /*
+   * Every letter resolved — the game's own win condition.
+   * Keyed on the round so the display fires once, not on every
+   * re-render or repeated realtime event.
+   */
+  const clearedKey =
+    boardCleared && round ? round.id : null;
 
   const runAction = async (
     action: () => Promise<void>,
@@ -1127,6 +1136,10 @@ function AlphabetGame({
 
         <div className="page gamePage">
         <div className="alphabetGame">
+          <Fireworks
+            triggerKey={clearedKey}
+          />
+
           <LowTimeBanner
                       secondsLeft={secondsLeft}
                       roundKey={turnKey}

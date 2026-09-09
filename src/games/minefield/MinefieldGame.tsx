@@ -17,6 +17,7 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import Fireworks from "../../components/Fireworks";
 import Header from "../../components/Header";
 import LowTimeBanner from "../../components/LowTimeBanner";
 import TurnFlash from "../../components/TurnFlash";
@@ -217,6 +218,15 @@ function MinefieldGame({
     correctTiles.length > 0 &&
     foundCorrect ===
       correctTiles.length;
+
+  /*
+   * Every correct tile actually picked. Deliberately not
+   * roundComplete, which is also true after somebody hits a mine.
+   * Keyed on the round so the display fires once, not on every
+   * re-render or repeated realtime event.
+   */
+  const clearedKey =
+    allCorrectFound && round ? round.id : null;
 
   const sortedPlayers =
     useMemo(
@@ -780,6 +790,10 @@ function MinefieldGame({
 
       <div className="page gamePage">
       <div className="minefieldGame">
+        <Fireworks
+          triggerKey={clearedKey}
+        />
+
         <LowTimeBanner
                     secondsLeft={secondsLeft}
                     roundKey={turnKey}

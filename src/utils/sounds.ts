@@ -227,6 +227,82 @@ export function playReveal() {
   ]);
 }
 
+/**
+ * Clearing the whole board — the biggest thing that can happen in a
+ * round, so it gets more than playWin's four notes: a rising run into
+ * a sustained major triad, with a sparkle on top.
+ */
+export function playFanfare() {
+  playTones([
+    /* Rising run. */
+    {
+      frequency: 523.25,
+      duration: 0.1,
+      gain: 0.08,
+    },
+    {
+      frequency: 659.25,
+      duration: 0.1,
+      delay: 0.09,
+      gain: 0.08,
+    },
+    {
+      frequency: 783.99,
+      duration: 0.1,
+      delay: 0.18,
+      gain: 0.08,
+    },
+    {
+      frequency: 1046.5,
+      duration: 0.12,
+      delay: 0.27,
+      gain: 0.09,
+    },
+
+    /* Held triad underneath. */
+    {
+      frequency: 523.25,
+      duration: 0.75,
+      delay: 0.4,
+      gain: 0.07,
+    },
+    {
+      frequency: 659.25,
+      duration: 0.75,
+      delay: 0.4,
+      gain: 0.06,
+    },
+    {
+      frequency: 783.99,
+      duration: 0.75,
+      delay: 0.4,
+      gain: 0.06,
+    },
+    {
+      frequency: 1046.5,
+      duration: 0.8,
+      delay: 0.4,
+      gain: 0.05,
+    },
+
+    /* Sparkle over the top. */
+    {
+      frequency: 1567.98,
+      duration: 0.14,
+      delay: 0.62,
+      type: "triangle",
+      gain: 0.045,
+    },
+    {
+      frequency: 2093,
+      duration: 0.22,
+      delay: 0.75,
+      type: "triangle",
+      gain: 0.04,
+    },
+  ]);
+}
+
 export function playWin() {
   playTones([
     {

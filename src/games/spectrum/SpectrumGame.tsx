@@ -21,6 +21,7 @@ import {
 } from "react";
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
+import Fireworks from "../../components/Fireworks";
 import Header from "../../components/Header";
 import LowTimeBanner from "../../components/LowTimeBanner";
 import TurnFlash from "../../components/TurnFlash";
@@ -412,6 +413,14 @@ function SpectrumGame({
     !!round &&
     round.usedItemIds.length >=
       items.length;
+
+  /*
+   * The whole pool placed — the game's own win condition.
+   * Keyed on the round so the display fires once, not on every
+   * re-render or repeated realtime event.
+   */
+  const clearedKey =
+    poolExhausted && round ? round.id : null;
 
   const sortedPlayers =
     useMemo(
@@ -1226,6 +1235,10 @@ function SpectrumGame({
 
         <div className="page gamePage">
         <div className="spectrumGame">
+          <Fireworks
+            triggerKey={clearedKey}
+          />
+
           <LowTimeBanner
                       secondsLeft={secondsLeft}
                       roundKey={turnKey}
@@ -1404,6 +1417,10 @@ function SpectrumGame({
 
       <div className="page gamePage">
       <div className="spectrumGame">
+        <Fireworks
+          triggerKey={clearedKey}
+        />
+
         <LowTimeBanner
                     secondsLeft={secondsLeft}
                     roundKey={turnKey}
