@@ -585,6 +585,7 @@ const de = {
     yourTurn: "Du bist dran — setze eine Hauptstadt",
     waitingFor: "Warte auf",
     outOfLives: "Raus",
+    dragHint: "Ziehe eine Hauptstadt auf ihr Land — oder tippe erst sie, dann das Land an",
     placedBy: "von",
     dragOne: "Ziehe eine Hauptstadt auf ihr Land",
     waitYourTurn: "Warte, bis du dran bist",

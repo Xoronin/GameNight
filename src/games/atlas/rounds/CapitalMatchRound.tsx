@@ -4,6 +4,8 @@ import {
   X,
 } from "lucide-react";
 import {
+  useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -31,6 +33,13 @@ import Flag from "../Flag";
 
 /** Pointer travel, in px, past which a press counts as a drag. */
 const DRAG_THRESHOLD = 6;
+
+/*
+ * How close to a screen edge a drag has to get before the page starts
+ * scrolling under it, and how sharply it accelerates from there.
+ */
+const EDGE_ZONE = 96;
+const EDGE_DIVISOR = 5;
 
 type CapitalMatchRoundProps = {
   payload: Extract<
@@ -60,6 +69,7 @@ type CapitalMatchRoundProps = {
     waitingFor: string;
     outOfLives: string;
     placedBy: string;
+    dragHint: string;
   };
 };
 
@@ -68,6 +78,12 @@ type DragState = {
   dx: number;
   dy: number;
   moved: boolean;
+};
+
+type DragOrigin = {
+  x: number;
+  y: number;
+  scrollY: number;
 };
 
 function CapitalMatchRound({
@@ -93,10 +109,61 @@ function CapitalMatchRound({
   const [selected, setSelected] =
     useState<string | null>(null);
 
-  const startRef = useRef({
+  const originRef =
+    useRef<DragOrigin | null>(
+      null,
+    );
+
+  /* Latest pointer position, for the edge-scroll loop to read. */
+  const pointerRef = useRef({
     x: 0,
     y: 0,
   });
+
+  const poolRef =
+    useRef<HTMLDivElement | null>(
+      null,
+    );
+
+  /*
+   * Recomputes the chip's offset from the pointer *and* the page
+   * scroll. Without the scroll term the chip would slide out from under
+   * the finger the moment the page moved beneath it.
+   */
+  const syncDrag = useCallback(() => {
+    const origin = originRef.current;
+
+    if (!origin) {
+      return;
+    }
+
+    const travelX =
+      pointerRef.current.x -
+      origin.x;
+
+    const travelY =
+      pointerRef.current.y -
+      origin.y;
+
+    setDrag((previous) =>
+      previous
+        ? {
+            ...previous,
+            dx: travelX,
+            dy:
+              travelY +
+              (window.scrollY -
+                origin.scrollY),
+            moved:
+              previous.moved ||
+              Math.hypot(
+                travelX,
+                travelY,
+              ) > DRAG_THRESHOLD,
+          }
+        : previous,
+    );
+  }, []);
 
   /* The board is derived from the placement log, not local state. */
   const solvedBy = new Map<
@@ -166,7 +233,13 @@ function CapitalMatchRound({
       return;
     }
 
-    startRef.current = {
+    originRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+      scrollY: window.scrollY,
+    };
+
+    pointerRef.current = {
       x: event.clientX,
       y: event.clientY,
     };
@@ -190,24 +263,92 @@ function CapitalMatchRound({
       return;
     }
 
-    const dx =
-      event.clientX -
-      startRef.current.x;
+    pointerRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+    };
 
-    const dy =
-      event.clientY -
-      startRef.current.y;
-
-    setDrag({
-      ...drag,
-      dx,
-      dy,
-      moved:
-        drag.moved ||
-        Math.hypot(dx, dy) >
-          DRAG_THRESHOLD,
-    });
+    syncDrag();
   };
+
+  /*
+   * While a drag is in flight, holding near the top or bottom of the
+   * screen scrolls the page. On a phone the board is far taller than
+   * the viewport, so without this the slots you have scrolled past
+   * simply cannot be reached — the chip has nowhere to go.
+   */
+  const dragging = !!drag?.moved;
+
+  useEffect(() => {
+    if (!dragging) {
+      return;
+    }
+
+    let frame = 0;
+
+    const step = () => {
+      const y = pointerRef.current.y;
+
+      /*
+       * The pool is pinned to the bottom of the screen, so the usable
+       * board ends at its top edge, not at the bottom of the window.
+       * Measuring against the window instead would mean picking up a
+       * chip — which happens inside the pool — instantly scrolled the
+       * page out from under the drag.
+       */
+      const poolTop =
+        poolRef.current?.getBoundingClientRect()
+          .top ??
+        window.innerHeight;
+
+      const floor = Math.min(
+        poolTop,
+        window.innerHeight,
+      );
+
+      let delta = 0;
+
+      if (y < EDGE_ZONE) {
+        delta = -Math.ceil(
+          (EDGE_ZONE - y) /
+            EDGE_DIVISOR,
+        );
+      } else if (
+        y < floor &&
+        y > floor - EDGE_ZONE
+      ) {
+        delta = Math.ceil(
+          (y -
+            (floor -
+              EDGE_ZONE)) /
+            EDGE_DIVISOR,
+        );
+      }
+
+      if (delta !== 0) {
+        window.scrollBy(0, delta);
+
+        /* The page moved, so the chip's offset has to follow it. */
+        syncDrag();
+      }
+
+      frame =
+        window.requestAnimationFrame(
+          step,
+        );
+    };
+
+    frame =
+      window.requestAnimationFrame(
+        step,
+      );
+
+    return () => {
+      window.cancelAnimationFrame(
+        frame,
+      );
+    };
+  }, [dragging, syncDrag]);
 
   const handlePointerUp = (
     event: React.PointerEvent,
@@ -219,6 +360,7 @@ function CapitalMatchRound({
     const current = drag;
 
     setDrag(null);
+    originRef.current = null;
 
     if (!current.moved) {
       setSelected((previous) =>
@@ -457,8 +599,17 @@ function CapitalMatchRound({
       </div>
 
       {!revealed &&
+        interactive &&
+        pool.length > 0 && (
+          <p className="atlasDragHint">
+            {labels.dragHint}
+          </p>
+        )}
+
+      {!revealed &&
         pool.length > 0 && (
           <div
+            ref={poolRef}
             className={`atlasMatchPool ${
               interactive
                 ? "active"

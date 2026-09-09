@@ -585,6 +585,7 @@ const en = {
     yourTurn: "Your turn — place a capital",
     waitingFor: "Waiting for",
     outOfLives: "Out",
+    dragHint: "Drag a capital onto its country — or tap one, then tap a country",
     placedBy: "by",
     dragOne: "Drag one capital onto its country",
     waitYourTurn: "Wait for your turn",
