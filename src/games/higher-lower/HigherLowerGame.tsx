@@ -23,6 +23,7 @@ import {
 } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
+import LowTimeBanner from "../../components/LowTimeBanner";
 import {
   getGameRoundCount,
   getGameTimerSeconds,
@@ -129,6 +130,9 @@ function HigherLowerGame({
     room?.id,
     gameLanguage,
   );
+
+  /* One countdown warning per round. */
+  const turnKey = round?.id ?? null;
 
   const isHost =
     !!room &&
@@ -742,6 +746,14 @@ function HigherLowerGame({
 
       <div className="page gamePage">
       <div className="higherLowerGame">
+        <LowTimeBanner
+                    secondsLeft={secondsLeft}
+                    roundKey={turnKey}
+                    label={gameT(
+                      "common.timeRunningOut",
+                    )}
+                  />
+
         <header className="higherLowerHeader">
           <div>
             <span className="eyebrow">

@@ -1,5 +1,8 @@
 const de = {
   common: {
+    yourTurn: "Du bist dran!",
+    yourTurnHint: "Alle warten auf dich",
+    timeRunningOut: "Zeit läuft ab",
     home: "Startseite",
     back: "Zurück",
     loading: "Lädt...",

@@ -1,5 +1,8 @@
 const en = {
   common: {
+    yourTurn: "Your turn!",
+    yourTurnHint: "Everyone is waiting on you",
+    timeRunningOut: "Time running out",
     home: "Home",
     back: "Back",
     loading: "Loading...",
