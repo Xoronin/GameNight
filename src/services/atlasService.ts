@@ -1,9 +1,15 @@
 import {
-  atlasCountries,
+  allAtlasCountries,
+  flagCountries,
   getAtlasCountry,
 } from "../data/atlasCountries";
 import type { AtlasCountry } from "../data/atlasCountries";
 import { flagRegions } from "../data/atlasFlags";
+import {
+  mapPlayableIds,
+  mapRegionIds,
+} from "../data/atlasMapRegions";
+import type { MapRegionId } from "../data/atlasMapPaths";
 import { supabase } from "../lib/supabase";
 import type {
   AtlasAnswer,
@@ -94,7 +100,42 @@ const ROUND_TYPES: AtlasRoundType[] =
     "country_from_flag",
     "capital_choice",
     "capital_match",
+    "map_choice",
+    "map_place",
   ];
+
+/**
+ * The shared, turn-based boards. Each runs many turns where the other
+ * modes take a single answer, so they are guaranteed once but never
+ * drawn again — two in a game would unbalance it rather than vary it.
+ */
+export const BOARD_ROUND_TYPES: AtlasRoundType[] =
+  [
+    "capital_match",
+    "map_place",
+  ];
+
+/** The slots on a turn-based board, whichever board it is. */
+export function boardCountryIds(
+  payload: AtlasRoundPayload,
+): string[] {
+  return payload.type ===
+    "capital_match" ||
+    payload.type === "map_place"
+    ? payload.countryIds
+    : [];
+}
+
+export function isBoardRound(
+  type: AtlasRoundType,
+): boolean {
+  return BOARD_ROUND_TYPES.includes(
+    type,
+  );
+}
+
+/** How many countries a map placement board holds. */
+export const MAP_PLACE_COUNT = 6;
 
 function mapSession(
   row: SessionRow,
@@ -206,10 +247,11 @@ function pickRandom<T>(
  * bands, for instance, would be a chore rather than a puzzle.
  */
 export function paintableCountries(): AtlasCountry[] {
-  return atlasCountries.filter(
+  return flagCountries.filter(
     (country) => {
-      const regions =
-        flagRegions(country.flag);
+      const regions = flagRegions(
+        country.flag!,
+      );
 
       return (
         regions.length >= 2 &&
@@ -269,10 +311,19 @@ export function buildRoundPayload(
   roundType: AtlasRoundType,
   excludedCountryIds: string[],
 ): AtlasRoundPayload | null {
+  /*
+   * A mode may only draw countries it can render. The flag modes need
+   * a drawable flag; the capital modes are happy with any country.
+   */
   const pool =
     roundType === "flag_paint"
       ? paintableCountries()
-      : atlasCountries;
+      : roundType ===
+            "flag_choice" ||
+          roundType ===
+            "country_from_flag"
+        ? flagCountries
+        : allAtlasCountries;
 
   const available = pool.filter(
     (country) =>
@@ -299,7 +350,7 @@ export function buildRoundPayload(
     roundType === "capital_match"
   ) {
     if (
-      atlasCountries.length <
+      allAtlasCountries.length <
       MATCH_PAIR_COUNT
     ) {
       return null;
@@ -321,7 +372,7 @@ export function buildRoundPayload(
       MATCH_PAIR_COUNT
     ) {
       const filler = shuffle(
-        atlasCountries.filter(
+        allAtlasCountries.filter(
           (country) =>
             !chosen.some(
               (item) =>
@@ -351,6 +402,82 @@ export function buildRoundPayload(
     };
   }
 
+  if (roundType === "map_place") {
+    const region = pickRegion(
+      MAP_PLACE_COUNT,
+    );
+
+    if (!region) {
+      return null;
+    }
+
+    const countryIds = shuffle(
+      mapPlayableIds[region],
+    ).slice(0, MAP_PLACE_COUNT);
+
+    return {
+      type: "map_place",
+      region,
+      countryIds,
+      placeOrder:
+        shuffle(countryIds),
+    };
+  }
+
+  if (roundType === "map_choice") {
+    const region = pickRegion(
+      CHOICE_COUNT,
+    );
+
+    if (!region) {
+      return null;
+    }
+
+    const inRegion =
+      mapPlayableIds[region];
+
+    /*
+     * Prefer a country this session has not asked about, but never
+     * fail the round over it.
+     */
+    const fresh = inRegion.filter(
+      (id) =>
+        !excludedCountryIds.includes(
+          id,
+        ),
+    );
+
+    const answerId = pickRandom(
+      fresh.length > 0
+        ? fresh
+        : inRegion,
+    );
+
+    const optionIds = shuffle([
+      answerId,
+      ...shuffle(
+        inRegion.filter(
+          (id) => id !== answerId,
+        ),
+      ).slice(
+        0,
+        CHOICE_COUNT - 1,
+      ),
+    ]);
+
+    return {
+      type: "map_choice",
+      region,
+      countryId: answerId,
+      optionIds,
+      /* Half the time the map asks for the capital instead. */
+      asks:
+        Math.random() < 0.5
+          ? "country"
+          : "capital",
+    };
+  }
+
   const answer =
     pickRandom(candidates);
 
@@ -367,7 +494,7 @@ export function buildRoundPayload(
     pickDistractors(
       answer,
       CHOICE_COUNT - 1,
-      atlasCountries,
+      pool,
     );
 
   const optionIds = shuffle([
@@ -377,18 +504,21 @@ export function buildRoundPayload(
     (country) => country.id,
   );
 
-  return {
-    type: roundType,
-    countryId: answer.id,
-    optionIds,
-  };
-}
+  if (
+    roundType === "flag_choice" ||
+    roundType ===
+      "country_from_flag" ||
+    roundType === "capital_choice"
+  ) {
+    return {
+      type: roundType,
+      countryId: answer.id,
+      optionIds,
+    };
+  }
 
-const QUICK_ROUND_TYPES =
-  ROUND_TYPES.filter(
-    (type) =>
-      type !== "capital_match",
-  );
+  return null;
+}
 
 /**
  * Chooses the task for a round.
@@ -406,26 +536,71 @@ const QUICK_ROUND_TYPES =
  * every round, so coverage can never be missed.
  *
  * Once every mode has been seen the rest of the game is a free draw —
- * except for the capital board, which is deliberately left out of it.
- * It runs ten-plus turns where the other modes take a single answer, so
- * a second one would unbalance the game rather than vary it.
+ * except for the turn-based boards, which are deliberately left out of
+ * it. See BOARD_ROUND_TYPES.
  */
+/**
+ * A region with enough answerable countries for the round.
+ *
+ * Region membership comes from the generated id lists rather than the
+ * roster's continent field: a country can sit in a continent but fall
+ * outside that region's map frame, and asking players to place a shape
+ * that is mostly off the edge would not be fair.
+ */
+function pickRegion(
+  needed: number,
+): MapRegionId | null {
+  const usable = mapRegionIds.filter(
+    (region) =>
+      mapPlayableIds[region]
+        .length >= needed,
+  );
+
+  return usable.length > 0
+    ? pickRandom(usable)
+    : null;
+}
+
 export function pickRoundType(
   roundNumber: number,
   totalRounds: number,
   usedTypes: AtlasRoundType[],
+  enabledModes: AtlasRoundType[] = ROUND_TYPES,
 ): AtlasRoundType {
+  const enabled =
+    enabledModes.length > 0
+      ? enabledModes
+      : ROUND_TYPES;
+
   /*
-   * The first round is always a flag choice: it is the quickest type to
-   * grasp, and reading the rules mid-game is nobody's idea of fun.
+   * The first round opens with a flag choice where it is available: it
+   * is the quickest type to grasp, and reading the rules mid-game is
+   * nobody's idea of fun. If the host has turned that mode off, any
+   * other non-board mode will do.
    */
   if (roundNumber <= 1) {
-    return "flag_choice";
+    if (
+      enabled.includes(
+        "flag_choice",
+      )
+    ) {
+      return "flag_choice";
+    }
+
+    const gentle = enabled.filter(
+      (type) => !isBoardRound(type),
+    );
+
+    return pickRandom(
+      gentle.length > 0
+        ? gentle
+        : enabled,
+    );
   }
 
   const seen = new Set(usedTypes);
 
-  const unseen = ROUND_TYPES.filter(
+  const unseen = enabled.filter(
     (type) => !seen.has(type),
   );
 
@@ -458,8 +633,14 @@ export function pickRoundType(
     }
   }
 
+  const quick = enabled.filter(
+    (type) => !isBoardRound(type),
+  );
+
   return pickRandom(
-    QUICK_ROUND_TYPES,
+    quick.length > 0
+      ? quick
+      : enabled,
   );
 }
 
@@ -518,8 +699,16 @@ export function gradeResponse(
       };
     }
 
-    const regions =
-      flagRegions(country.flag);
+    if (!country.flag) {
+      return {
+        correctCount: 0,
+        totalCount: 1,
+      };
+    }
+
+    const regions = flagRegions(
+      country.flag,
+    );
 
     const correctCount =
       regions.filter(
@@ -849,8 +1038,9 @@ export async function placeAtlasCapital(
 ): Promise<void> {
   if (
     round.status !== "playing" ||
-    round.payload.type !==
-      "capital_match" ||
+    !isBoardRound(
+      round.payload.type,
+    ) ||
     round.currentPlayerId !==
       playerId
   ) {
@@ -934,8 +1124,11 @@ export async function placeAtlasCapital(
         placement.countryId,
     );
 
+  const boardIds =
+    boardCountryIds(round.payload);
+
   const over = isMatchRoundOver(
-    round.payload.countryIds,
+    boardIds,
     solved,
     playerIds,
     outPlayerIds,
@@ -999,8 +1192,9 @@ export async function passAtlasTurn(
 ): Promise<void> {
   if (
     round.status !== "playing" ||
-    round.payload.type !==
-      "capital_match" ||
+    !isBoardRound(
+      round.payload.type,
+    ) ||
     !round.currentPlayerId
   ) {
     return;
@@ -1035,7 +1229,9 @@ export async function passAtlasTurn(
 
   if (
     isMatchRoundOver(
-      round.payload.countryIds,
+      boardCountryIds(
+        round.payload,
+      ),
       solved,
       playerIds,
       outPlayerIds,
@@ -1251,7 +1447,9 @@ export async function getAtlasUsedCountryIds(
 
       if (
         payload.type ===
-        "capital_match"
+          "capital_match" ||
+        payload.type ===
+          "map_place"
       ) {
         return payload.countryIds;
       }
@@ -1269,6 +1467,7 @@ export async function createAtlasRound(
   timerSeconds: number,
   playerIds: string[],
   totalRounds: number,
+  enabledModes: AtlasRoundType[],
 ): Promise<AtlasRound | null> {
   /* Guard against double-clicks and duplicate realtime actions. */
   const {
@@ -1302,6 +1501,7 @@ export async function createAtlasRound(
     await getAtlasUsedRoundTypes(
       sessionId,
     ),
+    enabledModes,
   );
 
   const payload =
@@ -1319,11 +1519,11 @@ export async function createAtlasRound(
    * a per-player life count. The other round types are answered by
    * everyone at once and leave the turn columns alone.
    */
-  const isMatch =
-    payload.type ===
-    "capital_match";
+  const isBoard = isBoardRound(
+    payload.type,
+  );
 
-  const turnFields = isMatch
+  const turnFields = isBoard
     ? {
         current_player_id:
           playerIds[0] ?? null,

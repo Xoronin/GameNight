@@ -58,6 +58,10 @@ function FlagPaintRound({
     return null;
   }
 
+  if (!country.flag) {
+    return null;
+  }
+
   const regions = flagRegions(
     country.flag,
   );

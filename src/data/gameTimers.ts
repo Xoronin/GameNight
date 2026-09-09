@@ -19,6 +19,8 @@ export type GameSettingsEntry = {
   roundCount?: number;
   categoryKeys?: string[];
   customCategories?: CustomCategory[];
+  /** Atlas: which round types are in play. */
+  modeKeys?: string[];
 };
 
 export type GameSettings = Record<
@@ -114,7 +116,7 @@ export const GAME_ROUND_COUNT_OPTIONS: Record<
   trivia: [4, 6, 8, 10, 12],
   alphabet: [1, 2, 3, 5],
   spectrum: [3, 5, 8, 13],
-  atlas: [5, 8, 10, 12],
+  atlas: [7, 8, 10, 12],
 };
 
 export function getGameRoundCount(
@@ -200,6 +202,78 @@ export function withCategoriesCustom(
     categories: {
       ...gameSettings?.categories,
       customCategories,
+    },
+  };
+}
+
+
+/*
+ * Atlas round types the host can turn on or off.
+ *
+ * Order is the order they appear in the lobby, grouped by what they ask
+ * about: flags, then capitals, then maps.
+ */
+export const ATLAS_MODE_KEYS = [
+  "flag_choice",
+  "flag_paint",
+  "country_from_flag",
+  "capital_choice",
+  "capital_match",
+  "map_choice",
+  "map_place",
+] as const;
+
+export type AtlasModeKey =
+  (typeof ATLAS_MODE_KEYS)[number];
+
+/** Translation key for each mode's label in the lobby. */
+export const ATLAS_MODE_LABEL_KEYS: Record<
+  AtlasModeKey,
+  string
+> = {
+  flag_choice: "atlas.modeFlagChoice",
+  flag_paint: "atlas.modeFlagPaint",
+  country_from_flag:
+    "atlas.modeCountryFromFlag",
+  capital_choice:
+    "atlas.modeCapitalChoice",
+  capital_match:
+    "atlas.modeCapitalMatch",
+  map_choice: "atlas.modeMapChoice",
+  map_place: "atlas.modeMapPlace",
+};
+
+export function getAtlasModes(
+  gameSettings:
+    | GameSettings
+    | null
+    | undefined,
+): string[] {
+  const modes =
+    gameSettings?.atlas?.modeKeys;
+
+  /*
+   * Never let the selection collapse to nothing — a game with no modes
+   * has no rounds to deal. An empty or missing setting means all of
+   * them, which is also the sensible default.
+   */
+  return modes && modes.length > 0
+    ? modes
+    : [...ATLAS_MODE_KEYS];
+}
+
+export function withAtlasModes(
+  gameSettings:
+    | GameSettings
+    | null
+    | undefined,
+  modeKeys: string[],
+): GameSettings {
+  return {
+    ...gameSettings,
+    atlas: {
+      ...gameSettings?.atlas,
+      modeKeys,
     },
   };
 }

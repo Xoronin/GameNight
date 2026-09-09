@@ -25,8 +25,12 @@ import {
 } from "react-router-dom";
 import Header from "../components/Header";
 import {
+  ATLAS_MODE_KEYS,
+  ATLAS_MODE_LABEL_KEYS,
   GAME_ROUND_COUNT_OPTIONS,
   GAME_TIMER_OPTIONS,
+  getAtlasModes,
+  withAtlasModes,
   getCategoriesCustom,
   getCategoriesSelectedKeys,
   getGameRoundCount,
@@ -866,6 +870,79 @@ function Lobby() {
           ))}
         </select>
       </div>
+
+      {gameId === "atlas" && (
+        <div className="categorySettingList">
+          <span>
+            {t("atlas.modesLabel")}
+          </span>
+
+          {ATLAS_MODE_KEYS.map(
+            (mode) => {
+              const selected =
+                getAtlasModes(
+                  room.gameSettings,
+                );
+
+              const checked =
+                selected.includes(
+                  mode,
+                );
+
+              return (
+                <label
+                  key={mode}
+                  className="categorySettingOption"
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    disabled={!isHost}
+                    onChange={() => {
+                      const next =
+                        checked
+                          ? selected.filter(
+                              (key) =>
+                                key !==
+                                mode,
+                            )
+                          : [
+                              ...selected,
+                              mode,
+                            ];
+
+                      /*
+                       * Turning off the last mode would leave the game
+                       * with nothing to deal, so the final one stays.
+                       */
+                      if (
+                        next.length ===
+                        0
+                      ) {
+                        return;
+                      }
+
+                      void updateGameSettings(
+                        room.id,
+                        withAtlasModes(
+                          room.gameSettings,
+                          next,
+                        ),
+                      );
+                    }}
+                  />
+
+                  {t(
+                    ATLAS_MODE_LABEL_KEYS[
+                      mode
+                    ],
+                  )}
+                </label>
+              );
+            },
+          )}
+        </div>
+      )}
 
       {gameId === "categories" && (
         <div className="categorySettingList">
