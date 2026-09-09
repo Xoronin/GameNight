@@ -335,6 +335,7 @@ function AtlasGame({
         players.map(
           (player) => player.id,
         ),
+        ROUNDS_PER_GAME,
       );
 
     if (!result) {

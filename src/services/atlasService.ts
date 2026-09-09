@@ -384,42 +384,84 @@ export function buildRoundPayload(
   };
 }
 
+const QUICK_ROUND_TYPES =
+  ROUND_TYPES.filter(
+    (type) =>
+      type !== "capital_match",
+  );
+
+/**
+ * Chooses the task for a round.
+ *
+ * The capital board is scheduled rather than rolled for. Leaving it to
+ * a plain random draw meant it turned up in barely half of the default
+ * eight-round games — a coin flip on whether anyone saw the mode at
+ * all. Instead every game gets exactly one, on a round picked
+ * uniformly at random: taking it with probability 1/(rounds left,
+ * including this one) spreads the slot evenly and makes it a certainty
+ * by the final round if it has not landed yet.
+ *
+ * Exactly one also keeps the pacing honest — the board runs ten-plus
+ * turns where the other types take a single answer.
+ */
 export function pickRoundType(
   roundNumber: number,
+  totalRounds: number,
+  usedTypes: AtlasRoundType[],
 ): AtlasRoundType {
   /*
    * The first round is always a flag choice: it is the quickest type to
-   * understand, and reading the rules mid-game is nobody's idea of fun.
-   * After that the type is random, but never the same as the round
-   * before, so the game keeps changing shape.
+   * grasp, and reading the rules mid-game is nobody's idea of fun.
    */
   if (roundNumber <= 1) {
     return "flag_choice";
   }
 
-  /*
-   * The match board is turn-based and takes at least ten turns, so it
-   * is drawn less often than the quick round types rather than at an
-   * even one-in-five.
-   */
-  const type = pickRandom(
-    ROUND_TYPES,
-  );
-
   if (
-    type === "capital_match" &&
-    Math.random() < 0.5
+    !usedTypes.includes(
+      "capital_match",
+    )
   ) {
-    return pickRandom(
-      ROUND_TYPES.filter(
-        (candidate) =>
-          candidate !==
-          "capital_match",
-      ),
+    const roundsLeft = Math.max(
+      0,
+      totalRounds - roundNumber,
+    );
+
+    if (
+      Math.random() <
+      1 / (roundsLeft + 1)
+    ) {
+      return "capital_match";
+    }
+  }
+
+  return pickRandom(
+    QUICK_ROUND_TYPES,
+  );
+}
+
+export async function getAtlasUsedRoundTypes(
+  sessionId: string,
+): Promise<AtlasRoundType[]> {
+  const { data, error } =
+    await supabase
+      .from("atlas_rounds")
+      .select("round_type")
+      .eq(
+        "session_id",
+        sessionId,
+      );
+
+  if (error) {
+    throw new Error(
+      `Could not load Atlas round types: ${error.message}`,
     );
   }
 
-  return type;
+  return (data ?? []).map(
+    (row) =>
+      row.round_type as AtlasRoundType,
+  );
 }
 
 /**
@@ -1203,6 +1245,7 @@ export async function createAtlasRound(
   excludedCountryIds: string[],
   timerSeconds: number,
   playerIds: string[],
+  totalRounds: number,
 ): Promise<AtlasRound | null> {
   /* Guard against double-clicks and duplicate realtime actions. */
   const {
@@ -1230,8 +1273,13 @@ export async function createAtlasRound(
     );
   }
 
-  const roundType =
-    pickRoundType(roundNumber);
+  const roundType = pickRoundType(
+    roundNumber,
+    totalRounds,
+    await getAtlasUsedRoundTypes(
+      sessionId,
+    ),
+  );
 
   const payload =
     buildRoundPayload(
