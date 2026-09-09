@@ -1,5 +1,6 @@
 const de = {
   common: {
+    revealing: "Alle haben geantwortet — Auflösung...",
     yourTurn: "Du bist dran!",
     yourTurnHint: "Alle warten auf dich",
     timeRunningOut: "Zeit läuft ab",
@@ -493,7 +494,6 @@ const de = {
     guessLower: "Tiefer",
     guessLocked: "Antwort abgegeben",
     playersGuessed: "Spieler haben getippt",
-    reveal: "Auflösen",
     itemsMissing: "Einträge fehlen",
     itemsExhausted:
       "Keine weiteren Einträge für dieses Spiel verfügbar.",
@@ -522,7 +522,6 @@ const de = {
     answerLocked: "Antwort abgegeben",
     playersAnswered: "Spieler haben geantwortet",
     noAnswer: "Keine Antwort",
-    reveal: "Auflösen",
     correct: "Richtig!",
     incorrect: "Falsch",
     questionMissing: "Frage fehlt",
@@ -592,7 +591,6 @@ const de = {
     modeMapPlace: "Karten-Board",
     taskCapitalMatch: "Ziehe jede Hauptstadt auf ihr Land",
     submit: "Antwort abgeben",
-    reveal: "Auflösen",
     answerLocked: "Antwort abgegeben",
     playersAnswered: "Spieler haben geantwortet",
     youScored: "Du hattest",
@@ -618,6 +616,35 @@ const de = {
     timerLabel: "Antwortzeit",
   },
 
+  feedback: {
+    button: "Feedback",
+    title: "Feedback senden",
+    intro:
+      "Fehler gefunden oder eine Idee? Es geht direkt in den Issue-Tracker.",
+    kindBug: "Fehler",
+    kindIdea: "Idee",
+    placeholderBug:
+      "Was ist passiert, und was hattest du erwartet?",
+    placeholderIdea:
+      "Was wünschst du dir für Game Night?",
+    send: "Senden",
+    sending: "Wird gesendet...",
+    close: "Schließen",
+    thanks: "Danke — das ist eingetragen.",
+    viewIssue: "Auf GitHub ansehen",
+    hintPublic:
+      "Deine Nachricht wird öffentlich auf GitHub veröffentlicht — bitte nichts Privates hineinschreiben.",
+    errorTooShort:
+      "Bitte schreibe etwas mehr, damit wir etwas damit anfangen können.",
+    errorRateLimited:
+      "Das waren mehrere Meldungen hintereinander — versuch es in einer Minute nochmal.",
+    errorUnavailable:
+      "Feedback ist auf dieser Instanz noch nicht eingerichtet.",
+    errorNetwork:
+      "Server nicht erreichbar. Prüfe deine Verbindung und versuch es nochmal.",
+    errorFailed:
+      "Konnte nicht gesendet werden. Bitte versuch es nochmal.",
+  },
   gamePage: {
     noRoomSelected: "Kein Raum ausgewählt",
     joinRoomFirst:

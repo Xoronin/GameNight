@@ -15,7 +15,7 @@ import { translate } from "./i18n";
  * Every translation key the app uses must resolve in both languages.
  *
  * translate() returns the key itself when it cannot resolve one, so a
- * missing translation is not an error — it is a raw "trivia.reveal"
+ * missing translation is not an error — it is a raw "trivia.nextRound"
  * shown to a player mid-game. Nothing else catches that.
  */
 
