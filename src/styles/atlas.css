@@ -569,7 +569,23 @@
   font-weight: 700;
 }
 
+/*
+ * The pool sticks to the bottom of the viewport.
+ *
+ * The board is taller than most windows — over 1200px even on a
+ * desktop — so a pool sitting at the end of it puts the chips and the
+ * countries on different screens: you scroll down to the chips and the
+ * slots you wanted are gone. Sticking it keeps a capital within reach
+ * of whichever slots you are looking at. Where the whole board does
+ * fit, sticky is inert and nothing moves.
+ *
+ * The background has to be opaque rather than the usual translucent
+ * panel fill, since slots now scroll underneath it.
+ */
 .atlasMatchPool {
+  position: sticky;
+  bottom: 0;
+  z-index: 25;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -577,8 +593,17 @@
   min-height: 54px;
   padding: 12px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(14, 14, 20, 0.97);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -10px 26px rgba(0, 0, 0, 0.4);
+}
+
+.atlasDragHint {
+  margin: 0;
+  text-align: center;
+  color: #8f8f9e;
+  font-size: 0.82rem;
 }
 
 .atlasCapitalChip {
@@ -748,6 +773,29 @@
 }
 
 @media (max-width: 620px) {
+  /*
+   * The board is far taller than a phone screen, so a pool sitting at
+   * the bottom of it puts the chips and the slots on different screens
+   * — you scroll to the chips and the countries are gone. Sticking the
+   * pool to the bottom of the viewport keeps a capital always within
+   * reach of whichever slots you are looking at.
+   */
+  /* Bleed to the screen edges, and clear the home indicator. */
+  .atlasMatchPool {
+    margin: 4px -14px -16px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+    border-radius: 14px 14px 0 0;
+  }
+
+  .atlasCapitalChip {
+    padding: 9px 13px;
+    font-size: 0.92rem;
+  }
+
+  .atlasDragHint {
+    font-size: 0.78rem;
+  }
+
   .atlasOptionsFlags,
   .atlasOptionsText {
     grid-template-columns: 1fr;

@@ -1108,6 +1108,9 @@ function AtlasGame({
                   placedBy: gameT(
                     "atlas.placedBy",
                   ),
+                  dragHint: gameT(
+                    "atlas.dragHint",
+                  ),
                 }}
               />
             )}
