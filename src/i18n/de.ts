@@ -396,6 +396,7 @@ const de = {
     loading: "Minenfeld wird geladen...",
     loadError: "Minenfeld konnte nicht geladen werden",
     joinAgain: "Tritt dem Raum erneut bei.",
+    noPlayerTitle: "Kein Spieler gefunden",
     questionMissing: "Frage fehlt",
     timerLabel: "Zugzeit",
     youAreOut:
