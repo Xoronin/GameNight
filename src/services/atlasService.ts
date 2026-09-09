@@ -7,6 +7,7 @@ import { flagRegions } from "../data/atlasFlags";
 import { supabase } from "../lib/supabase";
 import type {
   AtlasAnswer,
+  AtlasPlacement,
   AtlasResponse,
   AtlasRound,
   AtlasRoundPayload,
@@ -41,6 +42,23 @@ type RoundRow = {
   status: AtlasRoundStatus;
   created_at: string;
   ends_at: string;
+  current_player_id: string | null;
+  turn_ends_at: string | null;
+  out_player_ids: string[] | null;
+  player_lives: Record<
+    string,
+    number
+  > | null;
+};
+
+type PlacementRow = {
+  id: string;
+  round_id: string;
+  country_id: string;
+  capital_country_id: string;
+  placed_by: string;
+  is_correct: boolean;
+  created_at: string;
 };
 
 type AnswerRow = {
@@ -54,8 +72,17 @@ type AnswerRow = {
   created_at: string;
 };
 
-/** How many countries a match round pairs up. */
-export const MATCH_PAIR_COUNT = 4;
+/** How many countries the shared match board holds. */
+export const MATCH_PAIR_COUNT = 10;
+
+/** Lives each player starts a match round with. */
+export const STARTING_LIVES = 3;
+
+/** Points for correctly placing one capital, before the speed bonus. */
+const PLACEMENT_POINTS = 300;
+
+/** Awarded to the only player still standing when a round ends. */
+const LAST_STANDING_BONUS = 500;
 
 /** How many options the multiple-choice rounds offer. */
 const CHOICE_COUNT = 4;
@@ -94,6 +121,28 @@ function mapRound(
     status: row.status,
     createdAt: row.created_at,
     endsAt: row.ends_at,
+    currentPlayerId:
+      row.current_player_id,
+    turnEndsAt: row.turn_ends_at,
+    outPlayerIds:
+      row.out_player_ids ?? [],
+    playerLives:
+      row.player_lives ?? {},
+  };
+}
+
+function mapPlacement(
+  row: PlacementRow,
+): AtlasPlacement {
+  return {
+    id: row.id,
+    roundId: row.round_id,
+    countryId: row.country_id,
+    capitalCountryId:
+      row.capital_country_id,
+    placedBy: row.placed_by,
+    isCorrect: row.is_correct,
+    createdAt: row.created_at,
   };
 }
 
@@ -348,9 +397,29 @@ export function pickRoundType(
     return "flag_choice";
   }
 
-  return pickRandom(
+  /*
+   * The match board is turn-based and takes at least ten turns, so it
+   * is drawn less often than the quick round types rather than at an
+   * even one-in-five.
+   */
+  const type = pickRandom(
     ROUND_TYPES,
   );
+
+  if (
+    type === "capital_match" &&
+    Math.random() < 0.5
+  ) {
+    return pickRandom(
+      ROUND_TYPES.filter(
+        (candidate) =>
+          candidate !==
+          "capital_match",
+      ),
+    );
+  }
+
+  return type;
 }
 
 /**
@@ -401,37 +470,11 @@ export function gradeResponse(
     };
   }
 
-  if (
-    payload.type ===
-    "capital_match"
-  ) {
-    if (
-      response.type !==
-      "capital_match"
-    ) {
-      return {
-        correctCount: 0,
-        totalCount:
-          payload.countryIds
-            .length,
-      };
-    }
-
-    /* A pair is right when a country is matched to its own capital. */
-    const correctCount =
-      payload.countryIds.filter(
-        (countryId) =>
-          response.pairs[
-            countryId
-          ] === countryId,
-      ).length;
-
-    return {
-      correctCount,
-      totalCount:
-        payload.countryIds.length,
-    };
-  }
+  /*
+   * capital_match is not graded here: it is a turn-based board scored
+   * one placement at a time as players take their turns, not a single
+   * submission at the end.
+   */
 
   if (
     response.type === "choice" &&
@@ -520,6 +563,462 @@ async function addScore(
       `Could not update player score: ${updateError.message}`,
     );
   }
+}
+
+/**
+ * The next player in seating order who is still in the round.
+ *
+ * Falls back to the current player when nobody else is left, so a
+ * last-player-standing keeps taking turns rather than the round
+ * stalling with no active player.
+ */
+export function nextActivePlayer(
+  playerIds: string[],
+  currentPlayerId: string | null,
+  outPlayerIds: string[],
+): string | null {
+  const active = playerIds.filter(
+    (id) =>
+      !outPlayerIds.includes(id),
+  );
+
+  if (active.length === 0) {
+    return null;
+  }
+
+  const startIndex =
+    currentPlayerId
+      ? playerIds.indexOf(
+          currentPlayerId,
+        )
+      : -1;
+
+  /*
+   * Walk forward from the current seat rather than filtering first, so
+   * the turn order still follows the table even after players drop out.
+   */
+  for (
+    let step = 1;
+    step <= playerIds.length;
+    step += 1
+  ) {
+    const candidate =
+      playerIds[
+        (startIndex + step) %
+          playerIds.length
+      ];
+
+    if (
+      !outPlayerIds.includes(
+        candidate,
+      )
+    ) {
+      return candidate;
+    }
+  }
+
+  return active[0];
+}
+
+/**
+ * Applies a wrong placement (or a missed turn) to the round's lives.
+ */
+export function applyLifeLoss(
+  playerLives: Record<
+    string,
+    number
+  >,
+  outPlayerIds: string[],
+  playerId: string,
+): {
+  playerLives: Record<
+    string,
+    number
+  >;
+  outPlayerIds: string[];
+} {
+  const lives = {
+    ...playerLives,
+  };
+
+  const remaining = Math.max(
+    (lives[playerId] ??
+      STARTING_LIVES) - 1,
+    0,
+  );
+
+  lives[playerId] = remaining;
+
+  const out =
+    remaining <= 0 &&
+    !outPlayerIds.includes(
+      playerId,
+    )
+      ? [...outPlayerIds, playerId]
+      : outPlayerIds;
+
+  return {
+    playerLives: lives,
+    outPlayerIds: out,
+  };
+}
+
+/**
+ * Whether the board is finished: every country solved, or nobody left
+ * to solve it.
+ */
+export function isMatchRoundOver(
+  countryIds: string[],
+  solvedCountryIds: string[],
+  playerIds: string[],
+  outPlayerIds: string[],
+): boolean {
+  const allSolved =
+    countryIds.every((id) =>
+      solvedCountryIds.includes(id),
+    );
+
+  const anyoneLeft =
+    playerIds.some(
+      (id) =>
+        !outPlayerIds.includes(id),
+    );
+
+  return allSolved || !anyoneLeft;
+}
+
+export function scorePlacement(
+  remainingSeconds: number,
+): number {
+  return (
+    PLACEMENT_POINTS +
+    Math.min(
+      200,
+      remainingSeconds * 20,
+    )
+  );
+}
+
+export async function getAtlasPlacements(
+  roundId: string,
+): Promise<AtlasPlacement[]> {
+  const { data, error } =
+    await supabase
+      .from("atlas_placements")
+      .select("*")
+      .eq("round_id", roundId)
+      .order("created_at", {
+        ascending: true,
+      });
+
+  if (error) {
+    throw new Error(
+      `Could not load Atlas placements: ${error.message}`,
+    );
+  }
+
+  return (
+    (data ?? []) as PlacementRow[]
+  ).map(mapPlacement);
+}
+
+async function updateRoundTurn(
+  roundId: string,
+  fields: {
+    currentPlayerId: string | null;
+    outPlayerIds: string[];
+    playerLives: Record<
+      string,
+      number
+    >;
+    turnSeconds: number;
+    status?: AtlasRoundStatus;
+  },
+) {
+  const { error } =
+    await supabase
+      .from("atlas_rounds")
+      .update({
+        current_player_id:
+          fields.currentPlayerId,
+        out_player_ids:
+          fields.outPlayerIds,
+        player_lives:
+          fields.playerLives,
+        turn_ends_at: new Date(
+          Date.now() +
+            fields.turnSeconds *
+              1000,
+        ).toISOString(),
+        ...(fields.status
+          ? {
+              status:
+                fields.status,
+            }
+          : {}),
+      })
+      .eq("id", roundId);
+
+  if (error) {
+    throw new Error(
+      `Could not update Atlas turn: ${error.message}`,
+    );
+  }
+}
+
+/**
+ * Places one capital on the shared board.
+ *
+ * The whole turn is resolved here rather than in the component so that
+ * two clients reacting to the same realtime event cannot both advance
+ * the turn: the placement insert is guarded by the round's current
+ * player, and the solved-country index rejects a duplicate solve.
+ */
+export async function placeAtlasCapital(
+  round: AtlasRound,
+  playerId: string,
+  countryId: string,
+  capitalCountryId: string,
+  playerIds: string[],
+  turnSeconds: number,
+): Promise<void> {
+  if (
+    round.status !== "playing" ||
+    round.payload.type !==
+      "capital_match" ||
+    round.currentPlayerId !==
+      playerId
+  ) {
+    return;
+  }
+
+  const isCorrect =
+    countryId === capitalCountryId;
+
+  const {
+    error: insertError,
+  } = await supabase
+    .from("atlas_placements")
+    .insert({
+      round_id: round.id,
+      country_id: countryId,
+      capital_country_id:
+        capitalCountryId,
+      placed_by: playerId,
+      is_correct: isCorrect,
+    });
+
+  if (insertError) {
+    throw new Error(
+      `Could not place capital: ${insertError.message}`,
+    );
+  }
+
+  let outPlayerIds =
+    round.outPlayerIds;
+
+  let playerLives =
+    round.playerLives;
+
+  if (isCorrect) {
+    const remainingSeconds =
+      Math.max(
+        0,
+        Math.ceil(
+          (new Date(
+            round.turnEndsAt ??
+              round.endsAt,
+          ).getTime() -
+            Date.now()) /
+            1000,
+        ),
+      );
+
+    await addScore(
+      playerId,
+      scorePlacement(
+        remainingSeconds,
+      ),
+    );
+  } else {
+    const result = applyLifeLoss(
+      playerLives,
+      outPlayerIds,
+      playerId,
+    );
+
+    playerLives =
+      result.playerLives;
+
+    outPlayerIds =
+      result.outPlayerIds;
+  }
+
+  const placements =
+    await getAtlasPlacements(
+      round.id,
+    );
+
+  const solved = placements
+    .filter(
+      (placement) =>
+        placement.isCorrect,
+    )
+    .map(
+      (placement) =>
+        placement.countryId,
+    );
+
+  const over = isMatchRoundOver(
+    round.payload.countryIds,
+    solved,
+    playerIds,
+    outPlayerIds,
+  );
+
+  if (over) {
+    const survivors =
+      playerIds.filter(
+        (id) =>
+          !outPlayerIds.includes(
+            id,
+          ),
+      );
+
+    /* Surviving alone is worth something on its own. */
+    if (
+      survivors.length === 1 &&
+      playerIds.length > 1
+    ) {
+      await addScore(
+        survivors[0],
+        LAST_STANDING_BONUS,
+      );
+    }
+
+    await updateRoundTurn(
+      round.id,
+      {
+        currentPlayerId: null,
+        outPlayerIds,
+        playerLives,
+        turnSeconds: 0,
+        status: "reveal",
+      },
+    );
+
+    return;
+  }
+
+  await updateRoundTurn(round.id, {
+    currentPlayerId:
+      nextActivePlayer(
+        playerIds,
+        playerId,
+        outPlayerIds,
+      ),
+    outPlayerIds,
+    playerLives,
+    turnSeconds,
+  });
+}
+
+/**
+ * Ends the current player's turn without a placement — used when their
+ * timer runs out. Costs a life, exactly as a wrong placement does.
+ */
+export async function passAtlasTurn(
+  round: AtlasRound,
+  playerIds: string[],
+  turnSeconds: number,
+): Promise<void> {
+  if (
+    round.status !== "playing" ||
+    round.payload.type !==
+      "capital_match" ||
+    !round.currentPlayerId
+  ) {
+    return;
+  }
+
+  const playerId =
+    round.currentPlayerId;
+
+  const {
+    playerLives,
+    outPlayerIds,
+  } = applyLifeLoss(
+    round.playerLives,
+    round.outPlayerIds,
+    playerId,
+  );
+
+  const placements =
+    await getAtlasPlacements(
+      round.id,
+    );
+
+  const solved = placements
+    .filter(
+      (placement) =>
+        placement.isCorrect,
+    )
+    .map(
+      (placement) =>
+        placement.countryId,
+    );
+
+  if (
+    isMatchRoundOver(
+      round.payload.countryIds,
+      solved,
+      playerIds,
+      outPlayerIds,
+    )
+  ) {
+    const survivors =
+      playerIds.filter(
+        (id) =>
+          !outPlayerIds.includes(
+            id,
+          ),
+      );
+
+    if (
+      survivors.length === 1 &&
+      playerIds.length > 1
+    ) {
+      await addScore(
+        survivors[0],
+        LAST_STANDING_BONUS,
+      );
+    }
+
+    await updateRoundTurn(
+      round.id,
+      {
+        currentPlayerId: null,
+        outPlayerIds,
+        playerLives,
+        turnSeconds: 0,
+        status: "reveal",
+      },
+    );
+
+    return;
+  }
+
+  await updateRoundTurn(round.id, {
+    currentPlayerId:
+      nextActivePlayer(
+        playerIds,
+        playerId,
+        outPlayerIds,
+      ),
+    outPlayerIds,
+    playerLives,
+    turnSeconds,
+  });
 }
 
 export async function createAtlasSession(
@@ -703,6 +1202,7 @@ export async function createAtlasRound(
   roundNumber: number,
   excludedCountryIds: string[],
   timerSeconds: number,
+  playerIds: string[],
 ): Promise<AtlasRound | null> {
   /* Guard against double-clicks and duplicate realtime actions. */
   const {
@@ -743,6 +1243,34 @@ export async function createAtlasRound(
     return null;
   }
 
+  /*
+   * A match round is turn-based, so it starts with a seated player and
+   * a per-player life count. The other round types are answered by
+   * everyone at once and leave the turn columns alone.
+   */
+  const isMatch =
+    payload.type ===
+    "capital_match";
+
+  const turnFields = isMatch
+    ? {
+        current_player_id:
+          playerIds[0] ?? null,
+        turn_ends_at: new Date(
+          Date.now() +
+            timerSeconds * 1000,
+        ).toISOString(),
+        out_player_ids: [],
+        player_lives:
+          Object.fromEntries(
+            playerIds.map((id) => [
+              id,
+              STARTING_LIVES,
+            ]),
+          ),
+      }
+    : {};
+
   const { data, error } =
     await supabase
       .from("atlas_rounds")
@@ -757,6 +1285,7 @@ export async function createAtlasRound(
           Date.now() +
             timerSeconds * 1000,
         ).toISOString(),
+        ...turnFields,
       })
       .select("*")
       .single();

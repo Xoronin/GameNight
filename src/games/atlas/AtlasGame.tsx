@@ -29,10 +29,13 @@ import { useAtlasRound } from "../../hooks/useAtlasRound";
 import { useRoom } from "../../hooks/useRoom";
 import { translate } from "../../i18n/i18n";
 import {
+  STARTING_LIVES,
   createAtlasRound,
   createAtlasSession,
   finishAtlasGame,
   getAtlasUsedCountryIds,
+  passAtlasTurn,
+  placeAtlasCapital,
   returnAtlasRoomToLobby,
   revealAtlasRound,
   submitAtlasAnswer,
@@ -111,13 +114,6 @@ function AtlasGame({
   const [choiceId, setChoiceId] =
     useState<string | null>(null);
 
-  const [
-    assignments,
-    setAssignments,
-  ] = useState<
-    Record<string, string>
-  >({});
-
   const triggeredRoundIdRef =
     useRef<string | null>(null);
 
@@ -138,6 +134,7 @@ function AtlasGame({
     session,
     round,
     answers,
+    placements,
     loading: roundLoading,
     error: roundError,
   } = useAtlasRound(room?.id);
@@ -180,6 +177,30 @@ function AtlasGame({
     answers.length >=
       players.length;
 
+  /** Countries each player solved on a match board. */
+  const solvedByPlayer = useMemo(
+    () => {
+      const counts: Record<
+        string,
+        number
+      > = {};
+
+      for (const placement of placements) {
+        if (placement.isCorrect) {
+          counts[
+            placement.placedBy
+          ] =
+            (counts[
+              placement.placedBy
+            ] ?? 0) + 1;
+        }
+      }
+
+      return counts;
+    },
+    [placements],
+  );
+
   const sortedPlayers = useMemo(
     () =>
       [...players].sort(
@@ -191,6 +212,47 @@ function AtlasGame({
 
   const revealed =
     round?.status === "reveal";
+
+  /*
+   * The match round is turn-based: no per-player submission, no reveal
+   * button, and the board is scored one placement at a time.
+   */
+  const isMatchRound =
+    round?.payload.type ===
+    "capital_match";
+
+  const playerIds = useMemo(
+    () =>
+      players.map(
+        (player) => player.id,
+      ),
+    [players],
+  );
+
+  const myTurn =
+    !!round?.currentPlayerId &&
+    round.currentPlayerId ===
+      localPlayer?.id;
+
+  const turnSeconds =
+    getGameTimerSeconds(
+      room?.gameSettings,
+      "atlas",
+    );
+
+  /*
+   * A match round times out once per turn, not once per round, so the
+   * "already fired" guard has to be keyed on the turn rather than on
+   * the round id — otherwise only the first stalled turn would pass.
+   */
+  const timeoutKey = round
+    ? `${round.id}:${
+        round.currentPlayerId ?? ""
+      }:${
+        round.turnEndsAt ??
+        round.endsAt
+      }`
+    : "";
 
   /*
    * Clear the in-progress answer when the round changes, so the next
@@ -212,7 +274,6 @@ function AtlasGame({
     setAnsweredRoundId(round?.id);
     setPainted({});
     setChoiceId(null);
-    setAssignments({});
   }
 
   const runAction = async (
@@ -271,6 +332,9 @@ function AtlasGame({
           room.gameSettings,
           "atlas",
         ),
+        players.map(
+          (player) => player.id,
+        ),
       );
 
     if (!result) {
@@ -328,21 +392,8 @@ function AtlasGame({
         round.payload.type ===
         "capital_match"
       ) {
-        if (
-          round.payload.countryIds.some(
-            (countryId) =>
-              !assignments[
-                countryId
-              ],
-          )
-        ) {
-          return null;
-        }
-
-        return {
-          type: "capital_match",
-          pairs: assignments,
-        };
+        /* Scored per placement as turns are taken, not on submit. */
+        return null;
       }
 
       if (!choiceId) {
@@ -371,6 +422,31 @@ function AtlasGame({
       round,
       localPlayer.id,
       response,
+    );
+  };
+
+  const placeCapital = async (
+    countryId: string,
+    capitalCountryId: string,
+  ) => {
+    if (
+      !round ||
+      !room ||
+      !localPlayer
+    ) {
+      return;
+    }
+
+    await placeAtlasCapital(
+      round,
+      localPlayer.id,
+      countryId,
+      capitalCountryId,
+      playerIds,
+      getGameTimerSeconds(
+        room.gameSettings,
+        "atlas",
+      ),
     );
   };
 
@@ -441,11 +517,22 @@ function AtlasGame({
     }
 
     const updateTimer = () => {
+      /*
+       * A match round counts down the current player's turn; the other
+       * types count down one shared answering window.
+       */
+      const deadline =
+        round.payload.type ===
+          "capital_match" &&
+        round.turnEndsAt
+          ? round.turnEndsAt
+          : round.endsAt;
+
       const remaining = Math.max(
         0,
         Math.ceil(
           (new Date(
-            round.endsAt,
+            deadline,
           ).getTime() -
             Date.now()) /
             1000,
@@ -470,12 +557,27 @@ function AtlasGame({
         remaining === 0 &&
         isHost &&
         triggeredRoundIdRef.current !==
-          round.id
+          timeoutKey
       ) {
         triggeredRoundIdRef.current =
-          round.id;
+          timeoutKey;
 
-        void reveal(true);
+        if (
+          round.payload.type ===
+          "capital_match"
+        ) {
+          /*
+           * Only the host fires this, so a stalled turn costs exactly
+           * one life however many clients are watching the clock.
+           */
+          void passAtlasTurn(
+            round,
+            playerIds,
+            turnSeconds,
+          );
+        } else {
+          void reveal(true);
+        }
       }
     };
 
@@ -490,7 +592,14 @@ function AtlasGame({
     return () => {
       window.clearInterval(timer);
     };
-  }, [round, isHost, reveal]);
+  }, [
+    round,
+    isHost,
+    reveal,
+    playerIds,
+    turnSeconds,
+    timeoutKey,
+  ]);
 
   useEffect(() => {
     if (
@@ -925,40 +1034,52 @@ function AtlasGame({
                 language={
                   gameLanguage
                 }
-                assignments={
-                  assignments
+                placements={
+                  placements
                 }
-                onAssign={(
+                players={players}
+                currentPlayerId={
+                  round.currentPlayerId
+                }
+                localPlayerId={
+                  localPlayer.id
+                }
+                playerLives={
+                  round.playerLives
+                }
+                outPlayerIds={
+                  round.outPlayerIds
+                }
+                startingLives={
+                  STARTING_LIVES
+                }
+                onPlace={(
                   countryId,
                   capitalCountryId,
-                ) =>
-                  setAssignments(
-                    (previous) => ({
-                      ...previous,
-                      [countryId]:
-                        capitalCountryId,
-                    }),
-                  )
-                }
-                onUnassign={(
-                  countryId,
-                ) =>
-                  setAssignments(
-                    (previous) => {
-                      const next = {
-                        ...previous,
-                      };
-
-                      delete next[
-                        countryId
-                      ];
-
-                      return next;
-                    },
-                  )
-                }
-                disabled={locked}
+                ) => {
+                  void runAction(() =>
+                    placeCapital(
+                      countryId,
+                      capitalCountryId,
+                    ),
+                  );
+                }}
+                disabled={working}
                 revealed={revealed}
+                labels={{
+                  yourTurn: gameT(
+                    "atlas.yourTurn",
+                  ),
+                  waitingFor: gameT(
+                    "atlas.waitingFor",
+                  ),
+                  outOfLives: gameT(
+                    "atlas.outOfLives",
+                  ),
+                  placedBy: gameT(
+                    "atlas.placedBy",
+                  ),
+                }}
               />
             )}
 
@@ -986,7 +1107,21 @@ function AtlasGame({
               />
             )}
 
-            {!revealed && (
+            {!revealed &&
+              isMatchRound && (
+                <div className="atlasFound">
+                  {myTurn
+                    ? gameT(
+                        "atlas.dragOne",
+                      )
+                    : gameT(
+                        "atlas.waitYourTurn",
+                      )}
+                </div>
+              )}
+
+            {!revealed &&
+              !isMatchRound && (
               <>
                 {myAnswer ? (
                   <div className="atlasLocked">
@@ -1051,46 +1186,67 @@ function AtlasGame({
 
             {revealed && (
               <>
-                <div
-                  className={`atlasResultBanner ${
-                    myAnswer &&
-                    myAnswer.correctCount ===
-                      myAnswer.totalCount
-                      ? "correct"
-                      : "incorrect"
-                  }`}
-                >
-                  {myAnswer ? (
-                    <>
-                      {gameT(
-                        "atlas.youScored",
-                      )}{" "}
-                      <strong>
-                        {
-                          myAnswer.correctCount
-                        }{" "}
-                        /{" "}
-                        {
-                          myAnswer.totalCount
-                        }
-                      </strong>
-
-                      {myAnswer.points >
-                        0 && (
+                {isMatchRound ? (
+                  <div
+                    className={`atlasResultBanner ${
+                      (solvedByPlayer[
+                        localPlayer.id
+                      ] ?? 0) > 0
+                        ? "correct"
+                        : "incorrect"
+                    }`}
+                  >
+                    {gameT(
+                      "atlas.youSolved",
+                    )}{" "}
+                    <strong>
+                      {solvedByPlayer[
+                        localPlayer.id
+                      ] ?? 0}
+                    </strong>
+                  </div>
+                ) : (
+                  <div
+                    className={`atlasResultBanner ${
+                      myAnswer &&
+                      myAnswer.correctCount ===
+                        myAnswer.totalCount
+                        ? "correct"
+                        : "incorrect"
+                    }`}
+                  >
+                    {myAnswer ? (
+                      <>
+                        {gameT(
+                          "atlas.youScored",
+                        )}{" "}
                         <strong>
-                          +
                           {
-                            myAnswer.points
+                            myAnswer.correctCount
+                          }{" "}
+                          /{" "}
+                          {
+                            myAnswer.totalCount
                           }
                         </strong>
-                      )}
-                    </>
-                  ) : (
-                    gameT(
-                      "atlas.noAnswer",
-                    )
-                  )}
-                </div>
+
+                        {myAnswer.points >
+                          0 && (
+                          <strong>
+                            +
+                            {
+                              myAnswer.points
+                            }
+                          </strong>
+                        )}
+                      </>
+                    ) : (
+                      gameT(
+                        "atlas.noAnswer",
+                      )
+                    )}
+                  </div>
+                )}
 
                 <div className="atlasAnswerNote">
                   {round.payload.type !==
@@ -1138,9 +1294,15 @@ function AtlasGame({
                             } as CSSProperties
                           }
                           className={`atlasResultRow ${
-                            answer &&
-                            answer.correctCount ===
-                              answer.totalCount
+                            (
+                              isMatchRound
+                                ? (solvedByPlayer[
+                                    player.id
+                                  ] ?? 0) > 0
+                                : answer &&
+                                  answer.correctCount ===
+                                    answer.totalCount
+                            )
                               ? "correct"
                               : ""
                           }`}
@@ -1152,18 +1314,36 @@ function AtlasGame({
                           </span>
 
                           <span className="atlasResultTally">
-                            {answer
-                              ? `${answer.correctCount} / ${answer.totalCount}`
-                              : gameT(
-                                  "atlas.noAnswer",
-                                )}
+                            {isMatchRound
+                              ? `${
+                                  solvedByPlayer[
+                                    player.id
+                                  ] ?? 0
+                                } / ${
+                                  round
+                                    .payload
+                                    .type ===
+                                  "capital_match"
+                                    ? round
+                                        .payload
+                                        .countryIds
+                                        .length
+                                    : 0
+                                }`
+                              : answer
+                                ? `${answer.correctCount} / ${answer.totalCount}`
+                                : gameT(
+                                    "atlas.noAnswer",
+                                  )}
                           </span>
 
-                          <span className="atlasResultPoints">
-                            +
-                            {answer?.points ??
-                              0}
-                          </span>
+                          {!isMatchRound && (
+                            <span className="atlasResultPoints">
+                              +
+                              {answer?.points ??
+                                0}
+                            </span>
+                          )}
                         </div>
                       );
                     },

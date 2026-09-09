@@ -579,6 +579,13 @@ const de = {
     playersAnswered: "Spieler haben geantwortet",
     youScored: "Du hattest",
     noAnswer: "Keine Antwort",
+    yourTurn: "Du bist dran — setze eine Hauptstadt",
+    waitingFor: "Warte auf",
+    outOfLives: "Raus",
+    placedBy: "von",
+    dragOne: "Ziehe eine Hauptstadt auf ihr Land",
+    waitYourTurn: "Warte, bis du dran bist",
+    youSolved: "Du hast gelöst:",
     correctFlag: "Richtige Flagge",
     correctAnswerWas: "Die Antwort war",
     countriesExhausted:

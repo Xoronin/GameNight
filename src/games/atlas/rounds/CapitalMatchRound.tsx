@@ -1,4 +1,8 @@
-import { Check, X } from "lucide-react";
+import {
+  Check,
+  Heart,
+  X,
+} from "lucide-react";
 import {
   useRef,
   useState,
@@ -8,17 +12,21 @@ import {
   countryName,
   getAtlasCountry,
 } from "../../../data/atlasCountries";
-import type { AtlasRoundPayload } from "../../../types/game";
+import type { AtlasPlacement, AtlasRoundPayload } from "../../../types/game";
+import type { RoomPlayer } from "../../../types/player";
 import Flag from "../Flag";
 
 /*
- * Drag each capital onto its country.
+ * The shared, turn-based capital board.
  *
- * Built on pointer events rather than HTML5 drag-and-drop, which does
- * not fire on touch at all — this is a party game, so phones matter.
- * A drag that never really moves is treated as a tap instead, giving a
- * select-then-place path for anyone who finds dragging fiddly (and for
- * keyboard-free accessibility on small screens).
+ * Ten countries and ten capitals are laid out for everyone, and players
+ * take turns placing a single capital. A correct placement locks onto
+ * the board and scores; a wrong one costs the placer a life.
+ *
+ * Dragging is built on pointer events rather than HTML5 drag-and-drop,
+ * which does not fire on touch at all — this is a party game, so phones
+ * matter. A press that never really moves counts as a tap, giving a
+ * select-then-place path as well.
  */
 
 /** Pointer travel, in px, past which a press counts as a drag. */
@@ -30,20 +38,29 @@ type CapitalMatchRoundProps = {
     { type: "capital_match" }
   >;
   language: "en" | "de";
-  /** Country id → the country id whose capital was dropped on it. */
-  assignments: Record<
+  placements: AtlasPlacement[];
+  players: RoomPlayer[];
+  currentPlayerId: string | null;
+  localPlayerId: string;
+  playerLives: Record<
     string,
-    string
+    number
   >;
-  onAssign: (
+  outPlayerIds: string[];
+  startingLives: number;
+  onPlace: (
     countryId: string,
     capitalCountryId: string,
   ) => void;
-  onUnassign: (
-    countryId: string,
-  ) => void;
+  /** True while a placement is in flight, or the round is over. */
   disabled: boolean;
   revealed: boolean;
+  labels: {
+    yourTurn: string;
+    waitingFor: string;
+    outOfLives: string;
+    placedBy: string;
+  };
 };
 
 type DragState = {
@@ -56,11 +73,17 @@ type DragState = {
 function CapitalMatchRound({
   payload,
   language,
-  assignments,
-  onAssign,
-  onUnassign,
+  placements,
+  players,
+  currentPlayerId,
+  localPlayerId,
+  playerLives,
+  outPlayerIds,
+  startingLives,
+  onPlace,
   disabled,
   revealed,
+  labels,
 }: CapitalMatchRoundProps) {
   const [drag, setDrag] =
     useState<DragState | null>(
@@ -75,38 +98,63 @@ function CapitalMatchRound({
     y: 0,
   });
 
-  const assignedCapitals =
-    new Set(
-      Object.values(assignments),
+  /* The board is derived from the placement log, not local state. */
+  const solvedBy = new Map<
+    string,
+    string
+  >();
+
+  for (const placement of placements) {
+    if (placement.isCorrect) {
+      solvedBy.set(
+        placement.countryId,
+        placement.placedBy,
+      );
+    }
+  }
+
+  const lastWrong = [
+    ...placements,
+  ]
+    .reverse()
+    .find(
+      (placement) =>
+        !placement.isCorrect,
     );
+
+  const myTurn =
+    currentPlayerId ===
+    localPlayerId;
+
+  const interactive =
+    myTurn && !disabled && !revealed;
+
+  const pool =
+    payload.capitalOrder.filter(
+      (capitalId) =>
+        !solvedBy.has(capitalId),
+    );
+
+  const playerName = (
+    playerId: string,
+  ) =>
+    players.find(
+      (player) =>
+        player.id === playerId,
+    )?.name ?? "?";
 
   const place = (
     capitalId: string,
     countryId: string,
   ) => {
-    /*
-     * A slot holds one capital and a capital sits in one slot, so
-     * placing has to evict both sides of any existing pairing.
-     */
-    for (const [
-      slotId,
-      heldCapital,
-    ] of Object.entries(
-      assignments,
-    )) {
-      if (
-        heldCapital === capitalId &&
-        slotId !== countryId
-      ) {
-        onUnassign(slotId);
-      }
+    if (
+      !interactive ||
+      solvedBy.has(countryId)
+    ) {
+      return;
     }
 
-    onAssign(
-      countryId,
-      capitalId,
-    );
-
+    onPlace(countryId, capitalId);
     setSelected(null);
   };
 
@@ -114,7 +162,7 @@ function CapitalMatchRound({
     event: React.PointerEvent,
     capitalId: string,
   ) => {
-    if (disabled) {
+    if (!interactive) {
       return;
     }
 
@@ -173,7 +221,6 @@ function CapitalMatchRound({
     setDrag(null);
 
     if (!current.moved) {
-      /* Treat it as a tap: select, or deselect if already selected. */
       setSelected((previous) =>
         previous ===
         current.capitalId
@@ -186,18 +233,14 @@ function CapitalMatchRound({
 
     /*
      * The dragged chip is pointer-events:none while dragging, so this
-     * finds the slot underneath it rather than the chip itself.
+     * finds the slot underneath rather than the chip itself.
      */
-    const target =
-      document.elementFromPoint(
+    const slot = document
+      .elementFromPoint(
         event.clientX,
         event.clientY,
-      );
-
-    const slot =
-      target?.closest(
-        "[data-slot]",
-      );
+      )
+      ?.closest("[data-slot]");
 
     const countryId =
       slot?.getAttribute(
@@ -212,79 +255,105 @@ function CapitalMatchRound({
     }
   };
 
-  const renderChip = (
-    capitalId: string,
-    inSlot: boolean,
-  ) => {
-    const country =
-      getAtlasCountry(capitalId);
-
-    if (!country) {
-      return null;
-    }
-
-    const isDragging =
-      drag?.capitalId ===
-        capitalId && drag.moved;
-
-    return (
-      <button
-        key={capitalId}
-        type="button"
-        disabled={disabled}
-        className={[
-          "atlasCapitalChip",
-          isDragging
-            ? "dragging"
-            : "",
-          selected === capitalId
-            ? "selected"
-            : "",
-          inSlot ? "inSlot" : "",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        style={
-          isDragging
-            ? {
-                transform: `translate(${drag.dx}px, ${drag.dy}px)`,
-              }
-            : undefined
-        }
-        onPointerDown={(event) =>
-          handlePointerDown(
-            event,
-            capitalId,
-          )
-        }
-        onPointerMove={
-          handlePointerMove
-        }
-        onPointerUp={
-          handlePointerUp
-        }
-        onPointerCancel={() =>
-          setDrag(null)
-        }
-      >
-        {capitalName(
-          country,
-          language,
-        )}
-      </button>
-    );
-  };
-
-  const pool =
-    payload.capitalOrder.filter(
-      (capitalId) =>
-        !assignedCapitals.has(
-          capitalId,
-        ),
-    );
-
   return (
     <div className="atlasMatchRound">
+      <div
+        className={`atlasTurnBanner ${
+          myTurn ? "mine" : ""
+        }`}
+      >
+        {revealed
+          ? null
+          : myTurn
+            ? labels.yourTurn
+            : `${labels.waitingFor} ${playerName(
+                currentPlayerId ?? "",
+              )}`}
+      </div>
+
+      <div className="atlasLives">
+        {players.map((player) => {
+          const isOut =
+            outPlayerIds.includes(
+              player.id,
+            );
+
+          const lives =
+            playerLives[player.id] ??
+            startingLives;
+
+          return (
+            <div
+              key={player.id}
+              className={[
+                "atlasLifeRow",
+                player.id ===
+                currentPlayerId
+                  ? "current"
+                  : "",
+                isOut ? "out" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
+              <span>
+                {player.name}
+              </span>
+
+              <span className="atlasHearts">
+                {Array.from(
+                  {
+                    length:
+                      startingLives,
+                  },
+                  (_unused, index) => (
+                    <Heart
+                      key={index}
+                      size={13}
+                      className={
+                        index < lives
+                          ? "filled"
+                          : ""
+                      }
+                    />
+                  ),
+                )}
+              </span>
+
+              {isOut && (
+                <span className="atlasOutTag">
+                  {labels.outOfLives}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {lastWrong && !revealed && (
+        <div className="atlasLastWrong">
+          <X size={15} />
+
+          {playerName(
+            lastWrong.placedBy,
+          )}
+          {": "}
+          {capitalName(
+            getAtlasCountry(
+              lastWrong.capitalCountryId,
+            )!,
+            language,
+          )}
+          {" → "}
+          {countryName(
+            getAtlasCountry(
+              lastWrong.countryId,
+            )!,
+            language,
+          )}
+        </div>
+      )}
+
       <div className="atlasMatchSlots">
         {payload.countryIds.map(
           (countryId) => {
@@ -297,54 +366,38 @@ function CapitalMatchRound({
               return null;
             }
 
-            const held =
-              assignments[
-                countryId
-              ];
-
-            const isCorrect =
-              held === countryId;
+            const solver =
+              solvedBy.get(countryId);
 
             return (
               <div
                 key={countryId}
                 data-slot={
-                  disabled
-                    ? undefined
-                    : countryId
+                  interactive &&
+                  !solver
+                    ? countryId
+                    : undefined
                 }
                 className={[
                   "atlasMatchSlot",
-                  revealed &&
-                  isCorrect
+                  solver
                     ? "correct"
                     : "",
-                  revealed &&
-                  held &&
-                  !isCorrect
-                    ? "incorrect"
+                  interactive &&
+                  !solver &&
+                  selected
+                    ? "droppable"
                     : "",
                 ]
                   .filter(Boolean)
                   .join(" ")}
                 onClick={() => {
                   if (
-                    disabled
+                    selected &&
+                    !solver
                   ) {
-                    return;
-                  }
-
-                  if (selected) {
                     place(
                       selected,
-                      countryId,
-                    );
-
-                    return;
-                  }
-
-                  if (held) {
-                    onUnassign(
                       countryId,
                     );
                   }
@@ -366,58 +419,120 @@ function CapitalMatchRound({
                 </span>
 
                 <span className="atlasMatchDrop">
-                  {held ? (
-                    renderChip(
-                      held,
-                      true,
-                    )
-                  ) : (
-                    <span className="atlasMatchEmpty" />
-                  )}
-                </span>
+                  {solver ? (
+                    <span className="atlasCapitalChip solved">
+                      <Check
+                        size={14}
+                      />
 
-                {revealed &&
-                  isCorrect && (
-                    <Check
-                      size={17}
-                    />
-                  )}
-
-                {revealed &&
-                  held &&
-                  !isCorrect && (
-                    <X size={17} />
-                  )}
-
-                {revealed &&
-                  !isCorrect && (
+                      {capitalName(
+                        country,
+                        language,
+                      )}
+                    </span>
+                  ) : revealed ? (
                     <span className="atlasMatchTruth">
                       {capitalName(
                         country,
                         language,
                       )}
                     </span>
+                  ) : (
+                    <span className="atlasMatchEmpty" />
                   )}
+                </span>
+
+                {solver && (
+                  <span className="atlasMatchPlacer">
+                    {labels.placedBy}{" "}
+                    {playerName(
+                      solver,
+                    )}
+                  </span>
+                )}
               </div>
             );
           },
         )}
       </div>
 
-      {!revealed && (
-        <div className="atlasMatchPool">
-          {pool.length === 0 ? (
-            <span className="atlasMatchPoolEmpty" />
-          ) : (
-            pool.map((capitalId) =>
-              renderChip(
-                capitalId,
-                false,
-              ),
-            )
-          )}
-        </div>
-      )}
+      {!revealed &&
+        pool.length > 0 && (
+          <div
+            className={`atlasMatchPool ${
+              interactive
+                ? "active"
+                : ""
+            }`}
+          >
+            {pool.map((capitalId) => {
+              const country =
+                getAtlasCountry(
+                  capitalId,
+                );
+
+              if (!country) {
+                return null;
+              }
+
+              const isDragging =
+                drag?.capitalId ===
+                  capitalId &&
+                drag.moved;
+
+              return (
+                <button
+                  key={capitalId}
+                  type="button"
+                  disabled={
+                    !interactive
+                  }
+                  className={[
+                    "atlasCapitalChip",
+                    isDragging
+                      ? "dragging"
+                      : "",
+                    selected ===
+                    capitalId
+                      ? "selected"
+                      : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  style={
+                    isDragging
+                      ? {
+                          transform: `translate(${drag.dx}px, ${drag.dy}px)`,
+                        }
+                      : undefined
+                  }
+                  onPointerDown={(
+                    event,
+                  ) =>
+                    handlePointerDown(
+                      event,
+                      capitalId,
+                    )
+                  }
+                  onPointerMove={
+                    handlePointerMove
+                  }
+                  onPointerUp={
+                    handlePointerUp
+                  }
+                  onPointerCancel={() =>
+                    setDrag(null)
+                  }
+                >
+                  {capitalName(
+                    country,
+                    language,
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
     </div>
   );
 }

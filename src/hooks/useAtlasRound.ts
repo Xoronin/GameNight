@@ -6,11 +6,13 @@ import { supabase } from "../lib/supabase";
 import {
   getActiveAtlasSession,
   getAtlasAnswers,
+  getAtlasPlacements,
   getLatestAtlasRound,
 } from "../services/atlasService";
 import type { AtlasSession } from "../services/atlasService";
 import type {
   AtlasAnswer,
+  AtlasPlacement,
   AtlasRound,
 } from "../types/game";
 
@@ -29,6 +31,13 @@ export function useAtlasRound(
 
   const [answers, setAnswers] =
     useState<AtlasAnswer[]>([]);
+
+  const [
+    placements,
+    setPlacements,
+  ] = useState<AtlasPlacement[]>(
+    [],
+  );
 
   const [loading, setLoading] =
     useState(true);
@@ -151,6 +160,7 @@ export function useAtlasRound(
 
         if (!latest) {
           setAnswers([]);
+          setPlacements([]);
         }
 
         setError(null);
@@ -207,16 +217,24 @@ export function useAtlasRound(
 
     const loadAnswers = async () => {
       try {
-        const loaded =
-          await getAtlasAnswers(
+        const [
+          loadedAnswers,
+          loadedPlacements,
+        ] = await Promise.all([
+          getAtlasAnswers(roundId),
+          getAtlasPlacements(
             roundId,
-          );
+          ),
+        ]);
 
         if (!active) {
           return;
         }
 
-        setAnswers(loaded);
+        setAnswers(loadedAnswers);
+        setPlacements(
+          loadedPlacements,
+        );
         setError(null);
       } catch (caughtError) {
         if (!active) {
@@ -249,6 +267,18 @@ export function useAtlasRound(
           void loadAnswers();
         },
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "atlas_placements",
+          filter: `round_id=eq.${roundId}`,
+        },
+        () => {
+          void loadAnswers();
+        },
+      )
       .subscribe();
 
     return () => {
@@ -264,6 +294,7 @@ export function useAtlasRound(
     session,
     round,
     answers,
+    placements,
     loading,
     error,
   };
