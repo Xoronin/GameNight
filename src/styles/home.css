@@ -131,6 +131,15 @@ main {
     box-shadow: none;
 }
 
+.comingSoonCard:hover .cardWatermark {
+    transform: none;
+    opacity: 0.07;
+}
+
+.comingSoonCard::after {
+    opacity: 0.25;
+}
+
 .comingSoonBadge {
     margin-top: auto;
     padding-top: 12px;
@@ -146,7 +155,16 @@ main {
     text-transform: uppercase;
 }
 
+/*
+ * Each card is built from a single `--accent` so the tint, border,
+ * glow and watermark all agree. The watermark is the game's own icon
+ * blown up behind the content, which is what makes the cards read as
+ * individual rather than as one tile in six colourways.
+ */
 .gameCard {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     min-height: 270px;
     padding: 22px;
     display: flex;
@@ -162,11 +180,67 @@ main {
     animation-delay: calc(var(--cardIndex, 0) * 45ms);
 }
 
+    /* Accent wash, strongest at the top-left corner. */
+    .gameCard::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        background:
+            radial-gradient(120% 90% at 0% 0%, var(--accentSoft, transparent) 0, transparent 58%);
+        opacity: 0.9;
+        transition: opacity 220ms ease;
+    }
+
+    /* Hairline of accent along the top edge. */
+    .gameCard::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        z-index: -1;
+        background: linear-gradient(90deg, var(--accent, transparent), transparent 70%);
+        opacity: 0.75;
+        transition: opacity 220ms ease;
+    }
+
+.cardWatermark {
+    position: absolute;
+    right: -26px;
+    bottom: -30px;
+    z-index: -1;
+    color: var(--accent, #ffffff);
+    opacity: 0.07;
+    pointer-events: none;
+    transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1), opacity 220ms ease;
+}
+
+    .cardWatermark svg {
+        width: 150px;
+        height: 150px;
+        stroke-width: 1.25;
+    }
+
     .gameCard:hover {
         transform: translateY(-4px);
-        border-color: #ffffff24;
+        border-color: var(--accentBorder, #ffffff24);
         background: #15151d;
-        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.42), 0 0 0 1px var(--accentBorder, transparent);
+    }
+
+    .gameCard:hover::before {
+        opacity: 1;
+    }
+
+    .gameCard:hover::after {
+        opacity: 1;
+    }
+
+    .gameCard:hover .cardWatermark {
+        transform: translate(-6px, -6px) rotate(-6deg) scale(1.06);
+        opacity: 0.13;
     }
 
     .gameCard:active {
@@ -242,6 +316,42 @@ main {
     font-weight: 700;
 }
 
+.gameCard.purple {
+    --accent: #a78bfa;
+    --accentSoft: #7c3aed26;
+    --accentBorder: #a78bfa5c;
+}
+
+.gameCard.red {
+    --accent: #fb7185;
+    --accentSoft: #e11d4826;
+    --accentBorder: #fb71855c;
+}
+
+.gameCard.green {
+    --accent: #4ade80;
+    --accentSoft: #16a34a26;
+    --accentBorder: #4ade805c;
+}
+
+.gameCard.blue {
+    --accent: #60a5fa;
+    --accentSoft: #2563eb26;
+    --accentBorder: #60a5fa5c;
+}
+
+.gameCard.orange {
+    --accent: #fb923c;
+    --accentSoft: #ea580c26;
+    --accentBorder: #fb923c5c;
+}
+
+.gameCard.pink {
+    --accent: #f472b6;
+    --accentSoft: #db277726;
+    --accentBorder: #f472b65c;
+}
+
 .purple .gameIcon,
 .purple .play {
     color: #a78bfa;
@@ -270,6 +380,22 @@ main {
 .pink .gameIcon,
 .pink .play {
     color: #f472b6;
+}
+
+/* The icon tile picks up the card's accent instead of a flat grey. */
+.gameCard .gameIcon {
+    border: 1px solid var(--accentBorder, #ffffff14);
+    background: linear-gradient(150deg, var(--accentSoft, #ffffff0b), #ffffff08);
+}
+
+.gameCard .players {
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: #ffffff08;
+}
+
+.gameCard .cardContent h3 {
+    letter-spacing: -0.015em;
 }
 
 footer {
@@ -314,16 +440,33 @@ footer {
         width: calc(100% - 32px);
     }
 
+    /*
+     * The hero was taking most of the first screen on a phone, so the
+     * game list — the reason anyone opens this page — started below the
+     * fold. Tightened until the first card is visible on load.
+     */
     .hero {
-        padding: 70px 0 60px;
+        padding: 18px 0 20px;
     }
 
         .hero h1 {
-            font-size: 48px;
+            font-size: 30px;
+            margin: 4px auto;
+        }
+
+        .hero p {
+            margin: 8px auto;
+            font-size: 14px;
         }
 
     .heroActions {
         flex-direction: column;
+        margin-top: 14px;
+        gap: 9px;
+    }
+
+    .sectionHeading {
+        margin-bottom: 4px;
     }
 
     .gameGrid {
@@ -331,8 +474,27 @@ footer {
     }
 
     .gameCard {
-        min-height: 235px;
+        min-height: 172px;
+        padding: 16px;
     }
+
+        .gameCard .cardContent {
+            margin-top: 16px;
+        }
+
+        .gameCard .cardContent h3 {
+            font-size: 19px;
+        }
+
+        .gameCard .gameIcon {
+            width: 42px;
+            height: 42px;
+        }
+
+        .cardWatermark svg {
+            width: 108px;
+            height: 108px;
+        }
 
     footer {
         flex-direction: column;

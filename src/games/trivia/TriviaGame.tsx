@@ -22,6 +22,7 @@ import {
 } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
+import LowTimeBanner from "../../components/LowTimeBanner";
 import {
   getGameRoundCount,
   getGameTimerSeconds,
@@ -732,6 +733,9 @@ function TriviaGame({
     );
   }
 
+  /* One countdown warning per round. */
+  const turnKey = round?.id ?? null;
+
   const revealed =
     round.status === "reveal";
 
@@ -741,6 +745,14 @@ function TriviaGame({
 
       <div className="page gamePage">
       <div className="triviaGame">
+        <LowTimeBanner
+                    secondsLeft={secondsLeft}
+                    roundKey={turnKey}
+                    label={gameT(
+                      "common.timeRunningOut",
+                    )}
+                  />
+
         <header className="triviaHeader">
           <div>
             <span className="eyebrow">

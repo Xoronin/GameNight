@@ -21,6 +21,8 @@ import {
 } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
+import LowTimeBanner from "../../components/LowTimeBanner";
+import TurnFlash from "../../components/TurnFlash";
 import {
   getGameRoundCount,
   getGameTimerSeconds,
@@ -251,6 +253,19 @@ function DrawingGame({
     !!localPlayer &&
     round.drawerPlayerId ===
       localPlayer.id;
+
+  /*
+   * A new turn re-arms both alerts: the countdown restarts for the new
+   * player, and the flash fires again when that player is you.
+   */
+  const turnKey = round
+    ? `${round.id}:${
+        round.drawerPlayerId
+      }`
+    : null;
+
+  const myTurnKey =
+    isDrawer && turnKey ? turnKey : null;
 
   const drawer =
     players.find(
@@ -1108,6 +1123,24 @@ function DrawingGame({
 
       <div className="page gamePage drawingPlayingPage">
       <div className="drawingGame">
+        <LowTimeBanner
+                    secondsLeft={secondsLeft}
+                    roundKey={turnKey}
+                    label={gameT(
+                      "common.timeRunningOut",
+                    )}
+                  />
+
+                  <TurnFlash
+                    turnKey={myTurnKey}
+                    label={gameT(
+                      "common.yourTurn",
+                    )}
+                    hint={gameT(
+                      "common.yourTurnHint",
+                    )}
+                  />
+
         <header className="drawingHeader">
           <div>
             <span className="eyebrow">

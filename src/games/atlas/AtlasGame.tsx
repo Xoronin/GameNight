@@ -16,6 +16,8 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
+import LowTimeBanner from "../../components/LowTimeBanner";
+import TurnFlash from "../../components/TurnFlash";
 import {
   countryName,
   getAtlasCountry,
@@ -917,6 +919,32 @@ function AtlasGame({
 
       <div className="page gamePage">
         <div className="atlasGame">
+          <LowTimeBanner
+            secondsLeft={secondsLeft}
+            roundKey={timeoutKey}
+            label={gameT(
+              "common.timeRunningOut",
+            )}
+          />
+
+          {/*
+            * Only the turn-based match round has a turn to announce;
+            * the other round types are answered by everyone at once.
+            */}
+          <TurnFlash
+            turnKey={
+              isMatchRound && myTurn
+                ? timeoutKey
+                : null
+            }
+            label={gameT(
+              "common.yourTurn",
+            )}
+            hint={gameT(
+              "common.yourTurnHint",
+            )}
+          />
+
           <header className="atlasHeader">
             <div>
               <span className="eyebrow">

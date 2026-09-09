@@ -42,6 +42,13 @@ function Home() {
           key={game.id}
           style={cardStyle}
         >
+          <span
+            className="cardWatermark"
+            aria-hidden
+          >
+            {game.icon}
+          </span>
+
           <div className="cardTop">
             <div className="gameIcon">
               {game.icon}
@@ -85,6 +92,13 @@ function Home() {
         }
         type="button"
       >
+        <span
+          className="cardWatermark"
+          aria-hidden
+        >
+          {game.icon}
+        </span>
+
         <div className="cardTop">
           <div className="gameIcon">
             {game.icon}

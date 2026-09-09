@@ -22,6 +22,8 @@ import {
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
+import LowTimeBanner from "../../components/LowTimeBanner";
+import TurnFlash from "../../components/TurnFlash";
 import {
   getGameRoundCount,
   getGameTimerSeconds,
@@ -345,6 +347,19 @@ function SpectrumGame({
     !!localPlayer &&
     round?.currentPlayerId ===
       localPlayer.id;
+
+  /*
+   * A new turn re-arms both alerts: the countdown restarts for the new
+   * player, and the flash fires again when that player is you.
+   */
+  const turnKey = round
+    ? `${round.id}:${
+        round.currentPlayerId ?? ""
+      }`
+    : null;
+
+  const myTurnKey =
+    isMyTurn && turnKey ? turnKey : null;
 
   const boardEntriesAscending =
     useMemo(() => {
@@ -1211,6 +1226,24 @@ function SpectrumGame({
 
         <div className="page gamePage">
         <div className="spectrumGame">
+          <LowTimeBanner
+                      secondsLeft={secondsLeft}
+                      roundKey={turnKey}
+                      label={gameT(
+                        "common.timeRunningOut",
+                      )}
+                    />
+
+                    <TurnFlash
+                      turnKey={myTurnKey}
+                      label={gameT(
+                        "common.yourTurn",
+                      )}
+                      hint={gameT(
+                        "common.yourTurnHint",
+                      )}
+                    />
+
           <header className="spectrumHeader">
             <div>
               <span className="eyebrow">
@@ -1371,6 +1404,24 @@ function SpectrumGame({
 
       <div className="page gamePage">
       <div className="spectrumGame">
+        <LowTimeBanner
+                    secondsLeft={secondsLeft}
+                    roundKey={turnKey}
+                    label={gameT(
+                      "common.timeRunningOut",
+                    )}
+                  />
+
+                  <TurnFlash
+                    turnKey={myTurnKey}
+                    label={gameT(
+                      "common.yourTurn",
+                    )}
+                    hint={gameT(
+                      "common.yourTurnHint",
+                    )}
+                  />
+
         <header className="spectrumHeader">
           <div>
             <span className="eyebrow">

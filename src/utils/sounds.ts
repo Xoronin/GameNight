@@ -144,6 +144,54 @@ export function playTick() {
   ]);
 }
 
+/**
+ * Your turn: a bright rising chime, deliberately unlike playCorrect so
+ * "you may act now" never reads as "you got it right".
+ */
+export function playYourTurn() {
+  playTones([
+    {
+      frequency: 587.33,
+      duration: 0.11,
+      gain: 0.09,
+    },
+    {
+      frequency: 880,
+      duration: 0.13,
+      delay: 0.1,
+      gain: 0.09,
+    },
+    {
+      frequency: 1174.66,
+      duration: 0.2,
+      delay: 0.21,
+      gain: 0.07,
+    },
+  ]);
+}
+
+/**
+ * The clock is nearly out: two urgent low pulses, distinct from the
+ * per-second playTick so the warning is not mistaken for the count.
+ */
+export function playTimeWarning() {
+  playTones([
+    {
+      frequency: 392,
+      duration: 0.14,
+      type: "square",
+      gain: 0.08,
+    },
+    {
+      frequency: 392,
+      duration: 0.2,
+      delay: 0.19,
+      type: "square",
+      gain: 0.09,
+    },
+  ]);
+}
+
 export function playCorrect() {
   playTones([
     {

@@ -18,6 +18,8 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
+import LowTimeBanner from "../../components/LowTimeBanner";
+import TurnFlash from "../../components/TurnFlash";
 import {
   getGameRoundCount,
   getGameTimerSeconds,
@@ -150,6 +152,19 @@ function MinefieldGame({
     !!localPlayer &&
     round?.currentPlayerId ===
       localPlayer.id;
+
+  /*
+   * A new turn re-arms both alerts: the countdown restarts for the new
+   * player, and the flash fires again when that player is you.
+   */
+  const turnKey = round
+    ? `${round.id}:${
+        round.currentPlayerId ?? ""
+      }`
+    : null;
+
+  const myTurnKey =
+    isMyTurn && turnKey ? turnKey : null;
 
   const outPlayerIds =
     round?.outPlayerIds ?? [];
@@ -765,6 +780,24 @@ function MinefieldGame({
 
       <div className="page gamePage">
       <div className="minefieldGame">
+        <LowTimeBanner
+                    secondsLeft={secondsLeft}
+                    roundKey={turnKey}
+                    label={gameT(
+                      "common.timeRunningOut",
+                    )}
+                  />
+
+                  <TurnFlash
+                    turnKey={myTurnKey}
+                    label={gameT(
+                      "common.yourTurn",
+                    )}
+                    hint={gameT(
+                      "common.yourTurnHint",
+                    )}
+                  />
+
         <header className="minefieldHeader">
           <div>
             <span className="eyebrow">

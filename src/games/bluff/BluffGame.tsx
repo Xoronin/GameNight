@@ -19,6 +19,7 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
+import LowTimeBanner from "../../components/LowTimeBanner";
 import {
   getGameRoundCount,
   getGameTimerSeconds,
@@ -259,6 +260,9 @@ function BluffGame({
       gameLanguage,
       key,
     );
+
+  /* One countdown warning per round. */
+  const turnKey = round?.id ?? null;
 
   const isHost =
     !!room &&
@@ -1129,6 +1133,14 @@ function BluffGame({
 
       <div className="page gamePage">
       <div className="bluffGame">
+        <LowTimeBanner
+                    secondsLeft={secondsLeft}
+                    roundKey={turnKey}
+                    label={gameT(
+                      "common.timeRunningOut",
+                    )}
+                  />
+
         <header className="bluffGameHeader">
           <div>
             <span className="eyebrow">
