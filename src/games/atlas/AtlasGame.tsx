@@ -24,6 +24,7 @@ import {
 } from "../../data/atlasCountries";
 import { flagRegions } from "../../data/atlasFlags";
 import {
+  getAtlasModes,
   getGameRoundCount,
   getGameTimerSeconds,
 } from "../../data/gameTimers";
@@ -32,6 +33,8 @@ import { useRoom } from "../../hooks/useRoom";
 import { translate } from "../../i18n/i18n";
 import {
   STARTING_LIVES,
+  boardCountryIds,
+  isBoardRound,
   createAtlasRound,
   createAtlasSession,
   finishAtlasGame,
@@ -57,6 +60,8 @@ import {
 import { getTournamentStatus } from "../../utils/tournament";
 import "../../styles/atlas.css";
 import CapitalMatchRound from "./rounds/CapitalMatchRound";
+import MapChoiceRound from "./rounds/MapChoiceRound";
+import MapPlaceRound from "./rounds/MapPlaceRound";
 import ChoiceRound from "./rounds/ChoiceRound";
 import FlagPaintRound from "./rounds/FlagPaintRound";
 
@@ -77,6 +82,8 @@ const promptKeys: Record<
     "atlas.taskCapitalChoice",
   capital_match:
     "atlas.taskCapitalMatch",
+  map_choice: "atlas.taskMapChoice",
+  map_place: "atlas.taskMapPlace",
 };
 
 function AtlasGame({
@@ -140,6 +147,15 @@ function AtlasGame({
     loading: roundLoading,
     error: roundError,
   } = useAtlasRound(room?.id);
+
+  /* Which round types the host turned on for this room. */
+  const enabledModes = useMemo(
+    () =>
+      getAtlasModes(
+        room?.gameSettings,
+      ) as AtlasRoundType[],
+    [room?.gameSettings],
+  );
 
   const ROUNDS_PER_GAME =
     getGameRoundCount(
@@ -220,8 +236,10 @@ function AtlasGame({
    * button, and the board is scored one placement at a time.
    */
   const isMatchRound =
-    round?.payload.type ===
-    "capital_match";
+    !!round &&
+    isBoardRound(
+      round.payload.type,
+    );
 
   const playerIds = useMemo(
     () =>
@@ -338,6 +356,7 @@ function AtlasGame({
           (player) => player.id,
         ),
         ROUNDS_PER_GAME,
+        enabledModes,
       );
 
     if (!result) {
@@ -370,6 +389,10 @@ function AtlasGame({
           return null;
         }
 
+        if (!country.flag) {
+          return null;
+        }
+
         const regions =
           flagRegions(
             country.flag,
@@ -392,8 +415,9 @@ function AtlasGame({
       }
 
       if (
-        round.payload.type ===
-        "capital_match"
+        isBoardRound(
+          round.payload.type,
+        )
       ) {
         /* Scored per placement as turns are taken, not on submit. */
         return null;
@@ -1115,6 +1139,89 @@ function AtlasGame({
               />
             )}
 
+            {round.payload.type ===
+              "map_choice" && (
+              <MapChoiceRound
+                payload={
+                  round.payload
+                }
+                language={
+                  gameLanguage
+                }
+                selectedId={choiceId}
+                onSelect={setChoiceId}
+                disabled={locked}
+                revealed={revealed}
+                loadingLabel={gameT(
+                  "atlas.loadingMap",
+                )}
+              />
+            )}
+
+            {round.payload.type ===
+              "map_place" && (
+              <MapPlaceRound
+                payload={
+                  round.payload
+                }
+                language={
+                  gameLanguage
+                }
+                placements={
+                  placements
+                }
+                players={players}
+                currentPlayerId={
+                  round.currentPlayerId
+                }
+                localPlayerId={
+                  localPlayer.id
+                }
+                playerLives={
+                  round.playerLives
+                }
+                outPlayerIds={
+                  round.outPlayerIds
+                }
+                startingLives={
+                  STARTING_LIVES
+                }
+                onPlace={(
+                  countryId,
+                  placedId,
+                ) => {
+                  void runAction(() =>
+                    placeCapital(
+                      countryId,
+                      placedId,
+                    ),
+                  );
+                }}
+                disabled={working}
+                revealed={revealed}
+                labels={{
+                  yourTurn: gameT(
+                    "atlas.yourTurn",
+                  ),
+                  waitingFor: gameT(
+                    "atlas.waitingFor",
+                  ),
+                  outOfLives: gameT(
+                    "atlas.outOfLives",
+                  ),
+                  placedBy: gameT(
+                    "atlas.placedBy",
+                  ),
+                  dragHint: gameT(
+                    "atlas.mapDragHint",
+                  ),
+                  loading: gameT(
+                    "atlas.loadingMap",
+                  ),
+                }}
+              />
+            )}
+
             {(round.payload.type ===
               "flag_choice" ||
               round.payload.type ===
@@ -1281,24 +1388,24 @@ function AtlasGame({
                 )}
 
                 <div className="atlasAnswerNote">
-                  {round.payload.type !==
-                    "capital_match" &&
+                  {!isMatchRound &&
                     gameT(
                       "atlas.correctAnswerWas",
                     )}{" "}
-                  {round.payload.type !==
-                    "capital_match" && (
-                    <strong>
-                      {countryName(
-                        getAtlasCountry(
-                          round
-                            .payload
-                            .countryId,
-                        )!,
-                        gameLanguage,
-                      )}
-                    </strong>
-                  )}
+                  {!isMatchRound &&
+                    "countryId" in
+                      round.payload && (
+                      <strong>
+                        {countryName(
+                          getAtlasCountry(
+                            round
+                              .payload
+                              .countryId,
+                          )!,
+                          gameLanguage,
+                        )}
+                      </strong>
+                    )}
                 </div>
 
                 <div className="atlasResults">
@@ -1352,15 +1459,9 @@ function AtlasGame({
                                     player.id
                                   ] ?? 0
                                 } / ${
-                                  round
-                                    .payload
-                                    .type ===
-                                  "capital_match"
-                                    ? round
-                                        .payload
-                                        .countryIds
-                                        .length
-                                    : 0
+                                  boardCountryIds(
+                                    round.payload,
+                                  ).length
                                 }`
                               : answer
                                 ? `${answer.correctCount} / ${answer.totalCount}`

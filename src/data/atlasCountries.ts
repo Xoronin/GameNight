@@ -47,7 +47,13 @@ export type AtlasCountry = {
   capitalEn: string;
   capitalDe: string;
   continent: Continent;
-  flag: FlagSpec;
+  /**
+   * Absent when the real flag cannot be drawn honestly from flat
+   * regions — an emblem, star or coat of arms. Those countries still
+   * play a full part in the map and capital modes, which do not care
+   * about the flag; only the flag modes filter them out.
+   */
+  flag?: FlagSpec;
 };
 
 export type Continent =
@@ -664,10 +670,90 @@ export const atlasCountries: AtlasCountry[] =
     },
   ];
 
+function mapCountry(
+  id: string,
+  nameEn: string,
+  nameDe: string,
+  capitalEn: string,
+  capitalDe: string,
+  continent: Continent,
+): AtlasCountry {
+  return {
+    id,
+    nameEn,
+    nameDe,
+    capitalEn,
+    capitalDe,
+    continent,
+  };
+}
+
+/*
+ * Countries carried for the map and capital modes only.
+ *
+ * Several are here precisely because their flag cannot be drawn from
+ * flat colour regions (Spain's arms, Brazil's globe, China's stars), so
+ * they were left out of the flag roster. None of that matters for a map
+ * outline or a capital city, and without them the Americas had three
+ * countries to choose from and Asia four — not enough for a region map
+ * or a four-way choice.
+ */
+const mapOnlyCountries: AtlasCountry[] =
+  [
+    // --- Europe ---------------------------------------------------
+    mapCountry("es", "Spain", "Spanien", "Madrid", "Madrid", "europe"),
+    mapCountry("pt", "Portugal", "Portugal", "Lisbon", "Lissabon", "europe"),
+    mapCountry("gr", "Greece", "Griechenland", "Athens", "Athen", "europe"),
+    mapCountry("cz", "Czechia", "Tschechien", "Prague", "Prag", "europe"),
+    mapCountry("gb", "United Kingdom", "Vereinigtes Königreich", "London", "London", "europe"),
+
+    // --- Americas -------------------------------------------------
+    mapCountry("us", "United States of America", "Vereinigte Staaten", "Washington, D.C.", "Washington, D.C.", "americas"),
+    mapCountry("ca", "Canada", "Kanada", "Ottawa", "Ottawa", "americas"),
+    mapCountry("mx", "Mexico", "Mexiko", "Mexico City", "Mexiko-Stadt", "americas"),
+    mapCountry("br", "Brazil", "Brasilien", "Brasília", "Brasília", "americas"),
+    mapCountry("ar", "Argentina", "Argentinien", "Buenos Aires", "Buenos Aires", "americas"),
+    mapCountry("cl", "Chile", "Chile", "Santiago", "Santiago de Chile", "americas"),
+
+    // --- Asia -----------------------------------------------------
+    mapCountry("cn", "China", "China", "Beijing", "Peking", "asia"),
+    mapCountry("jp", "Japan", "Japan", "Tokyo", "Tokio", "asia"),
+    mapCountry("in", "India", "Indien", "New Delhi", "Neu-Delhi", "asia"),
+    mapCountry("tr", "Turkey", "Türkei", "Ankara", "Ankara", "asia"),
+    mapCountry("sa", "Saudi Arabia", "Saudi-Arabien", "Riyadh", "Riad", "asia"),
+    mapCountry("vn", "Vietnam", "Vietnam", "Hanoi", "Hanoi", "asia"),
+    mapCountry("kz", "Kazakhstan", "Kasachstan", "Astana", "Astana", "asia"),
+
+    // --- Africa ---------------------------------------------------
+    mapCountry("eg", "Egypt", "Ägypten", "Cairo", "Kairo", "africa"),
+    mapCountry("ma", "Morocco", "Marokko", "Rabat", "Rabat", "africa"),
+    mapCountry("ke", "Kenya", "Kenia", "Nairobi", "Nairobi", "africa"),
+    mapCountry("et", "Ethiopia", "Äthiopien", "Addis Ababa", "Addis Abeba", "africa"),
+    mapCountry("dz", "Algeria", "Algerien", "Algiers", "Algier", "africa"),
+    /*
+     * South Africa has three capitals; Pretoria is the seat of
+     * government and the one a quiz means.
+     */
+    mapCountry("za", "South Africa", "Südafrika", "Pretoria", "Pretoria", "africa"),
+  ];
+
+/** Every country, whether or not its flag can be drawn. */
+export const allAtlasCountries: AtlasCountry[] =
+  [
+    ...atlasCountries,
+    ...mapOnlyCountries,
+  ];
+
+/** Only those whose flag can be rendered — the flag modes use this. */
+export const flagCountries: AtlasCountry[] =
+  atlasCountries.filter(
+    (country) => !!country.flag,
+  );
+
 export function getAtlasCountry(
   id: string,
 ): AtlasCountry | undefined {
-  return atlasCountries.find(
+  return allAtlasCountries.find(
     (country) =>
       country.id === id,
   );

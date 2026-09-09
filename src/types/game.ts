@@ -372,12 +372,16 @@ export type TriviaAnswer = {
   createdAt: string;
 };
 
+import type { MapRegionId } from "../data/atlasMapPaths";
+
 export type AtlasRoundType =
   | "flag_paint"
   | "flag_choice"
   | "country_from_flag"
   | "capital_choice"
-  | "capital_match";
+  | "capital_match"
+  | "map_choice"
+  | "map_place";
 
 export type AtlasRoundStatus =
   | "playing"
@@ -426,6 +430,26 @@ export type AtlasRoundPayload =
       countryIds: string[];
       /** The same countries, reshuffled, as the draggable capitals. */
       capitalOrder: string[];
+    }
+  | {
+      /** One country lit up on a region map; name it, or its capital. */
+      type: "map_choice";
+      region: MapRegionId;
+      countryId: string;
+      optionIds: string[];
+      /** Whether the options are country names or capital cities. */
+      asks: "country" | "capital";
+    }
+  | {
+      /*
+       * The turn-based board again, but the slots are shapes on a map:
+       * each turn a player drags one country name onto its outline.
+       */
+      type: "map_place";
+      region: MapRegionId;
+      /** Countries outlined as targets, and the pool to place. */
+      countryIds: string[];
+      placeOrder: string[];
     };
 
 export type AtlasResponse =

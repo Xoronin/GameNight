@@ -378,6 +378,129 @@
   font-weight: 700;
 }
 
+/* --- world map ------------------------------------------------- */
+
+/*
+ * Capped so the map and the pinned pool fit on one screen. Left at its
+ * natural aspect ratio the map ran under the pool, and the countries
+ * along the bottom of the region could not be tapped or dropped on at
+ * all — the pool intercepted the pointer.
+ *
+ * The SVG keeps its aspect ratio inside the cap (preserveAspectRatio
+ * defaults to "meet"), so it letterboxes rather than distorting.
+ */
+.atlasMapFrame {
+  width: 100%;
+  max-height: 46vh;
+  display: flex;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+.atlasMap {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 46vh;
+}
+
+.atlasMapShape {
+  fill: rgba(255, 255, 255, 0.11);
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: 0.8;
+  transition:
+    fill 220ms ease,
+    stroke 220ms ease;
+}
+
+/* Countries that are only there to make the frame look like a map. */
+.atlasMapContext {
+  fill: rgba(255, 255, 255, 0.045);
+  stroke: rgba(255, 255, 255, 0.09);
+  pointer-events: none;
+}
+
+.atlasMapShape.target {
+  fill: rgba(255, 255, 255, 0.16);
+  stroke: rgba(255, 255, 255, 0.4);
+  /* The hit path above it takes the pointer. */
+  pointer-events: none;
+}
+
+.atlasMapHit:hover + .atlasMapShape,
+g:hover > .atlasMapShape.target {
+  fill: rgba(74, 222, 128, 0.28);
+}
+
+.atlasMapShape.selected {
+  fill: rgba(74, 222, 128, 0.3);
+  stroke: #4ade80;
+}
+
+.atlasMapShape.solved {
+  fill: rgba(34, 197, 94, 0.42);
+  stroke: #4ade80;
+  cursor: default;
+}
+
+/* The country being asked about. */
+.atlasMapShape.highlight {
+  fill: rgba(252, 209, 22, 0.62);
+  stroke: #fcd116;
+  stroke-width: 1.4;
+  animation: atlasPop 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/*
+ * Finger-sized hit area for a target country. non-scaling-stroke keeps
+ * the width in screen pixels, so a country a few pixels across on a
+ * phone still gets a tappable halo.
+ */
+.atlasMapHit {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 26px;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.atlasMapLegend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.atlasMapLegendItem {
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.atlasMapLegendItem.solved {
+  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.atlasMapLoading {
+  display: grid;
+  place-items: center;
+  min-height: 190px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  color: #8f8f9e;
+  font-size: 0.88rem;
+}
+
 /* --- capital match ------------------------------------------------ */
 
 .atlasMatchRound {
@@ -604,6 +727,19 @@
   text-align: center;
   color: #8f8f9e;
   font-size: 0.82rem;
+}
+
+/*
+ * The capital board is a long list of slots, so its pool has to follow
+ * you down it. The map board is a single compact element — a sticky
+ * pool there just covers the southern half of the map, and the
+ * countries under it cannot be tapped or dropped on at all.
+ */
+.atlasMapBoard .atlasMatchPool {
+  position: static;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: none;
 }
 
 .atlasCapitalChip {

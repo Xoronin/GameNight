@@ -6,24 +6,19 @@ import {
   getAtlasCountry,
 } from "../../../data/atlasCountries";
 import type { AtlasRoundPayload } from "../../../types/game";
-import Flag from "../Flag";
+import MapRegionView from "../MapRegion";
 
 /*
- * The three multiple-choice round types share this view. They differ
- * only in what the prompt shows and what each option renders, so those
- * two decisions are made from the payload type rather than by having
- * three near-identical components.
+ * One country lit up on a region map; name it, or name its capital.
+ *
+ * Which of the two it asks for is decided when the round is generated,
+ * so the same mode plays differently from round to round.
  */
 
-type ChoiceRoundProps = {
+type MapChoiceRoundProps = {
   payload: Extract<
     AtlasRoundPayload,
-    {
-      type:
-        | "flag_choice"
-        | "country_from_flag"
-        | "capital_choice";
-    }
+    { type: "map_choice" }
   >;
   language: "en" | "de";
   selectedId: string | null;
@@ -32,60 +27,29 @@ type ChoiceRoundProps = {
   ) => void;
   disabled: boolean;
   revealed: boolean;
+  loadingLabel: string;
 };
 
-function ChoiceRound({
+function MapChoiceRound({
   payload,
   language,
   selectedId,
   onSelect,
   disabled,
   revealed,
-}: ChoiceRoundProps) {
-  const answer = getAtlasCountry(
-    payload.countryId,
-  );
-
-  if (!answer) {
-    return null;
-  }
-
-  const showsFlagPrompt =
-    payload.type ===
-    "country_from_flag";
-
-  const optionsAreFlags =
-    payload.type ===
-    "flag_choice";
-
+  loadingLabel,
+}: MapChoiceRoundProps) {
   return (
     <div className="atlasChoiceRound">
-      <div className="atlasPrompt">
-        {showsFlagPrompt ? (
-          <div className="atlasPromptFlag">
-            {answer.flag && (
-              <Flag
-                spec={answer.flag}
-              />
-            )}
-          </div>
-        ) : (
-          <strong className="atlasPromptCountry">
-            {countryName(
-              answer,
-              language,
-            )}
-          </strong>
-        )}
-      </div>
+      <MapRegionView
+        region={payload.region}
+        highlightId={
+          payload.countryId
+        }
+        loadingLabel={loadingLabel}
+      />
 
-      <div
-        className={`atlasOptions ${
-          optionsAreFlags
-            ? "atlasOptionsFlags"
-            : "atlasOptionsText"
-        }`}
-      >
+      <div className="atlasOptions atlasOptionsText">
         {payload.optionIds.map(
           (optionId, index) => {
             const option =
@@ -134,35 +98,21 @@ function ChoiceRound({
                   .filter(Boolean)
                   .join(" ")}
                 onClick={() =>
-                  onSelect(
-                    optionId,
-                  )
+                  onSelect(optionId)
                 }
               >
-                {optionsAreFlags ? (
-                  <span className="atlasOptionFlag">
-                    {option.flag && (
-                      <Flag
-                        spec={
-                          option.flag
-                        }
-                      />
-                    )}
-                  </span>
-                ) : (
-                  <span className="atlasOptionText">
-                    {payload.type ===
-                    "capital_choice"
-                      ? capitalName(
-                          option,
-                          language,
-                        )
-                      : countryName(
-                          option,
-                          language,
-                        )}
-                  </span>
-                )}
+                <span className="atlasOptionText">
+                  {payload.asks ===
+                  "capital"
+                    ? capitalName(
+                        option,
+                        language,
+                      )
+                    : countryName(
+                        option,
+                        language,
+                      )}
+                </span>
 
                 {revealed &&
                   isCorrect && (
@@ -189,4 +139,4 @@ function ChoiceRound({
   );
 }
 
-export default ChoiceRound;
+export default MapChoiceRound;
