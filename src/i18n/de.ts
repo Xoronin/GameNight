@@ -577,6 +577,8 @@ const de = {
     taskCountryFromFlag: "Zu welchem Land gehört diese Flagge?",
     taskCapitalChoice: "Was ist die Hauptstadt dieses Landes?",
     taskMapChoice: "Welches Land ist markiert?",
+    taskMapCapital:
+      "Was ist die Hauptstadt des markierten Landes?",
     taskMapPlace: "Ziehe jedes Land an seinen Platz auf der Karte",
     mapDragHint: "Ziehe ein Land auf die Karte — oder tippe erst es, dann die Karte an",
     loadingMap: "Karte wird geladen…",

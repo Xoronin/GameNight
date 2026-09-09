@@ -18,10 +18,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import LowTimeBanner from "../../components/LowTimeBanner";
 import TurnFlash from "../../components/TurnFlash";
-import {
-  countryName,
-  getAtlasCountry,
-} from "../../data/atlasCountries";
+import { getAtlasCountry } from "../../data/atlasCountries";
 import { flagRegions } from "../../data/atlasFlags";
 import {
   getAtlasModes,
@@ -50,6 +47,10 @@ import type {
   AtlasResponse,
   AtlasRoundType,
 } from "../../types/game";
+import {
+  answerLabel,
+  promptKeyFor,
+} from "./roundText";
 import type { Player } from "../../types/player";
 import { getPlayer } from "../../utils/gameUtils";
 import {
@@ -67,23 +68,6 @@ import FlagPaintRound from "./rounds/FlagPaintRound";
 
 type AtlasGameProps = {
   roomCode: string;
-};
-
-/** Translation key for the instruction shown above each round type. */
-const promptKeys: Record<
-  AtlasRoundType,
-  string
-> = {
-  flag_paint: "atlas.taskFlagPaint",
-  flag_choice: "atlas.taskFlagChoice",
-  country_from_flag:
-    "atlas.taskCountryFromFlag",
-  capital_choice:
-    "atlas.taskCapitalChoice",
-  capital_match:
-    "atlas.taskCapitalMatch",
-  map_choice: "atlas.taskMapChoice",
-  map_place: "atlas.taskMapPlace",
 };
 
 function AtlasGame({
@@ -1034,9 +1018,9 @@ function AtlasGame({
           <section className="atlasPanel">
             <div className="atlasTask">
               {gameT(
-                promptKeys[
-                  round.roundType
-                ],
+                promptKeyFor(
+                  round.payload,
+                ),
               )}
             </div>
 
@@ -1392,20 +1376,14 @@ function AtlasGame({
                     gameT(
                       "atlas.correctAnswerWas",
                     )}{" "}
-                  {!isMatchRound &&
-                    "countryId" in
-                      round.payload && (
-                      <strong>
-                        {countryName(
-                          getAtlasCountry(
-                            round
-                              .payload
-                              .countryId,
-                          )!,
-                          gameLanguage,
-                        )}
-                      </strong>
-                    )}
+                  {!isMatchRound && (
+                    <strong>
+                      {answerLabel(
+                        round.payload,
+                        gameLanguage,
+                      )}
+                    </strong>
+                  )}
                 </div>
 
                 <div className="atlasResults">
