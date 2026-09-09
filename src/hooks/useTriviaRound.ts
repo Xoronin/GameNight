@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { reportChannelStatus } from "../lib/realtime";
 import { supabase } from "../lib/supabase";
 import {
   getActiveTriviaSession,
@@ -17,11 +18,15 @@ import type {
   TriviaQuestion,
   TriviaRound,
 } from "../types/game";
+import { useRealtimeGeneration } from "./useConnection";
 
 export function useTriviaRound(
   roomId: string | undefined,
   language: "en" | "de",
 ) {
+  const generation =
+    useRealtimeGeneration();
+
   const [session, setSession] =
     useState<TriviaSession | null>(
       null,
@@ -128,7 +133,9 @@ export function useTriviaRound(
           void loadSession();
         },
       )
-      .subscribe();
+      .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -137,7 +144,7 @@ export function useTriviaRound(
         channel,
       );
     };
-  }, [roomId]);
+  }, [roomId, generation]);
 
   /*
    * Keyed on the last non-null session
@@ -211,7 +218,9 @@ export function useTriviaRound(
           void loadRound();
         },
       )
-      .subscribe();
+      .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -220,7 +229,7 @@ export function useTriviaRound(
         channel,
       );
     };
-  }, [lastSessionId]);
+  }, [lastSessionId, generation]);
 
   useEffect(() => {
     if (!round?.id) {
@@ -295,7 +304,9 @@ export function useTriviaRound(
           void loadData();
         },
       )
-      .subscribe();
+      .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -308,6 +319,7 @@ export function useTriviaRound(
     round?.id,
     round?.questionId,
     language,
+    generation,
   ]);
 
   return {

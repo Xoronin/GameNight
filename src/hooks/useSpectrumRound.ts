@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { reportChannelStatus } from "../lib/realtime";
 import { supabase } from "../lib/supabase";
 import {
   getActiveSpectrumSession,
@@ -17,11 +18,15 @@ import type {
   SpectrumPlacement,
   SpectrumRound,
 } from "../types/game";
+import { useRealtimeGeneration } from "./useConnection";
 
 export function useSpectrumRound(
   roomId: string | undefined,
   language: "en" | "de",
 ) {
+  const generation =
+    useRealtimeGeneration();
+
   const [
     session,
     setSession,
@@ -125,7 +130,9 @@ export function useSpectrumRound(
             void loadSession();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -134,7 +141,7 @@ export function useSpectrumRound(
         channel,
       );
     };
-  }, [roomId]);
+  }, [roomId, generation]);
 
   useEffect(() => {
     if (!round?.categoryId) {
@@ -158,6 +165,7 @@ export function useSpectrumRound(
   }, [
     round?.categoryId,
     language,
+    generation,
   ]);
 
   useEffect(() => {
@@ -220,7 +228,9 @@ export function useSpectrumRound(
             void loadPlacements();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -229,7 +239,7 @@ export function useSpectrumRound(
         channel,
       );
     };
-  }, [round?.id]);
+  }, [round?.id, generation]);
 
   useEffect(() => {
     if (!session?.id) {
@@ -294,7 +304,9 @@ export function useSpectrumRound(
             void loadRound();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -303,7 +315,7 @@ export function useSpectrumRound(
         channel,
       );
     };
-  }, [session?.id]);
+  }, [session?.id, generation]);
 
   return {
     session,

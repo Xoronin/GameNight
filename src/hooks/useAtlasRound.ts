@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { reportChannelStatus } from "../lib/realtime";
 import { supabase } from "../lib/supabase";
 import {
   getActiveAtlasSession,
@@ -15,10 +16,14 @@ import type {
   AtlasPlacement,
   AtlasRound,
 } from "../types/game";
+import { useRealtimeGeneration } from "./useConnection";
 
 export function useAtlasRound(
   roomId: string | undefined,
 ) {
+  const generation =
+    useRealtimeGeneration();
+
   const [session, setSession] =
     useState<AtlasSession | null>(
       null,
@@ -119,7 +124,9 @@ export function useAtlasRound(
           void loadSession();
         },
       )
-      .subscribe();
+      .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -128,7 +135,7 @@ export function useAtlasRound(
         channel,
       );
     };
-  }, [roomId]);
+  }, [roomId, generation]);
 
   /*
    * Keyed on the last non-null session id rather than session?.id:
@@ -195,7 +202,9 @@ export function useAtlasRound(
           void loadRound();
         },
       )
-      .subscribe();
+      .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -204,7 +213,7 @@ export function useAtlasRound(
         channel,
       );
     };
-  }, [lastSessionId]);
+  }, [lastSessionId, generation]);
 
   useEffect(() => {
     if (!round?.id) {
@@ -279,7 +288,9 @@ export function useAtlasRound(
           void loadAnswers();
         },
       )
-      .subscribe();
+      .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -288,7 +299,7 @@ export function useAtlasRound(
         channel,
       );
     };
-  }, [round?.id]);
+  }, [round?.id, generation]);
 
   return {
     session,

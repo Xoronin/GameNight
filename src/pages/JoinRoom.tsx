@@ -4,7 +4,10 @@ import {
   User,
 } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import Header from "../components/Header";
 import { useAuth } from "../hooks/useAuth";
 import { useLanguage } from "../hooks/useLanguage";
@@ -28,8 +31,23 @@ function JoinRoom() {
   const [guestName, setGuestName] =
     useState("");
 
+  /*
+   * A shared link carries the code, so the person opening it should not
+   * have to read it back off the screen and type it in again.
+   */
+  const [searchParams] =
+    useSearchParams();
+
   const [roomCode, setRoomCode] =
-    useState("");
+    useState(() =>
+      (
+        searchParams.get(
+          "code",
+        ) ?? ""
+      )
+        .trim()
+        .toUpperCase(),
+    );
 
   const [error, setError] =
     useState<string | null>(null);
@@ -194,7 +212,10 @@ function JoinRoom() {
             }
             placeholder="ABCD"
             maxLength={6}
-            autoFocus={isLoggedIn}
+            autoFocus={
+              isLoggedIn &&
+              !roomCode
+            }
           />
 
           {error && (

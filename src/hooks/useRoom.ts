@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { reportChannelStatus } from "../lib/realtime";
 import { supabase } from "../lib/supabase";
 import {
   getPlayers,
@@ -11,10 +12,14 @@ import type {
   RoomPlayer,
 } from "../types/player";
 import type { Room } from "../types/room";
+import { useRealtimeGeneration } from "./useConnection";
 
 export function useRoom(
   roomCode?: string,
 ) {
+  const generation =
+    useRealtimeGeneration();
+
   const [room, setRoom] =
     useState<Room | null>(
       null,
@@ -141,7 +146,9 @@ export function useRoom(
             }
           },
         )
-        .subscribe();
+        .subscribe(
+          reportChannelStatus,
+        );
 
     let playerChannel:
       | ReturnType<
@@ -206,7 +213,9 @@ export function useRoom(
                   }
                 },
               )
-              .subscribe();
+              .subscribe(
+          reportChannelStatus,
+        );
         } catch (
           caughtError
         ) {
@@ -232,7 +241,8 @@ export function useRoom(
         );
       }
     };
-  }, [roomCode]);
+    /* generation changes on recovery, refetching what the gap missed. */
+  }, [roomCode, generation]);
 
   return {
     room,

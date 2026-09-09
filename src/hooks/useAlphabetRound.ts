@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { reportChannelStatus } from "../lib/realtime";
 import { supabase } from "../lib/supabase";
 import {
   getActiveAlphabetSession,
@@ -17,10 +18,14 @@ import type {
   AlphabetRound,
   AlphabetVote,
 } from "../types/game";
+import { useRealtimeGeneration } from "./useConnection";
 
 export function useAlphabetRound(
   roomId: string | undefined,
 ) {
+  const generation =
+    useRealtimeGeneration();
+
   const [
     session,
     setSession,
@@ -124,7 +129,9 @@ export function useAlphabetRound(
             void loadSession();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -133,7 +140,7 @@ export function useAlphabetRound(
         channel,
       );
     };
-  }, [roomId]);
+  }, [roomId, generation]);
 
   useEffect(() => {
     if (!round?.id) {
@@ -226,7 +233,9 @@ export function useAlphabetRound(
             void loadLetters();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     votesChannel =
       supabase
@@ -247,7 +256,9 @@ export function useAlphabetRound(
             void loadVotes();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -264,7 +275,7 @@ export function useAlphabetRound(
         );
       }
     };
-  }, [round?.id]);
+  }, [round?.id, generation]);
 
   useEffect(() => {
     if (!session?.id) {
@@ -329,7 +340,9 @@ export function useAlphabetRound(
             void loadRound();
           },
         )
-        .subscribe();
+        .subscribe(
+        reportChannelStatus,
+      );
 
     return () => {
       active = false;
@@ -338,7 +351,7 @@ export function useAlphabetRound(
         channel,
       );
     };
-  }, [session?.id]);
+  }, [session?.id, generation]);
 
   return {
     session,

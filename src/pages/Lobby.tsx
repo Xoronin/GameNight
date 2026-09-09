@@ -1,7 +1,6 @@
 import {
   Check,
   ChevronRight,
-  Copy,
   Crown,
   LogOut,
   Plus,
@@ -24,6 +23,7 @@ import {
   useParams,
 } from "react-router-dom";
 import Header from "../components/Header";
+import RoomInvite from "../components/RoomInvite";
 import {
   ATLAS_MODE_KEYS,
   ATLAS_MODE_LABEL_KEYS,
@@ -142,9 +142,6 @@ function Lobby() {
       () => getPlayer(),
     );
 
-  const [copied, setCopied] =
-    useState(false);
-
   const [
     newCategoryName,
     setNewCategoryName,
@@ -184,26 +181,6 @@ function Lobby() {
     room?.code,
     navigate,
   ]);
-
-  const copyRoomCode = async () => {
-    if (!roomCode) {
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(
-        roomCode,
-      );
-
-      setCopied(true);
-
-      window.setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    } catch {
-      setCopied(false);
-    }
-  };
 
   const selectGame = async (
     gameId: string,
@@ -1204,27 +1181,9 @@ function Lobby() {
             {t("lobby.shareCode")}
           </p>
 
-          <button
-            className="roomCodeButton"
-            onClick={() => {
-              void copyRoomCode();
-            }}
-            type="button"
-          >
-            {room.code}
-
-            {copied ? (
-              <Check size={17} />
-            ) : (
-              <Copy size={17} />
-            )}
-          </button>
-
-          {copied && (
-            <span className="copyMessage">
-              {t("lobby.copied")}
-            </span>
-          )}
+          <RoomInvite
+            roomCode={room.code}
+          />
         </div>
 
         <div

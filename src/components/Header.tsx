@@ -26,6 +26,8 @@ function Header({
             navigate("/")
           }
           type="button"
+          /* The wordmark is hidden on narrow phones; this keeps the label. */
+          aria-label="Game Night"
         >
           <img
             className="brandDice"

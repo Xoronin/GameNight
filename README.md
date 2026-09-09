@@ -34,6 +34,29 @@ npm run build   # tsc -b, then the production bundle
 CI (`.github/workflows/ci.yml`) runs all three on every push and pull
 request.
 
+## Getting people into a room
+
+The lobby offers three ways in, because different situations want different
+ones: the bare code to read aloud, a share link that opens the join screen
+with the code already filled in, and a QR code for when everyone is in the
+same room holding phones. The QR encoder is loaded only when someone opens
+it, so it costs nothing on first paint.
+
+## Losing the connection
+
+Supabase rejoins a dropped channel by itself, but nothing replays what
+changed while it was gone — a phone locked mid-game would come back to a
+board frozen two rounds earlier, looking identical to a game where nobody
+had answered yet.
+
+`src/lib/realtime.ts` tracks the connection and hands out a generation
+number that every subscribing hook keeps in its effect dependencies.
+Bumping it re-subscribes and refetches, which is what recovering from a gap
+requires. A recovery is triggered by a channel that errors and comes back,
+by the network returning, or by the tab waking after more than ten seconds
+in the background. While any of that is unresolved a banner says so, so
+"is it frozen?" has an answer on screen.
+
 ## In-app feedback
 
 The Feedback button in the header files a GitHub issue from inside the app,

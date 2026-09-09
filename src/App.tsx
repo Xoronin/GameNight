@@ -1,5 +1,6 @@
 import { MotionConfig } from "motion/react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ConnectionBanner from "./components/ConnectionBanner";
 import CreateRoom from "./pages/CreateRoom";
 import GamePage from "./pages/GamePage";
 import Home from "./pages/Home";
@@ -12,6 +13,8 @@ function App() {
   return (
     <MotionConfig reducedMotion="user">
       <BrowserRouter>
+        <ConnectionBanner />
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

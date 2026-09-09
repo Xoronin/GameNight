@@ -1,5 +1,9 @@
 // @vitest-environment jsdom
-import { act, render } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  render,
+} from "@testing-library/react";
 import {
   afterEach,
   beforeEach,
@@ -40,8 +44,10 @@ describe("useAutoReveal", () => {
     vi.useFakeTimers();
   });
 
+  /* Vitest globals are off, so auto-cleanup never registers. */
   afterEach(() => {
     vi.useRealTimers();
+    cleanup();
   });
 
   const settle = (
