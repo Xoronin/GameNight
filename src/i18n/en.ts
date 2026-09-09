@@ -576,6 +576,8 @@ const en = {
     taskCountryFromFlag: "Which country has this flag?",
     taskCapitalChoice: "What is the capital of this country?",
     taskMapChoice: "Which country is highlighted?",
+    taskMapCapital:
+      "What is the capital of the highlighted country?",
     taskMapPlace: "Drag each country onto its place on the map",
     mapDragHint: "Drag a country onto the map — or tap one, then tap the map",
     loadingMap: "Loading map…",
