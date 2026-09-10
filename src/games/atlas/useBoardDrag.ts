@@ -43,6 +43,24 @@ type DragOrigin = {
   scrollY: number;
 };
 
+/** The drop target under a screen point, if any. */
+function slotUnder(
+  x: number,
+  y: number,
+): string | null {
+  /*
+   * The dragged chip is pointer-events:none while dragging, so this
+   * finds the slot underneath rather than the chip itself.
+   */
+  return (
+    document
+      .elementFromPoint(x, y)
+      ?.closest("[data-slot]")
+      ?.getAttribute("data-slot") ??
+    null
+  );
+}
+
 export function useBoardDrag({
   interactive,
   onDrop,
@@ -60,6 +78,18 @@ export function useBoardDrag({
 
   const [selected, setSelected] =
     useState<string | null>(null);
+
+  /*
+   * The slot the chip is currently over, so the board can light it up.
+   * A dragged chip holds the pointer capture, so CSS :hover never fires
+   * on what is underneath it — the drop target has to be found by hit
+   * testing, exactly as the drop itself is.
+   */
+  const [overSlot, setOverSlot] =
+    useState<string | null>(null);
+
+  /** Mirrors drag.moved so syncDrag can read it without a dependency. */
+  const movedRef = useRef(false);
 
   const originRef =
     useRef<DragOrigin | null>(
@@ -97,6 +127,15 @@ export function useBoardDrag({
       pointerRef.current.y -
       origin.y;
 
+    const moved =
+      movedRef.current ||
+      Math.hypot(
+        travelX,
+        travelY,
+      ) > DRAG_THRESHOLD;
+
+    movedRef.current = moved;
+
     setDrag((previous) =>
       previous
         ? {
@@ -106,14 +145,18 @@ export function useBoardDrag({
               travelY +
               (window.scrollY -
                 origin.scrollY),
-            moved:
-              previous.moved ||
-              Math.hypot(
-                travelX,
-                travelY,
-              ) > DRAG_THRESHOLD,
+            moved,
           }
         : previous,
+    );
+
+    setOverSlot(
+      moved
+        ? slotUnder(
+            pointerRef.current.x,
+            pointerRef.current.y,
+          )
+        : null,
     );
   }, []);
 
@@ -191,6 +234,8 @@ export function useBoardDrag({
 
   const endDrag = () => {
     setDrag(null);
+    setOverSlot(null);
+    movedRef.current = false;
     originRef.current = null;
   };
 
@@ -276,21 +321,10 @@ export function useBoardDrag({
           return;
         }
 
-        /*
-         * The dragged chip is pointer-events:none while dragging, so
-         * this finds the slot underneath rather than the chip itself.
-         */
-        const slot = document
-          .elementFromPoint(
-            event.clientX,
-            event.clientY,
-          )
-          ?.closest("[data-slot]");
-
-        const slotId =
-          slot?.getAttribute(
-            "data-slot",
-          );
+        const slotId = slotUnder(
+          event.clientX,
+          event.clientY,
+        );
 
         if (slotId) {
           onDrop(
@@ -309,6 +343,7 @@ export function useBoardDrag({
   const slotProps = (
     slotId: string,
   ) => ({
+    isOver: overSlot === slotId,
     onClick: () => {
       if (!interactive || !selected) {
         return;
@@ -322,6 +357,7 @@ export function useBoardDrag({
   return {
     selected,
     setSelected,
+    overSlot,
     poolRef,
     itemProps,
     slotProps,

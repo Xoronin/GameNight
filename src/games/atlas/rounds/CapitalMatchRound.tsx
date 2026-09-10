@@ -186,6 +186,8 @@ function CapitalMatchRound({
 
           const solver = solvedBy.get(countryId);
 
+          const slot = slotProps(countryId);
+
           return (
             <div
               key={countryId}
@@ -194,10 +196,11 @@ function CapitalMatchRound({
                 "atlasMatchSlot",
                 solver ? "correct" : "",
                 interactive && !solver && selected ? "droppable" : "",
+                slot.isOver && !solver ? "over" : "",
               ]
                 .filter(Boolean)
                 .join(" ")}
-              onClick={slotProps(countryId).onClick}
+              onClick={slot.onClick}
             >
               <span className="atlasMatchFlag">
                 {country.flag && <Flag spec={country.flag} />}

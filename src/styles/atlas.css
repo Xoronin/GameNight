@@ -422,9 +422,13 @@
   pointer-events: none;
 }
 
+/*
+ * The one grey that carries meaning: these are the countries in play.
+ * Everything else is background, so this is worth seeing at a glance.
+ */
 .atlasMapShape.target {
-  fill: rgba(255, 255, 255, 0.16);
-  stroke: rgba(255, 255, 255, 0.4);
+  fill: rgba(255, 255, 255, 0.24);
+  stroke: rgba(255, 255, 255, 0.55);
   /* The hit path above it takes the pointer. */
   pointer-events: none;
 }
@@ -973,5 +977,30 @@ g:hover > .atlasMapShape.target {
   .atlasPromptFlag,
   .atlasResultBanner {
     animation: none !important;
+  }
+}
+
+/*
+ * Drop feedback. A dragged chip holds the pointer capture, so :hover
+ * never reaches what is underneath it — these classes are set from the
+ * same hit test that decides where the drop lands, so what lights up is
+ * exactly what would receive the chip.
+ */
+.atlasMatchSlot.over {
+  border-color: #4ade80;
+  background: rgba(74, 222, 128, 0.18);
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.35);
+}
+
+.atlasMapShape.over {
+  fill: rgba(74, 222, 128, 0.38);
+  stroke: #4ade80;
+  stroke-width: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlasMatchSlot.over {
+    transform: none;
   }
 }
