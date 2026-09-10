@@ -12,6 +12,7 @@ import {
   it,
   vi,
 } from "vitest";
+import type { Mock } from "vitest";
 import { useBoardDrag } from "./useBoardDrag";
 
 /*
@@ -24,7 +25,17 @@ import { useBoardDrag } from "./useBoardDrag";
 
 const SLOTS = ["fr", "de"];
 
-let onDrop: ReturnType<typeof vi.fn>;
+/*
+ * Typed rather than left as ReturnType<typeof vi.fn>: a bare mock is
+ * "some callable", which satisfies nothing in particular, so passing one
+ * where a specific signature is wanted only compiled by accident.
+ */
+let onDrop: Mock<
+  (
+    slotId: string,
+    itemId: string,
+  ) => void
+>;
 
 /** Stands in for the slot the pointer is over; jsdom has no hit testing. */
 let underPointer: string | null =
