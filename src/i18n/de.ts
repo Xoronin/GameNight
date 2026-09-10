@@ -624,6 +624,31 @@ const de = {
     timerLabel: "Antwortzeit",
   },
 
+  emojiDecode: {
+    startTitle: "Was bedeuten diese Emojis?",
+    startDescription:
+      "Ein Film, ein Spiel oder eine Redewendung, nur aus Emojis. Tippe, was du denkst — je schneller, desto mehr Punkte, und wer zuerst da ist, bekommt einen Bonus. Falsche Versuche kosten nur Zeit.",
+    placeholder: "Tipp deine Antwort...",
+    guess: "Antwort senden",
+    youGotIt: "Richtig!",
+    playersSolved: "haben es gelöst",
+    answerWas: "Die Antwort war",
+    nobodyGotIt: "Das hat niemand geknackt.",
+    nextRound: "Nächste Runde",
+    seeResults: "Ergebnisse ansehen",
+    waitingForHost: "Warte auf den Host...",
+    gameComplete: "Spiel beendet",
+    finalScores: "Endstand",
+    backToLobby: "Zurück zur Lobby",
+    timerLabel: "Sekunden pro Rätsel",
+    loading: "Emoji Decode wird geladen...",
+    loadError: "Spiel konnte nicht geladen werden",
+    puzzleMissing: "Dieses Rätsel konnte nicht geladen werden.",
+    puzzlesExhausted:
+      "Keine Rätsel mehr übrig — starte ein neues Spiel, um sie neu zu mischen.",
+    noPlayerTitle: "Kein Spieler gefunden",
+    joinAgain: "Tritt dem Raum erneut bei, um zu spielen.",
+  },
   feedback: {
     button: "Feedback",
     title: "Feedback senden",

@@ -12,6 +12,7 @@ import {
 import Header from "../components/Header";
 import AlphabetGame from "../games/alphabet/AlphabetGame";
 import AtlasGame from "../games/atlas/AtlasGame";
+import EmojiDecodeGame from "../games/emoji-decode/EmojiDecodeGame";
 import BluffGame from "../games/bluff/BluffGame";
 import CategoriesGame from "../games/categories/CategoriesGame";
 import DrawingGame from "../games/draw-guess/DrawingGame";
@@ -34,6 +35,7 @@ const multiplayerGames = [
   "alphabet",
   "spectrum",
   "atlas",
+  "emoji-decode",
 ];
 
 function GamePage() {
@@ -287,6 +289,16 @@ function GamePage() {
     ) {
       return (
         <TriviaGame
+          roomCode={roomCode}
+        />
+      );
+    }
+
+    if (
+      gameId === "emoji-decode"
+    ) {
+      return (
+        <EmojiDecodeGame
           roomCode={roomCode}
         />
       );

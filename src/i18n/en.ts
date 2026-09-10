@@ -623,6 +623,31 @@ const en = {
     timerLabel: "Answer time",
   },
 
+  emojiDecode: {
+    startTitle: "What do these emojis mean?",
+    startDescription:
+      "A movie, a game or a saying, spelled out in emojis. Type what you think it is — the faster you get it, the more it is worth, and the first one there gets a bonus. Wrong guesses cost nothing but time.",
+    placeholder: "Type your guess...",
+    guess: "Send guess",
+    youGotIt: "You got it!",
+    playersSolved: "solved it",
+    answerWas: "The answer was",
+    nobodyGotIt: "Nobody got this one.",
+    nextRound: "Next round",
+    seeResults: "See results",
+    waitingForHost: "Waiting for the host...",
+    gameComplete: "Game complete",
+    finalScores: "Final scores",
+    backToLobby: "Back to lobby",
+    timerLabel: "Seconds per puzzle",
+    loading: "Loading Emoji Decode...",
+    loadError: "Could not load the game",
+    puzzleMissing: "This puzzle could not be loaded.",
+    puzzlesExhausted:
+      "No puzzles left — start a new game to shuffle them again.",
+    noPlayerTitle: "No player found",
+    joinAgain: "Join the room again to play.",
+  },
   feedback: {
     button: "Feedback",
     title: "Send feedback",

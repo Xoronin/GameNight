@@ -7,7 +7,8 @@ export type TimedGameId =
   | "trivia"
   | "alphabet"
   | "spectrum"
-  | "atlas";
+  | "atlas"
+  | "emoji-decode";
 
 export type CustomCategory = {
   key: string;
@@ -41,6 +42,7 @@ export const GAME_TIMER_DEFAULTS: Record<
   alphabet: 30,
   spectrum: 30,
   atlas: 30,
+  "emoji-decode": 45,
 };
 
 export const GAME_TIMER_OPTIONS: Record<
@@ -56,6 +58,7 @@ export const GAME_TIMER_OPTIONS: Record<
   alphabet: [15, 20, 30, 45, 60],
   spectrum: [15, 20, 30, 45, 60],
   atlas: [15, 20, 30, 45, 60],
+  "emoji-decode": [20, 30, 45, 60, 90],
 };
 
 export function getGameTimerSeconds(
@@ -102,6 +105,7 @@ export const GAME_ROUND_COUNT_DEFAULTS: Record<
   alphabet: 3,
   spectrum: 5,
   atlas: 8,
+  "emoji-decode": 8,
 };
 
 export const GAME_ROUND_COUNT_OPTIONS: Record<
@@ -117,6 +121,7 @@ export const GAME_ROUND_COUNT_OPTIONS: Record<
   alphabet: [1, 2, 3, 5],
   spectrum: [3, 5, 8, 13],
   atlas: [7, 8, 10, 12],
+  "emoji-decode": [5, 8, 10, 12],
 };
 
 export function getGameRoundCount(

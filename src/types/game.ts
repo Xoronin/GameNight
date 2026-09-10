@@ -372,6 +372,54 @@ export type TriviaAnswer = {
   createdAt: string;
 };
 
+export type EmojiRoundStatus =
+  | "answering"
+  | "reveal"
+  | "finished";
+
+export type EmojiSessionStatus =
+  | "playing"
+  | "finished";
+
+export type EmojiPuzzle = {
+  id: string;
+  emojis: string;
+  category: string;
+  /** The answer in the room's language. */
+  answer: string;
+  /*
+   * Every spelling that counts as right — both languages' titles and any
+   * short forms. The grader takes the whole list, because a German room
+   * still shouts the English name.
+   */
+  accepted: string[];
+  difficulty:
+    | "easy"
+    | "medium"
+    | "hard";
+};
+
+export type EmojiRound = {
+  id: string;
+  roomId: string;
+  sessionId: string;
+  roundNumber: number;
+  puzzleId: string;
+  status: EmojiRoundStatus;
+  createdAt: string;
+  endsAt: string;
+};
+
+export type EmojiGuess = {
+  id: string;
+  roundId: string;
+  playerId: string;
+  guess: string;
+  isCorrect: boolean;
+  points: number;
+  createdAt: string;
+};
+
 import type { MapRegionId } from "../data/atlasMapPaths";
 
 /*
