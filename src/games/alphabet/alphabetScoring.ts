@@ -1,4 +1,4 @@
-export function normalizeLetter(letter: string) {
+function normalizeLetter(letter: string) {
   return letter.trim().toUpperCase();
 }
 

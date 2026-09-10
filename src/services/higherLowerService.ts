@@ -330,7 +330,7 @@ export async function getActiveHigherLowerSession(
   );
 }
 
-export async function finishHigherLowerSession(
+async function finishHigherLowerSession(
   sessionId: string,
 ) {
   const { error } =

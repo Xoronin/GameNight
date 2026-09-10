@@ -49,7 +49,7 @@ export function promptKeyFor(
  * The revealed answer has to be named in the same register as the options
  * the player chose between, or it answers a question nobody was asked.
  */
-export function asksForCapital(
+function asksForCapital(
   payload: AtlasRoundPayload,
 ): boolean {
   return (

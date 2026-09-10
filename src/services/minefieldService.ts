@@ -418,7 +418,7 @@ export async function getActiveMinefieldSession(
   );
 }
 
-export async function finishMinefieldSession(
+async function finishMinefieldSession(
   sessionId: string,
 ) {
   const { error } =

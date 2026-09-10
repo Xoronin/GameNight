@@ -15,12 +15,8 @@ const en = {
     host: "Host",
     you: "You",
     room: "Room",
-    language: "Language",
     german: "German",
     english: "English",
-    continue: "Continue",
-    submit: "Submit",
-    cancel: "Cancel",
     logout: "Sign out",
     games: "games",
     genericError: "Something went wrong.",
@@ -268,7 +264,6 @@ const en = {
     gameCount: "games selected",
     nextGame: "Next Game",
     viewResults: "View Final Results",
-    gameProgress: "Game",
     complete: "TOURNAMENT COMPLETE",
     finalStandings: "Final Standings",
     gamesPlayed: "Games played",
@@ -352,13 +347,11 @@ const en = {
     "Waiting for the host...",
     round: "Round",
     timerLabel: "Answer time",
-    roundCountLabel: "Number of rounds",
     rounds: "rounds",
     categoriesLabel: "Categories in play",
     finalScores: "Final scores",
     gameComplete: "GAME COMPLETE",
     finishGame: "Finish game",
-    score: "Score",
     voteInvalid: "Doesn't count",
     addCustomCategoryPlaceholder:
       "New category name...",
@@ -405,7 +398,6 @@ const en = {
     loadError: "Could not load Minefield",
     joinAgain: "Join the room again.",
     noPlayerTitle: "No player found",
-    questionMissing: "Question missing",
     timerLabel: "Turn time",
     youAreOut:
       "You hit a mine — you're out for this round. Waiting for the others to finish...",
@@ -544,7 +536,6 @@ const en = {
   },
 
   drawing: {
-    loading: "Loading Draw & Guess...",
     loadError: "Could not load Draw & Guess.",
     startTitle: "Draw it. Guess it.",
     startDescription:
@@ -688,10 +679,7 @@ const en = {
       "Could not file that. Please try again.",
   },
   gamePage: {
-    noRoomSelected: "No room selected",
     joinRoomFirst: "Create or join a room first.",
-    bluffNeedsRoom:
-        "Bluff is a multiplayer game. Create or join a room first.",
     unknownGame: "Unknown Game",
     notImplemented:
         "This game has not been implemented yet.",

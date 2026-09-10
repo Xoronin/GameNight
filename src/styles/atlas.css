@@ -823,12 +823,6 @@ g:hover > .atlasMapShape.target {
   justify-content: center;
 }
 
-.atlasRevealButton {
-  width: 100%;
-  margin-top: 10px;
-  justify-content: center;
-}
-
 .atlasResultBanner {
   display: flex;
   justify-content: center;

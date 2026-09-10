@@ -296,7 +296,7 @@ export async function getActiveEmojiSession(
     : null;
 }
 
-export async function finishEmojiSession(
+async function finishEmojiSession(
   sessionId: string,
 ) {
   const { error } =

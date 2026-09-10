@@ -229,8 +229,8 @@ export function playReveal() {
 
 /**
  * Clearing the whole board — the biggest thing that can happen in a
- * round, so it gets more than playWin's four notes: a rising run into
- * a sustained major triad, with a sparkle on top.
+ * round, so it is the longest cue here: a rising run into a sustained
+ * major triad, with a sparkle on top.
  */
 export function playFanfare() {
   playTones([
@@ -303,26 +303,3 @@ export function playFanfare() {
   ]);
 }
 
-export function playWin() {
-  playTones([
-    {
-      frequency: 523.25,
-      duration: 0.12,
-    },
-    {
-      frequency: 659.25,
-      duration: 0.12,
-      delay: 0.11,
-    },
-    {
-      frequency: 783.99,
-      duration: 0.12,
-      delay: 0.22,
-    },
-    {
-      frequency: 1046.5,
-      duration: 0.3,
-      delay: 0.33,
-    },
-  ]);
-}
