@@ -499,16 +499,20 @@
     }
 
     /*
-     * Both axes, not just the vertical one: when a box has overflow-x
-     * hidden and overflow-y visible, the visible axis computes back to
-     * auto, so overriding one alone leaves this a scroll container that
-     * happens never to overflow. Releasing both makes the rule mean what
-     * it says, and keeps it meaning it if the panel is ever given a
-     * height again.
+     * Panels keep their own scrollbar on a phone rather than handing
+     * scrolling back to the document. Twenty-one games stacked out to a
+     * 2000px page, which buried the players list and the start button
+     * below three screens of cards; capped, everything stays in reach.
+     *
+     * overscroll-behavior is what makes nested scrolling bearable on
+     * touch: without it, running out of list carries straight on into
+     * scrolling the page, which feels like the list threw you.
      */
     .lobbyPanelBody {
         flex: initial;
-        overflow: visible;
+        max-height: 60vh;
+        overflow-y: auto;
+        overscroll-behavior: contain;
     }
 
     .playerPanel {
@@ -1148,4 +1152,32 @@
 .tournamentResults .primaryButton {
   margin-top: 26px;
   justify-content: center;
+}
+/*
+ * A thin track where the browser draws a classic scrollbar. Where it uses
+ * overlay scrollbars instead — every touch browser, and desktops set that
+ * way — nothing in CSS can hold one open, so the panel is not relying on
+ * it: the 60vh cap is chosen to leave a card cut off at the fold, and a
+ * half-visible card says "more below" on any device.
+ */
+.lobbyPanelBody {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+
+.lobbyPanelBody::-webkit-scrollbar {
+    width: 6px;
+}
+
+.lobbyPanelBody::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.lobbyPanelBody::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.lobbyPanelBody::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.42);
 }
