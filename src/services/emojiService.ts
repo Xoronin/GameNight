@@ -314,14 +314,18 @@ export async function finishEmojiSession(
   }
 }
 
+/*
+ * Keyed on the session rather than the room: a room plays several games,
+ * and the round belonging to a finished session is not this game's round.
+ */
 export async function getLatestEmojiRound(
-  roomId: string,
+  sessionId: string,
 ): Promise<EmojiRound | null> {
   const { data, error } =
     await supabase
       .from("emoji_rounds")
       .select("*")
-      .eq("room_id", roomId)
+      .eq("session_id", sessionId)
       .order("round_number", {
         ascending: false,
       })
