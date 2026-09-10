@@ -8,7 +8,10 @@ import {
   getAtlasModes,
   withAtlasModes,
 } from "../data/gameTimers";
-import type { AtlasRoundType } from "../types/game";
+import type {
+  AtlasRoundPayload,
+  AtlasRoundType,
+} from "../types/game";
 import {
   MAP_PLACE_COUNT,
   MATCH_PAIR_COUNT,
@@ -23,6 +26,7 @@ import {
   pickRoundType,
   scoreAnswer,
   scorePlacement,
+  turnDeadline,
 } from "./atlasService";
 
 /*
@@ -622,5 +626,82 @@ describe("mode settings", () => {
     expect(
       [...ATLAS_MODE_KEYS].sort(),
     ).toEqual([...ALL].sort());
+  });
+});
+
+/*
+ * A stalled turn on the map board never expired: the screen was watching
+ * the round deadline instead of the turn's, so nobody lost a life and the
+ * round simply ended when the outer clock ran out.
+ */
+describe("turnDeadline", () => {
+  const TURN =
+    "2026-01-01T00:00:10.000Z";
+
+  const ROUND =
+    "2026-01-01T00:05:00.000Z";
+
+  const board = (
+    type:
+      | "capital_match"
+      | "map_place",
+  ): AtlasRoundPayload =>
+    type === "map_place"
+      ? {
+          type,
+          region: "europe",
+          countryIds: ["fr"],
+          placeOrder: ["fr"],
+        }
+      : {
+          type,
+          countryIds: ["fr"],
+          capitalOrder: ["fr"],
+        };
+
+  it("counts down the turn on every board, not just the capital one", () => {
+    for (const type of [
+      "capital_match",
+      "map_place",
+    ] as const) {
+      expect(
+        turnDeadline({
+          payload: board(type),
+          turnEndsAt: TURN,
+          endsAt: ROUND,
+        }),
+        type,
+      ).toBe(TURN);
+    }
+  });
+
+  it("counts down the shared window for the other round types", () => {
+    expect(
+      turnDeadline({
+        payload: {
+          type: "capital_choice",
+          countryId: "fr",
+          optionIds: ["fr"],
+        },
+        turnEndsAt: TURN,
+        endsAt: ROUND,
+      }),
+    ).toBe(ROUND);
+  });
+
+  it("falls back to the round when a board has no turn clock yet", () => {
+    for (const turnEndsAt of [
+      null,
+      undefined,
+    ]) {
+      expect(
+        turnDeadline({
+          payload:
+            board("map_place"),
+          turnEndsAt,
+          endsAt: ROUND,
+        }),
+      ).toBe(ROUND);
+    }
   });
 });

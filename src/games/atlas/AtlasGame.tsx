@@ -42,6 +42,7 @@ import {
   returnAtlasRoomToLobby,
   revealAtlasRound,
   submitAtlasAnswer,
+  turnDeadline,
 } from "../../services/atlasService";
 import { advanceTournament } from "../../services/roomService";
 import type {
@@ -50,6 +51,7 @@ import type {
 } from "../../types/game";
 import {
   answerLabel,
+  boardDragKey,
   promptKeyFor,
 } from "./roundText";
 import type { Player } from "../../types/player";
@@ -546,16 +548,8 @@ function AtlasGame({
     }
 
     const updateTimer = () => {
-      /*
-       * A match round counts down the current player's turn; the other
-       * types count down one shared answering window.
-       */
       const deadline =
-        round.payload.type ===
-          "capital_match" &&
-        round.turnEndsAt
-          ? round.turnEndsAt
-          : round.endsAt;
+        turnDeadline(round);
 
       const remaining = Math.max(
         0,
@@ -591,10 +585,7 @@ function AtlasGame({
         triggeredRoundIdRef.current =
           timeoutKey;
 
-        if (
-          round.payload.type ===
-          "capital_match"
-        ) {
+        if (isMatchRound) {
           /*
            * Only the host fires this, so a stalled turn costs exactly
            * one life however many clients are watching the clock.
@@ -624,6 +615,7 @@ function AtlasGame({
   }, [
     round,
     isHost,
+    isMatchRound,
     reveal,
     playerIds,
     turnSeconds,
@@ -1253,7 +1245,9 @@ function AtlasGame({
                 <div className="atlasFound">
                   {myTurn
                     ? gameT(
-                        "atlas.dragOne",
+                        boardDragKey(
+                          round.payload,
+                        ),
                       )
                     : gameT(
                         "atlas.waitYourTurn",

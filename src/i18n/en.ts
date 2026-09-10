@@ -608,6 +608,7 @@ const en = {
     dragHint: "Drag a capital onto its country — or tap one, then tap a country",
     placedBy: "by",
     dragOne: "Drag one capital onto its country",
+    dragOneCountry: "Drag one country onto the map",
     waitYourTurn: "Wait for your turn",
     youSolved: "You solved",
     correctFlag: "Correct flag",

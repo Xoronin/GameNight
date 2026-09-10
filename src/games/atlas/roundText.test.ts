@@ -8,6 +8,7 @@ import type { TranslationKey } from "../../i18n/i18n";
 import type { AtlasRoundPayload } from "../../types/game";
 import {
   answerLabel,
+  boardDragKey,
   promptKeyFor,
   promptKeys,
 } from "./roundText";
@@ -140,10 +141,72 @@ describe("Atlas round instructions", () => {
     ).toBeNull();
   });
 
+  /*
+   * The two turn-based boards share a component and a turn banner, but
+   * one deals capitals and the other countries. A single string told map
+   * players to drag a capital onto its country while they were dragging
+   * countries onto a map.
+   */
+  it("tells the map board it is dragging countries", () => {
+    const key = boardDragKey({
+      type: "map_place",
+      region: "europe",
+      countryIds: ["fr"],
+      placeOrder: ["fr"],
+    });
+
+    expect(
+      text("en", key),
+    ).toMatch(/countr/i);
+
+    expect(
+      text("en", key),
+    ).not.toMatch(/capital/i);
+
+    expect(
+      text("de", key),
+    ).not.toMatch(/hauptstadt/i);
+  });
+
+  it("tells the capital board it is dragging capitals", () => {
+    const key = boardDragKey({
+      type: "capital_match",
+      countryIds: ["fr"],
+      capitalOrder: ["fr"],
+    });
+
+    expect(
+      text("en", key),
+    ).toMatch(/capital/i);
+
+    expect(
+      text("de", key),
+    ).toMatch(/hauptstadt/i);
+  });
+
+  it("gives the two boards different instructions", () => {
+    expect(
+      boardDragKey({
+        type: "map_place",
+        region: "europe",
+        countryIds: ["fr"],
+        placeOrder: ["fr"],
+      }),
+    ).not.toBe(
+      boardDragKey({
+        type: "capital_match",
+        countryIds: ["fr"],
+        capitalOrder: ["fr"],
+      }),
+    );
+  });
+
   it("has a translated instruction for every round type", () => {
     const keys = [
       ...Object.values(promptKeys),
       "atlas.taskMapCapital",
+      "atlas.dragOne",
+      "atlas.dragOneCountry",
     ];
 
     for (const key of keys) {

@@ -609,6 +609,7 @@ const de = {
     dragHint: "Ziehe eine Hauptstadt auf ihr Land — oder tippe erst sie, dann das Land an",
     placedBy: "von",
     dragOne: "Ziehe eine Hauptstadt auf ihr Land",
+    dragOneCountry: "Ziehe ein Land auf die Karte",
     waitYourTurn: "Warte, bis du dran bist",
     youSolved: "Du hast gelöst:",
     correctFlag: "Richtige Flagge",
