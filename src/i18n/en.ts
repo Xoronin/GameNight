@@ -624,6 +624,15 @@ const en = {
   },
 
   emojiDecode: {
+    categoriesLabel: "Categories",
+    categoryMovie: "Movies",
+    categoryGame: "Games",
+    categoryShow: "TV shows",
+    categorySong: "Songs",
+    categoryBook: "Books",
+    categoryFood: "Food",
+    categoryPlace: "Places",
+    categorySaying: "Sayings",
     startTitle: "What do these emojis mean?",
     startDescription:
       "A movie, a game or a saying, spelled out in emojis. Type what you think it is — the faster you get it, the more it is worth, and the first one there gets a bonus. Wrong guesses cost nothing but time.",

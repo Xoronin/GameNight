@@ -27,6 +27,10 @@ import RoomInvite from "../components/RoomInvite";
 import {
   ATLAS_MODE_KEYS,
   ATLAS_MODE_LABEL_KEYS,
+  EMOJI_CATEGORY_KEYS,
+  EMOJI_CATEGORY_LABEL_KEYS,
+  getEmojiCategories,
+  withEmojiCategories,
   GAME_ROUND_COUNT_OPTIONS,
   GAME_TIMER_OPTIONS,
   getAtlasModes,
@@ -916,6 +920,82 @@ function Lobby() {
                   {t(
                     ATLAS_MODE_LABEL_KEYS[
                       mode
+                    ],
+                  )}
+                </label>
+              );
+            },
+          )}
+        </div>
+      )}
+
+      {gameId ===
+        "emoji-decode" && (
+        <div className="categorySettingList">
+          <span>
+            {t(
+              "emojiDecode.categoriesLabel",
+            )}
+          </span>
+
+          {EMOJI_CATEGORY_KEYS.map(
+            (category) => {
+              const selected =
+                getEmojiCategories(
+                  room.gameSettings,
+                );
+
+              const checked =
+                selected.includes(
+                  category,
+                );
+
+              return (
+                <label
+                  key={category}
+                  className="categorySettingOption"
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    disabled={!isHost}
+                    onChange={() => {
+                      const next =
+                        checked
+                          ? selected.filter(
+                              (key) =>
+                                key !==
+                                category,
+                            )
+                          : [
+                              ...selected,
+                              category,
+                            ];
+
+                      /*
+                       * The last category has to stay, or there would be
+                       * no puzzles left to deal.
+                       */
+                      if (
+                        next.length ===
+                        0
+                      ) {
+                        return;
+                      }
+
+                      void updateGameSettings(
+                        room.id,
+                        withEmojiCategories(
+                          room.gameSettings,
+                          next,
+                        ),
+                      );
+                    }}
+                  />
+
+                  {t(
+                    EMOJI_CATEGORY_LABEL_KEYS[
+                      category
                     ],
                   )}
                 </label>

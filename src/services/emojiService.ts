@@ -66,6 +66,7 @@ type GuessRow = {
 type PuzzleRow = {
   id: string;
   emojis: string;
+  category_key: string;
   category_en: string;
   category_de: string;
   answer_en: string;
@@ -138,6 +139,7 @@ export function mapPuzzle(
   return {
     id: row.id,
     emojis: row.emojis,
+    categoryKey: row.category_key,
     category:
       language === "de"
         ? row.category_de
@@ -420,6 +422,7 @@ export async function createEmojiRound(
   excludedPuzzleIds: string[],
   language: "en" | "de",
   timerSeconds: number,
+  categoryKeys: string[],
 ): Promise<EmojiPuzzle | null> {
   /* Guards against a double tap or a duplicated realtime action. */
   const {
@@ -453,7 +456,11 @@ export async function createEmojiRound(
     await supabase
       .from("emoji_puzzles")
       .select("*")
-      .eq("active", true);
+      .eq("active", true)
+      .in(
+        "category_key",
+        categoryKeys,
+      );
 
   if (error) {
     throw new Error(

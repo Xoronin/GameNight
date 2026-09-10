@@ -625,6 +625,15 @@ const de = {
   },
 
   emojiDecode: {
+    categoriesLabel: "Kategorien",
+    categoryMovie: "Filme",
+    categoryGame: "Spiele",
+    categoryShow: "Serien",
+    categorySong: "Lieder",
+    categoryBook: "Bücher",
+    categoryFood: "Essen",
+    categoryPlace: "Orte",
+    categorySaying: "Redewendungen",
     startTitle: "Was bedeuten diese Emojis?",
     startDescription:
       "Ein Film, ein Spiel oder eine Redewendung, nur aus Emojis. Tippe, was du denkst — je schneller, desto mehr Punkte, und wer zuerst da ist, bekommt einen Bonus. Falsche Versuche kosten nur Zeit.",

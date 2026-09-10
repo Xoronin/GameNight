@@ -267,6 +267,79 @@ export function getAtlasModes(
     : [...ATLAS_MODE_KEYS];
 }
 
+/*
+ * Emoji Decode categories. These are keys rather than the display names
+ * the puzzles carry, so the host's choice does not change meaning when
+ * the room switches language.
+ */
+export const EMOJI_CATEGORY_KEYS = [
+  "movie",
+  "game",
+  "show",
+  "song",
+  "book",
+  "food",
+  "place",
+  "saying",
+] as const;
+
+export type EmojiCategoryKey =
+  (typeof EMOJI_CATEGORY_KEYS)[number];
+
+/** Translation key for each category's label in the lobby. */
+export const EMOJI_CATEGORY_LABEL_KEYS: Record<
+  EmojiCategoryKey,
+  string
+> = {
+  movie: "emojiDecode.categoryMovie",
+  game: "emojiDecode.categoryGame",
+  show: "emojiDecode.categoryShow",
+  song: "emojiDecode.categorySong",
+  book: "emojiDecode.categoryBook",
+  food: "emojiDecode.categoryFood",
+  place: "emojiDecode.categoryPlace",
+  saying:
+    "emojiDecode.categorySaying",
+};
+
+export function getEmojiCategories(
+  gameSettings:
+    | GameSettings
+    | null
+    | undefined,
+): string[] {
+  const categories =
+    gameSettings?.["emoji-decode"]
+      ?.categoryKeys;
+
+  /*
+   * An empty selection would leave nothing to deal, so it means all of
+   * them — which is also the sensible default for a fresh room.
+   */
+  return categories &&
+    categories.length > 0
+    ? categories
+    : [...EMOJI_CATEGORY_KEYS];
+}
+
+export function withEmojiCategories(
+  gameSettings:
+    | GameSettings
+    | null
+    | undefined,
+  categoryKeys: string[],
+): GameSettings {
+  return {
+    ...gameSettings,
+    "emoji-decode": {
+      ...gameSettings?.[
+        "emoji-decode"
+      ],
+      categoryKeys,
+    },
+  };
+}
+
 export function withAtlasModes(
   gameSettings:
     | GameSettings
