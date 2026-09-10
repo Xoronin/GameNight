@@ -126,6 +126,27 @@ export function boardCountryIds(
     : [];
 }
 
+/*
+ * Which clock a round is running against.
+ *
+ * The turn-based boards count down the player on turn; everything else
+ * counts down one shared answering window. Naming a single board here
+ * rather than asking whether it is one left the map board watching the
+ * round deadline, so a stalled turn never expired, nobody lost a life and
+ * the round simply ended when the outer clock ran out.
+ */
+export function turnDeadline(round: {
+  payload: AtlasRoundPayload;
+  turnEndsAt?: string | null;
+  endsAt: string;
+}): string {
+  return isBoardRound(
+    round.payload.type,
+  ) && round.turnEndsAt
+    ? round.turnEndsAt
+    : round.endsAt;
+}
+
 export function isBoardRound(
   type: AtlasRoundType,
 ): boolean {

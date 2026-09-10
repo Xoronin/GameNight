@@ -90,3 +90,17 @@ export function answerLabel(
         language,
       );
 }
+
+/*
+ * What the player on turn is being told to drag. Both boards run on turns
+ * and share a component, but one deals capitals and the other countries,
+ * so a single string was telling map players to drag a capital.
+ */
+export function boardDragKey(
+  payload: AtlasRoundPayload,
+): string {
+  return payload.type ===
+    "map_place"
+    ? "atlas.dragOneCountry"
+    : "atlas.dragOne";
+}
