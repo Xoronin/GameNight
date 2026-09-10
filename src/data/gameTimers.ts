@@ -9,7 +9,8 @@ export type TimedGameId =
   | "spectrum"
   | "atlas"
   | "emoji-decode"
-  | "know-your-friends";
+  | "know-your-friends"
+  | "syllable-rush";
 
 export type CustomCategory = {
   key: string;
@@ -45,6 +46,7 @@ export const GAME_TIMER_DEFAULTS: Record<
   atlas: 30,
   "emoji-decode": 45,
   "know-your-friends": 25,
+  "syllable-rush": 12,
 };
 
 export const GAME_TIMER_OPTIONS: Record<
@@ -63,6 +65,9 @@ export const GAME_TIMER_OPTIONS: Record<
   "emoji-decode": [20, 30, 45, 60, 90],
   "know-your-friends": [
     15, 20, 25, 30, 45,
+  ],
+  "syllable-rush": [
+    8, 10, 12, 15, 20,
   ],
 };
 
@@ -112,6 +117,7 @@ export const GAME_ROUND_COUNT_DEFAULTS: Record<
   atlas: 8,
   "emoji-decode": 8,
   "know-your-friends": 8,
+  "syllable-rush": 3,
 };
 
 export const GAME_ROUND_COUNT_OPTIONS: Record<
@@ -130,6 +136,9 @@ export const GAME_ROUND_COUNT_OPTIONS: Record<
   "emoji-decode": [5, 8, 10, 12],
   "know-your-friends": [
     4, 6, 8, 10, 12,
+  ],
+  "syllable-rush": [
+    1, 2, 3, 5,
   ],
 };
 

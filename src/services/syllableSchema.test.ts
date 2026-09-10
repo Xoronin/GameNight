@@ -13,13 +13,13 @@ import {
 } from "./schemaAudit";
 
 /*
- * Cross-checks Know Your Friends against its migration. See
- * schemaAudit.ts for why this exists and how it reads the SQL.
+ * Cross-checks Syllable Rush against its migration. See schemaAudit.ts for
+ * why this exists and how it reads the SQL.
  */
 
-describe("Know Your Friends code matches its migration", () => {
+describe("Syllable Rush code matches its migration", () => {
   const sql = migrationSql(
-    "know_your_friends",
+    "syllable_rush",
   );
 
   const flat = sql.replace(
@@ -33,34 +33,30 @@ describe("Know Your Friends code matches its migration", () => {
   );
 
   const service = readFileSync(
-    "src/services/friendsService.ts",
-    "utf8",
-  );
-
-  const game = readFileSync(
-    "src/games/know-your-friends/KnowYourFriendsGame.tsx",
+    "src/services/syllableService.ts",
     "utf8",
   );
 
   it("has a migration at all", () => {
     expect(
       sql,
-      "no migration file mentions know_your_friends",
+      "no migration file mentions syllable_rush",
     ).toContain(
-      "create table if not exists friends_rounds",
+      "create table if not exists syllable_rounds",
     );
   });
 
   it("allows every round status the app can set", () => {
-    const allowed = allowedValuesFor(
-      sql,
-      "friends_rounds",
-      "status",
-    );
+    const allowed =
+      allowedValuesFor(
+        sql,
+        "syllable_rounds",
+        "status",
+      );
 
     for (const status of unionMembers(
       types,
-      "FriendsRoundStatus",
+      "SyllableRoundStatus",
     )) {
       expect(
         allowed,
@@ -70,18 +66,37 @@ describe("Know Your Friends code matches its migration", () => {
   });
 
   it("allows every session status the app can set", () => {
-    const allowed = allowedValuesFor(
-      sql,
-      "friends_sessions",
-      "status",
-    );
+    const allowed =
+      allowedValuesFor(
+        sql,
+        "syllable_sessions",
+        "status",
+      );
 
     for (const status of unionMembers(
       types,
-      "FriendsSessionStatus",
+      "SyllableSessionStatus",
     )) {
       expect(allowed).toContain(
         status,
+      );
+    }
+  });
+
+  it("allows every turn outcome the app can record", () => {
+    const allowed =
+      allowedValuesFor(
+        sql,
+        "syllable_turns",
+        "outcome",
+      );
+
+    for (const outcome of unionMembers(
+      types,
+      "SyllableOutcome",
+    )) {
+      expect(allowed).toContain(
+        outcome,
       );
     }
   });
@@ -93,7 +108,7 @@ describe("Know Your Friends code matches its migration", () => {
     const writes =
       serviceWrites(
         service,
-        "friends",
+        "syllable",
       );
 
     /* If the scrape finds nothing, the test is not testing anything. */
@@ -112,78 +127,61 @@ describe("Know Your Friends code matches its migration", () => {
   });
 
   /*
-   * A prediction is one per player per round, and that is the constraint
-   * rather than anything in the service — submit leans on it, treating a
-   * unique violation as "already answered" instead of an error.
+   * The clock and the player who just answered can both try to close the
+   * same turn. Recording it is what settles which of them got there, and
+   * that is this index rather than anything in the service — timing out
+   * leans on it, treating a unique violation as "already handled".
    */
-  it("stops a player answering the same round twice", () => {
+  it("lets a turn be recorded only once", () => {
+    expect(flat).toContain(
+      "unique (round_id, turn_number)",
+    );
+  });
+
+  /* Seats are the turn order, so two players cannot share one. */
+  it("keeps seats unique within a round", () => {
+    expect(flat).toContain(
+      "unique (round_id, seat)",
+    );
+
     expect(flat).toContain(
       "unique (round_id, player_id)",
     );
   });
 
   /*
-   * The subject rotates by round number, so a session must not be able to
-   * hold two rows for the same round or two players would be the subject.
+   * A word is looked up by language and spelling on every submission,
+   * under a clock that can be five seconds. Without the index that is a
+   * sequential scan of the whole dictionary.
    */
-  it("stops a session holding one round twice", () => {
+  it("indexes the dictionary the way it is queried", () => {
     expect(flat).toContain(
-      "unique (session_id, round_number)",
-    );
-  });
-
-  /*
-   * The board shows one lettered button per option and the column only
-   * accepts indexes inside that range, so the two have to agree.
-   */
-  it("accepts exactly the option indexes the board offers", () => {
-    const letters = game.match(
-      /const OPTION_LETTERS = \[([^\]]*)\]/,
-    );
-
-    expect(letters).toBeTruthy();
-
-    const count = [
-      ...letters![1].matchAll(
-        /"[A-Z]"/g,
-      ),
-    ].length;
-
-    expect(flat).toContain(
-      `check (selected_index between 0 and ${count - 1})`,
-    );
-
-    expect(flat).toContain(
-      `array_length(options_en, 1) = ${count}`,
-    );
-
-    expect(flat).toContain(
-      `array_length(options_de, 1) = ${count}`,
+      "on syllable_words (language, word)",
     );
   });
 
   /*
    * Every screen updates off realtime rather than polling, so a table the
-   * app watches has to be in the publication or the round never advances
-   * for anyone but the host.
+   * app watches has to be in the publication or the turn never passes for
+   * anyone but the host.
    */
   it("publishes the tables the app subscribes to", () => {
     const hook = readFileSync(
-      "src/hooks/useFriendsRound.ts",
+      "src/hooks/useSyllableRound.ts",
       "utf8",
     );
 
     const watched = new Set(
       [
         ...hook.matchAll(
-          /table:\s*"(friends_\w+)"/g,
+          /table:\s*"(syllable_\w+)"/g,
         ),
       ].map((match) => match[1]),
     );
 
     expect(
       watched.size,
-    ).toBeGreaterThan(0);
+    ).toBeGreaterThan(2);
 
     for (const table of watched) {
       expect(

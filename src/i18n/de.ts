@@ -684,6 +684,47 @@ const de = {
       "Tritt dem Raum erneut bei, um zu spielen.",
     timerLabel: "Sekunden pro Frage",
   },
+  syllableRush: {
+    startTitle: "Drei Buchstaben. Irgendein Wort. Los.",
+    startDescription:
+      "Ein Fragment erscheint, und wer dran ist, muss ein Wort tippen, das es enthält, bevor die Zeit abläuft. Daneben heißt ein Leben weniger; wer als Letzter übrig bleibt, gewinnt die Runde. Die Uhr wird immer kürzer, je länger die Runde dauert.",
+    yourTurn: "Du bist dran",
+    yourTurnHint:
+      "Tippe irgendein Wort, das das Fragment enthält.",
+    yourGo: "Du bist dran",
+    isUp: "ist dran",
+    placeholder: "Wort eingeben...",
+    send: "Wort abschicken",
+    waitingTurn: "Warte auf das Wort...",
+    missingFragment:
+      "Dieses Wort enthält das Fragment nicht.",
+    alreadyUsed:
+      "In dieser Runde schon gespielt — finde ein anderes.",
+    unknownWord:
+      "Nicht im Wörterbuch. Versuch ein anderes Wort.",
+    notYourTurn: "Dieser Zug ist schon vorbei.",
+    youAreOut:
+      "Du bist raus aus dieser Runde — warte auf die nächste.",
+    tookTheRound: "gewinnt die Runde!",
+    nobodyLeft: "Diese Runde hat niemand überlebt.",
+    turnsPlayed: "Züge gespielt",
+    cannotStart:
+      "Runde konnte nicht gestartet werden. Es braucht mindestens einen Spieler.",
+    nextRound: "Nächste Runde",
+    seeResults: "Ergebnisse ansehen",
+    waitingForHost: "Warte auf den Host...",
+    gameComplete: "Spiel beendet",
+    finalScores: "Endstand",
+    backToLobby: "Zurück zur Lobby",
+    timerLabel: "Sekunden pro Zug am Anfang",
+    roundCountLabel:
+      "Runden (jede bis nur noch ein Spieler übrig ist)",
+    loading: "Silben-Rush wird geladen...",
+    loadError: "Spiel konnte nicht geladen werden",
+    noPlayerTitle: "Kein Spieler gefunden",
+    joinAgain:
+      "Tritt dem Raum erneut bei, um zu spielen.",
+  },
   feedback: {
     button: "Feedback",
     title: "Feedback senden",

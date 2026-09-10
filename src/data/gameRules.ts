@@ -155,4 +155,19 @@ export const gameRules: GameRules = {
       "Eine richtige Vorhersage bringt +500. Die Person, um die es geht, bekommt +150 für jeden, der sie richtig eingeschätzt hat.",
     ],
   },
+
+  "syllable-rush": {
+    en: [
+      "A three-letter fragment appears and the turn passes around the table.",
+      "On your turn, type any word containing those letters — spelling is checked against a dictionary.",
+      "A word that is not in the dictionary just costs you seconds; only the clock running out costs a life.",
+      "3 lives each, and no word twice in a round. Last player standing takes it — and the clock gets shorter as you go.",
+    ],
+    de: [
+      "Ein Fragment aus drei Buchstaben erscheint, und es wird reihum gewechselt.",
+      "Wenn du dran bist, tippe irgendein Wort, das diese Buchstaben enthält — die Schreibweise wird gegen ein Wörterbuch geprüft.",
+      "Ein Wort, das nicht im Wörterbuch steht, kostet dich nur Sekunden; nur die abgelaufene Uhr kostet ein Leben.",
+      "Jeder hat 3 Leben, und kein Wort zweimal pro Runde. Wer als Letzter übrig bleibt, gewinnt — und die Uhr wird immer kürzer.",
+    ],
+  },
 };

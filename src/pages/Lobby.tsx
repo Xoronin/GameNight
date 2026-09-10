@@ -92,6 +92,8 @@ const timerLabelKeys: Record<
     "emojiDecode.timerLabel",
   "know-your-friends":
     "knowFriends.timerLabel",
+  "syllable-rush":
+    "syllableRush.timerLabel",
 };
 
 function isTimedGame(
@@ -127,6 +129,8 @@ const roundCountLabelKeys: Record<
     "lobby.roundCountLabel",
   "know-your-friends":
     "lobby.roundCountLabel",
+  "syllable-rush":
+    "syllableRush.roundCountLabel",
 };
 
 const games = gameLibrary;

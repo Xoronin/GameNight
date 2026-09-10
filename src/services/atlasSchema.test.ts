@@ -8,6 +8,7 @@ import {
   allowedValuesFor,
   declaredColumns,
   migrationSql,
+  serviceWrites,
   unionMembers,
 } from "./schemaAudit";
 
@@ -85,33 +86,22 @@ describe("Atlas code matches its migrations", () => {
     const tables =
       declaredColumns(sql);
 
-    const writes = [
-      ...service.matchAll(
-        /\.from\(\s*"(atlas_\w+)"\s*\)\s*\n?\s*\.(insert|update)\(\{([^{}]*)\}\)/g,
-      ),
-    ];
+    const writes =
+      serviceWrites(
+        service,
+        "atlas",
+      );
 
     /* If the scrape finds nothing, the test is not testing anything. */
     expect(
       writes.length,
     ).toBeGreaterThan(4);
 
-    for (const [
-      ,
-      table,
-      operation,
-      body,
-    ] of writes) {
-      const columns = [
-        ...body.matchAll(
-          /^\s*([a-z_]+):/gm,
-        ),
-      ].map((m) => m[1]);
-
-      for (const column of columns) {
+    for (const write of writes) {
+      for (const column of write.columns) {
         expect(
-          tables[table],
-          `${operation} on ${table} writes "${column}", which no migration declares`,
+          tables[write.table],
+          `${write.operation} on ${write.table} writes "${column}", which no migration declares`,
         ).toContain(column);
       }
     }

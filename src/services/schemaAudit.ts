@@ -156,6 +156,46 @@ export function declaredColumns(
   return tables;
 }
 
+/** One `.insert({...})` or `.update({...})` a service performs. */
+export type ServiceWrite = {
+  table: string;
+  operation: string;
+  columns: string[];
+};
+
+/*
+ * Every write a service makes to its own tables, with the columns each one
+ * sets, so an audit can hold them against what the migration declares.
+ *
+ * The column pattern has to accept shorthand — `{ fragment, word }` sets
+ * two columns just as surely as `{ fragment: x }` sets one. Matching only
+ * `name:` quietly skipped those, which left the columns most likely to be
+ * named after their variable as the ones nothing checked.
+ */
+export function serviceWrites(
+  source: string,
+  prefix: string,
+): ServiceWrite[] {
+  const blocks = source.matchAll(
+    new RegExp(
+      `\\.from\\(\\s*"(${prefix}_\\w+)"\\s*\\)\\s*\\n?\\s*\\.(insert|update)\\(\\{([^{}]*)\\}\\)`,
+      "g",
+    ),
+  );
+
+  return [...blocks].map(
+    ([, table, operation, body]) => ({
+      table,
+      operation,
+      columns: [
+        ...body.matchAll(
+          /^\s*([a-z_]+)\s*(?::|,?\s*$)/gm,
+        ),
+      ].map((match) => match[1]),
+    }),
+  );
+}
+
 /** String literals in a TypeScript union type. */
 export function unionMembers(
   source: string,

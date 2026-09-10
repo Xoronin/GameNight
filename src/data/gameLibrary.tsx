@@ -192,7 +192,6 @@ export const gameLibrary: GameLibraryEntry[] = [
     icon: <Type />,
     className: "blue",
     group: "solo",
-    comingSoon: true,
   },
   {
     id: "know-your-friends",
