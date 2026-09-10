@@ -20,6 +20,7 @@ import HigherLowerGame from "../games/higher-lower/HigherLowerGame";
 import KnowYourFriendsGame from "../games/know-your-friends/KnowYourFriendsGame";
 import MinefieldGame from "../games/minefield/MinefieldGame";
 import SpectrumGame from "../games/spectrum/SpectrumGame";
+import SyllableRushGame from "../games/syllable-rush/SyllableRushGame";
 import TriviaGame from "../games/trivia/TriviaGame";
 import { getGameLibraryEntry } from "../data/gameLibrary";
 import { gameRules } from "../data/gameRules";
@@ -38,6 +39,7 @@ const multiplayerGames = [
   "atlas",
   "emoji-decode",
   "know-your-friends",
+  "syllable-rush",
 ];
 
 function GamePage() {
@@ -320,6 +322,16 @@ function GamePage() {
     ) {
       return (
         <KnowYourFriendsGame
+          roomCode={roomCode}
+        />
+      );
+    }
+
+    if (
+      gameId === "syllable-rush"
+    ) {
+      return (
+        <SyllableRushGame
           roomCode={roomCode}
         />
       );

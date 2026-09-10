@@ -611,3 +611,61 @@ export type AtlasAnswer = {
   points: number;
   createdAt: string;
 };
+
+export type SyllableRoundStatus =
+  | "playing"
+  | "reveal"
+  | "finished";
+
+export type SyllableSessionStatus =
+  | "playing"
+  | "finished";
+
+/** How a turn ended: a word was accepted, or the clock ran out. */
+export type SyllableOutcome =
+  | "solved"
+  | "timeout";
+
+/** The letters a word has to contain, plus what it could have been. */
+export type SyllablePrompt = {
+  id: string;
+  language: "en" | "de";
+  fragment: string;
+  wordCount: number;
+  examples: string[];
+};
+
+export type SyllableRound = {
+  id: string;
+  roomId: string;
+  sessionId: string;
+  roundNumber: number;
+  status: SyllableRoundStatus;
+  promptId: string | null;
+  currentPlayerId: string | null;
+  turnNumber: number;
+  turnSeconds: number;
+  turnEndsAt: string | null;
+  createdAt: string;
+};
+
+/** One player's standing in a round: lives left, and their seat. */
+export type SyllablePlayer = {
+  id: string;
+  roundId: string;
+  playerId: string;
+  lives: number;
+  isOut: boolean;
+  seat: number;
+};
+
+export type SyllableTurn = {
+  id: string;
+  roundId: string;
+  playerId: string;
+  turnNumber: number;
+  fragment: string;
+  word: string | null;
+  outcome: SyllableOutcome;
+  createdAt: string;
+};

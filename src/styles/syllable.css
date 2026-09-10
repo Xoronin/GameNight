@@ -1,0 +1,424 @@
+.syllableGame {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  display: grid;
+  /* Items may shrink; without this any long word widens the whole game. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+.syllableStart {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 34px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  text-align: center;
+}
+
+.syllableHeroIcon {
+  display: grid;
+  place-items: center;
+  width: 78px;
+  height: 78px;
+  border-radius: 22px;
+  background: linear-gradient(140deg, #38bdf8, #6366f1);
+  color: #0b1020;
+}
+
+.syllableStart h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.syllableStart p {
+  max-width: 42ch;
+  margin: 0;
+  opacity: 0.75;
+  line-height: 1.55;
+}
+
+/*
+ * Round counter on one side, clock and score on the other. On a narrow
+ * phone the two sides together are wider than the screen, and a flex row
+ * that cannot wrap pushes the whole game sideways instead of stacking.
+ */
+.syllableHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+}
+
+.syllableHeader > div {
+  min-width: 0;
+}
+
+.syllableHeader strong {
+  display: block;
+  font-size: 1.05rem;
+}
+
+.syllableHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.syllableScore {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.14);
+  color: #bae6fd;
+  font-weight: 700;
+}
+
+.syllablePanel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.syllableTurnOf {
+  justify-self: center;
+  max-width: 100%;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  opacity: 0.85;
+}
+
+/* The fragment is the whole game, so it gets the room. */
+.syllableFragment {
+  justify-self: center;
+  padding: 10px 26px;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.28);
+  font-size: clamp(2.6rem, 13vw, 4.2rem);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1.15;
+  /* The letter-spacing would otherwise hang off the right edge. */
+  text-indent: 0.14em;
+}
+
+.syllableFragment.isMine {
+  border-color: rgba(56, 189, 248, 0.55);
+  background: rgba(56, 189, 248, 0.12);
+  color: #bae6fd;
+}
+
+/* The turn clock, draining left to right. */
+.syllableClock {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.syllableClock > div {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #38bdf8, #6366f1);
+  transition: width 250ms linear;
+}
+
+.syllableClock > div.isLow {
+  background: linear-gradient(90deg, #f87171, #fb923c);
+}
+
+.syllableForm {
+  display: flex;
+  gap: 10px;
+}
+
+.syllableInput {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.28);
+  color: inherit;
+  font: inherit;
+  font-size: 1.05rem;
+}
+
+.syllableInput:focus {
+  outline: 2px solid rgba(56, 189, 248, 0.65);
+  outline-offset: 1px;
+}
+
+.syllableSendButton {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  padding: 0;
+}
+
+/*
+ * Why a word bounced. It replaces itself rather than stacking, because
+ * under a five-second clock the only one that matters is the last.
+ */
+.syllableRejection {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 120, 120, 0.12);
+  color: #ffb4b4;
+  font-size: 0.88rem;
+  text-align: center;
+  animation: syllableShake 320ms ease-in-out;
+}
+
+.syllableFound,
+.syllableWaiting {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.9rem;
+  text-align: center;
+  opacity: 0.78;
+}
+
+.syllableError {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 96, 96, 0.14);
+  color: #ffb4b4;
+  font-size: 0.88rem;
+}
+
+/* Who is still in, and how many lives each has left. */
+.syllableSeats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.syllableSeat {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  min-width: 0;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.syllableSeat.isTurn {
+  border-color: rgba(56, 189, 248, 0.5);
+  background: rgba(56, 189, 248, 0.14);
+  color: #bae6fd;
+}
+
+.syllableSeat.isOut {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+/* A flex item will not shrink past its text without this. */
+.syllableSeatName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.syllableLives {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 2px;
+}
+
+.syllableLives .isFull {
+  color: #fb7185;
+  fill: #fb7185;
+}
+
+.syllableLives .isGone {
+  opacity: 0.25;
+}
+
+/* The last few turns, newest at the top. */
+.syllableHistory {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+
+.syllableHistoryRow {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.88rem;
+}
+
+.syllableHistoryRow.missed {
+  background: rgba(255, 120, 120, 0.09);
+  color: #ffb4b4;
+}
+
+.syllableHistoryName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.syllableHistoryWord {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.syllableOutcome {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  color: #6ee7a8;
+  text-align: center;
+  animation: syllablePop 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.syllableOutcome h1 {
+  margin: 0;
+  font-size: clamp(1.3rem, 5vw, 1.8rem);
+  overflow-wrap: anywhere;
+}
+
+.syllableOutcome p {
+  margin: 0;
+  color: inherit;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.syllableScoreboard {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.syllableScoreRow {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.syllableScoreRow span {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.09);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.syllableScoreRow strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.syllableScoreRow b {
+  color: #bae6fd;
+}
+
+.syllableMainButton {
+  justify-self: center;
+  min-width: 220px;
+}
+
+@keyframes syllablePop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@keyframes syllableShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+@media (max-width: 560px) {
+  .syllablePanel {
+    padding: 16px;
+  }
+
+  .syllableHeader .eyebrow {
+    font-size: 0.68rem;
+  }
+
+  .syllableHeader strong {
+    font-size: 0.95rem;
+  }
+
+  .syllableStart {
+    padding: 24px 16px;
+  }
+
+  .syllableFragment {
+    padding: 8px 18px;
+    letter-spacing: 0.1em;
+    text-indent: 0.1em;
+  }
+
+  .syllableMainButton {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .syllableOutcome,
+  .syllableRejection,
+  .syllableScoreRow {
+    animation: none !important;
+  }
+
+  .syllableClock > div {
+    transition: none;
+  }
+}
