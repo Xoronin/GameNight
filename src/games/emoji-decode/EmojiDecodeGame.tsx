@@ -4,7 +4,7 @@ import {
   Crown,
   LoaderCircle,
   Send,
-  Sparkles,
+  Smile,
   Trophy,
   X,
 } from "lucide-react";
@@ -27,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import LowTimeBanner from "../../components/LowTimeBanner";
 import {
+  getEmojiCategories,
   getGameRoundCount,
   getGameTimerSeconds,
 } from "../../data/gameTimers";
@@ -243,6 +244,9 @@ function EmojiDecodeGame({
         getGameTimerSeconds(
           room.gameSettings,
           "emoji-decode",
+        ),
+        getEmojiCategories(
+          room.gameSettings,
         ),
       );
 
@@ -560,7 +564,7 @@ function EmojiDecodeGame({
           <div className="emojiGame">
             <section className="emojiStart">
               <div className="emojiHeroIcon">
-                <Sparkles size={42} />
+                <Smile size={42} />
               </div>
 
               <span className="eyebrow">

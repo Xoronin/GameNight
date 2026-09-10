@@ -384,6 +384,9 @@ export type EmojiSessionStatus =
 export type EmojiPuzzle = {
   id: string;
   emojis: string;
+  /** Stable key the host's category selection filters on. */
+  categoryKey: string;
+  /** The category's display name, in the room's language. */
   category: string;
   /** The answer in the room's language. */
   answer: string;

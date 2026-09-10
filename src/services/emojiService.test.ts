@@ -22,6 +22,7 @@ import {
 const ROW = {
   id: "p1",
   emojis: "🦁👑",
+  category_key: "movie",
   category_en: "Movie",
   category_de: "Film",
   answer_en: "The Lion King",
