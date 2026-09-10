@@ -19,6 +19,8 @@ type MapRegionViewProps = {
   solvedIds?: string[];
   /** Country the player has picked up but not yet placed. */
   selectedId?: string | null;
+  /** Shape the dragged chip is currently over, to light it up. */
+  overId?: string | null;
   /**
    * Marks target shapes as drop targets. Off when it is not your turn,
    * so a stray drop cannot land on someone else's move.
@@ -37,6 +39,7 @@ function MapRegionView({
   targetIds,
   solvedIds,
   selectedId,
+  overId,
   droppable,
   onShapeClick,
   loadingLabel,
@@ -81,13 +84,27 @@ function MapRegionView({
               shape.id ===
                 highlightId;
 
+            /*
+             * Whether a shape carries an id is a detail of the generated
+             * map data, not something a player should be able to see. A
+             * country that is not in play this round is background,
+             * however it got here — otherwise the map shows three greys
+             * for two meanings and the middle one means nothing.
+             */
+            const inPlay =
+              isTarget || isHighlight;
+
             const className = [
               "atlasMapShape",
-              shape.id
+              inPlay
                 ? ""
                 : "atlasMapContext",
               isTarget
                 ? "target"
+                : "",
+              !!shape.id &&
+              shape.id === overId
+                ? "over"
                 : "",
               isSolved
                 ? "solved"

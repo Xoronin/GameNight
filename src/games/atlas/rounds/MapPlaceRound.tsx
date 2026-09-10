@@ -68,7 +68,7 @@ function MapPlaceRound({
   const myTurn = currentPlayerId === localPlayerId;
   const interactive = myTurn && !disabled && !revealed;
 
-  const { selected, poolRef, itemProps, slotProps } = useBoardDrag({
+  const { selected, overSlot, poolRef, itemProps, slotProps } = useBoardDrag({
     interactive,
     onDrop: (slotId, itemId) => {
       if (!solvedBy.has(slotId)) {
@@ -145,6 +145,7 @@ function MapPlaceRound({
         targetIds={payload.countryIds}
         solvedIds={[...solvedBy.keys()]}
         selectedId={selected}
+        overId={overSlot}
         droppable={interactive}
         onShapeClick={(countryId) => slotProps(countryId).onClick()}
         loadingLabel={labels.loading}
