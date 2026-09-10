@@ -166,7 +166,7 @@ export async function getActiveBluffSession(
   return data as BluffSessionRow;
 }
 
-export async function finishBluffSession(
+async function finishBluffSession(
   sessionId: string,
 ) {
   const {

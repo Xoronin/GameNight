@@ -317,7 +317,7 @@ export async function getActiveAlphabetSession(
   );
 }
 
-export async function finishAlphabetSession(
+async function finishAlphabetSession(
   sessionId: string,
 ) {
   const { error } =

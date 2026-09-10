@@ -15,12 +15,8 @@ const de = {
     host: "Host",
     you: "Du",
     room: "Raum",
-    language: "Sprache",
     german: "Deutsch",
     english: "Englisch",
-    continue: "Weiter",
-    submit: "Absenden",
-    cancel: "Abbrechen",
     logout: "Abmelden",
     games: "Spiele",
     genericError: "Etwas ist schiefgelaufen.",
@@ -268,7 +264,6 @@ const de = {
     gameCount: "Spiele ausgewählt",
     nextGame: "Nächstes Spiel",
     viewResults: "Endergebnis ansehen",
-    gameProgress: "Spiel",
     complete: "TURNIER BEENDET",
     finalStandings: "Endstand",
     gamesPlayed: "Gespielte Spiele",
@@ -353,13 +348,11 @@ const de = {
     "Warte auf den Host...",
     round: "Runde",
     timerLabel: "Antwortzeit",
-    roundCountLabel: "Anzahl der Runden",
     rounds: "Runden",
     categoriesLabel: "Aktive Kategorien",
     finalScores: "Endstand",
     gameComplete: "SPIEL BEENDET",
     finishGame: "Spiel beenden",
-    score: "Punkte",
     voteInvalid: "Zählt nicht",
     addCustomCategoryPlaceholder:
       "Name der neuen Kategorie...",
@@ -406,7 +399,6 @@ const de = {
     loadError: "Minenfeld konnte nicht geladen werden",
     joinAgain: "Tritt dem Raum erneut bei.",
     noPlayerTitle: "Kein Spieler gefunden",
-    questionMissing: "Frage fehlt",
     timerLabel: "Zugzeit",
     youAreOut:
       "Du hast eine Mine getroffen — du bist für diese Runde raus. Warte, bis die anderen fertig sind...",
@@ -545,7 +537,6 @@ const de = {
   },
 
   drawing: {
-    loading: "Zeichnen & Raten wird geladen...",
     loadError: "Zeichnen & Raten konnte nicht geladen werden.",
     startTitle: "Zeichnen. Raten. Punkten.",
     startDescription:
@@ -689,11 +680,8 @@ const de = {
       "Konnte nicht gesendet werden. Bitte versuch es nochmal.",
   },
   gamePage: {
-    noRoomSelected: "Kein Raum ausgewählt",
     joinRoomFirst:
         "Erstelle zuerst einen Raum oder tritt einem bei.",
-    bluffNeedsRoom:
-        "Bluff ist ein Mehrspieler-Spiel. Erstelle zuerst einen Raum oder tritt einem bei.",
     unknownGame: "Unbekanntes Spiel",
     notImplemented:
         "Dieses Spiel wurde noch nicht implementiert.",

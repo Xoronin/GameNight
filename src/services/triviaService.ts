@@ -330,7 +330,7 @@ export async function getActiveTriviaSession(
   );
 }
 
-export async function finishTriviaSession(
+async function finishTriviaSession(
   sessionId: string,
 ) {
   const { error } =

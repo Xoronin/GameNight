@@ -542,7 +542,7 @@ export async function getActiveSpectrumSession(
   );
 }
 
-export async function finishSpectrumSession(
+async function finishSpectrumSession(
   sessionId: string,
 ) {
   const { error } =

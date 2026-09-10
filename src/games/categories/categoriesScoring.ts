@@ -2,7 +2,7 @@ import type { CategoriesAnswer } from "../../types/game";
 
 type GameLanguage = "en" | "de";
 
-export function answerStartsWithLetter(
+function answerStartsWithLetter(
   answer: string,
   letter: string,
   language: GameLanguage,
@@ -30,7 +30,7 @@ function normalizeAnswerText(
     .replace(/\s+/g, " ");
 }
 
-export function countDuplicateAnswers(
+function countDuplicateAnswers(
   answer: CategoriesAnswer,
   answers: CategoriesAnswer[],
 ) {

@@ -463,14 +463,6 @@ canvas.drawingCanvas.drawable {
   margin-top: 8px;
 }
 
-.drawingLeaderboard {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(16, 16, 24, 0.82);
-  border-radius: 24px;
-  padding: 28px;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
-}
-
 .drawingLeaderboard h2 {
   margin: 0 0 20px;
   font-size: 1.3rem;

@@ -109,7 +109,7 @@ const ROUND_TYPES: AtlasRoundType[] =
  * modes take a single answer, so they are guaranteed once but never
  * drawn again — two in a game would unbalance it rather than vary it.
  */
-export const BOARD_ROUND_TYPES: AtlasRoundType[] =
+const BOARD_ROUND_TYPES: AtlasRoundType[] =
   [
     "capital_match",
     "map_place",
@@ -267,7 +267,7 @@ function pickRandom<T>(
  * handed to the player as empty slots to fill in. Botswana's five
  * bands, for instance, would be a chore rather than a puzzle.
  */
-export function paintableCountries(): AtlasCountry[] {
+function paintableCountries(): AtlasCountry[] {
   return flagCountries.filter(
     (country) => {
       const regions = flagRegions(
@@ -665,7 +665,7 @@ export function pickRoundType(
   );
 }
 
-export async function getAtlasUsedRoundTypes(
+async function getAtlasUsedRoundTypes(
   sessionId: string,
 ): Promise<AtlasRoundType[]> {
   const { data, error } =
@@ -1372,7 +1372,7 @@ export async function getActiveAtlasSession(
     : null;
 }
 
-export async function finishAtlasSession(
+async function finishAtlasSession(
   sessionId: string,
 ) {
   const { error } =
