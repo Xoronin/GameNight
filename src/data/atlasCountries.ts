@@ -682,6 +682,11 @@ export const atlasCountries: AtlasCountry[] =
         weights: [2, 1, 2],
       },
     },
+    /*
+     * No flag on purpose: Monaco's red-over-white bicolour is Indonesia's,
+     * differing only in aspect ratio, which this renderer does not express.
+     * Monaco still plays in the capital rounds.
+     */
     {
       id: "mc",
       nameEn: "Monaco",
@@ -689,11 +694,6 @@ export const atlasCountries: AtlasCountry[] =
       capitalEn: "Monaco",
       capitalDe: "Monaco",
       continent: "europe",
-      flag: {
-        kind: "stripes",
-        direction: "horizontal",
-        bands: [c.red, c.white],
-      },
     },
     {
       id: "ci",
@@ -708,6 +708,13 @@ export const atlasCountries: AtlasCountry[] =
         bands: [c.orange, c.white, c.green],
       },
     },
+    /*
+     * No flag on purpose: Chad's is a blue-yellow-red vertical tricolour,
+     * which is Romania's exactly. Real life tells them apart by a shade of
+     * blue this palette does not carry, so drawn here they are the same
+     * picture and "pick the flag" would have two right answers. Chad still
+     * plays in the capital and map rounds.
+     */
     {
       id: "td",
       nameEn: "Chad",
@@ -715,11 +722,6 @@ export const atlasCountries: AtlasCountry[] =
       capitalEn: "N'Djamena",
       capitalDe: "N'Djamena",
       continent: "africa",
-      flag: {
-        kind: "stripes",
-        direction: "vertical",
-        bands: [c.blue, c.yellow, c.red],
-      },
     },
     {
       id: "gm",
