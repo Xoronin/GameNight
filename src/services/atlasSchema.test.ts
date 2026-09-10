@@ -5,7 +5,7 @@ import {
   it,
 } from "vitest";
 import {
-  allowedValues,
+  allowedValuesFor,
   declaredColumns,
   migrationSql,
   unionMembers,
@@ -30,8 +30,9 @@ describe("Atlas code matches its migrations", () => {
   );
 
   it("allows every round type the app can produce", () => {
-    const allowed = allowedValues(
+    const allowed = allowedValuesFor(
       sql,
+      "atlas_rounds",
       "round_type",
     );
 
@@ -47,8 +48,9 @@ describe("Atlas code matches its migrations", () => {
   });
 
   it("allows every round status the app can set", () => {
-    const allowed = allowedValues(
+    const allowed = allowedValuesFor(
       sql,
+      "atlas_rounds",
       "status",
     );
 
@@ -63,8 +65,9 @@ describe("Atlas code matches its migrations", () => {
   });
 
   it("allows every session status the app can set", () => {
-    const allowed = allowedValues(
+    const allowed = allowedValuesFor(
       sql,
+      "atlas_sessions",
       "status",
     );
 

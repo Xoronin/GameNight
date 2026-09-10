@@ -372,6 +372,47 @@ export type TriviaAnswer = {
   createdAt: string;
 };
 
+export type FriendsRoundStatus =
+  | "answering"
+  | "reveal"
+  | "finished";
+
+export type FriendsSessionStatus =
+  | "playing"
+  | "finished";
+
+export type FriendsQuestion = {
+  id: string;
+  /** Carries a {name} placeholder for the subject. */
+  prompt: string;
+  options: string[];
+};
+
+export type FriendsRound = {
+  id: string;
+  roomId: string;
+  sessionId: string;
+  roundNumber: number;
+  questionId: string;
+  /** The player this round is about. */
+  subjectPlayerId: string;
+  status: FriendsRoundStatus;
+  createdAt: string;
+  endsAt: string;
+};
+
+export type FriendsAnswer = {
+  id: string;
+  roundId: string;
+  playerId: string;
+  selectedIndex: number;
+  /** The subject's own answer rather than a prediction of it. */
+  isSubject: boolean;
+  isCorrect: boolean;
+  points: number;
+  createdAt: string;
+};
+
 export type EmojiRoundStatus =
   | "answering"
   | "reveal"
