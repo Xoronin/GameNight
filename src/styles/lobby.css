@@ -498,9 +498,17 @@
         min-height: 0;
     }
 
+    /*
+     * Both axes, not just the vertical one: when a box has overflow-x
+     * hidden and overflow-y visible, the visible axis computes back to
+     * auto, so overriding one alone leaves this a scroll container that
+     * happens never to overflow. Releasing both makes the rule mean what
+     * it says, and keeps it meaning it if the panel is ever given a
+     * height again.
+     */
     .lobbyPanelBody {
         flex: initial;
-        overflow-y: visible;
+        overflow: visible;
     }
 
     .playerPanel {
