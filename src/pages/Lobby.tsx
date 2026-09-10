@@ -90,6 +90,8 @@ const timerLabelKeys: Record<
   atlas: "atlas.timerLabel",
   "emoji-decode":
     "emojiDecode.timerLabel",
+  "know-your-friends":
+    "knowFriends.timerLabel",
 };
 
 function isTimedGame(
@@ -122,6 +124,8 @@ const roundCountLabelKeys: Record<
   spectrum:
     "lobby.roundCountLabel",
   "emoji-decode":
+    "lobby.roundCountLabel",
+  "know-your-friends":
     "lobby.roundCountLabel",
 };
 

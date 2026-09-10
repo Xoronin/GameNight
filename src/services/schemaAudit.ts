@@ -66,6 +66,52 @@ export function allowedValues(
   return found;
 }
 
+/*
+ * The same as above, but reading only the SQL that belongs to one table:
+ * its `create table` body plus any `alter table` on it.
+ *
+ * Scoping matters because several tables in a game share the column name
+ * `status`. Scanning the whole file merges their constraints, and a value
+ * only one table allows then looks allowed everywhere — which is exactly
+ * the mistake these audits exist to catch.
+ */
+export function allowedValuesFor(
+  sql: string,
+  table: string,
+  column: string,
+): Set<string> {
+  const parts: string[] = [];
+
+  const body = sql.match(
+    new RegExp(
+      `create table if not exists ${table} \\(([\\s\\S]*?)\\n\\);`,
+    ),
+  );
+
+  if (body) {
+    parts.push(body[1]);
+  }
+
+  for (const altered of sql.matchAll(
+    new RegExp(
+      `alter table ${table}\\b([\\s\\S]*?);`,
+      "g",
+    ),
+  )) {
+    parts.push(altered[1]);
+  }
+
+  expect(
+    parts.length,
+    `no SQL found for table ${table}`,
+  ).toBeGreaterThan(0);
+
+  return allowedValues(
+    parts.join("\n"),
+    column,
+  );
+}
+
 /** Columns each `create table` declares, plus any added later. */
 export function declaredColumns(
   sql: string,

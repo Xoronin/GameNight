@@ -8,7 +8,8 @@ export type TimedGameId =
   | "alphabet"
   | "spectrum"
   | "atlas"
-  | "emoji-decode";
+  | "emoji-decode"
+  | "know-your-friends";
 
 export type CustomCategory = {
   key: string;
@@ -43,6 +44,7 @@ export const GAME_TIMER_DEFAULTS: Record<
   spectrum: 30,
   atlas: 30,
   "emoji-decode": 45,
+  "know-your-friends": 25,
 };
 
 export const GAME_TIMER_OPTIONS: Record<
@@ -59,6 +61,9 @@ export const GAME_TIMER_OPTIONS: Record<
   spectrum: [15, 20, 30, 45, 60],
   atlas: [15, 20, 30, 45, 60],
   "emoji-decode": [20, 30, 45, 60, 90],
+  "know-your-friends": [
+    15, 20, 25, 30, 45,
+  ],
 };
 
 export function getGameTimerSeconds(
@@ -106,6 +111,7 @@ export const GAME_ROUND_COUNT_DEFAULTS: Record<
   spectrum: 5,
   atlas: 8,
   "emoji-decode": 8,
+  "know-your-friends": 8,
 };
 
 export const GAME_ROUND_COUNT_OPTIONS: Record<
@@ -122,6 +128,9 @@ export const GAME_ROUND_COUNT_OPTIONS: Record<
   spectrum: [3, 5, 8, 13],
   atlas: [7, 8, 10, 12],
   "emoji-decode": [5, 8, 10, 12],
+  "know-your-friends": [
+    4, 6, 8, 10, 12,
+  ],
 };
 
 export function getGameRoundCount(

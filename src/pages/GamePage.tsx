@@ -17,6 +17,7 @@ import BluffGame from "../games/bluff/BluffGame";
 import CategoriesGame from "../games/categories/CategoriesGame";
 import DrawingGame from "../games/draw-guess/DrawingGame";
 import HigherLowerGame from "../games/higher-lower/HigherLowerGame";
+import KnowYourFriendsGame from "../games/know-your-friends/KnowYourFriendsGame";
 import MinefieldGame from "../games/minefield/MinefieldGame";
 import SpectrumGame from "../games/spectrum/SpectrumGame";
 import TriviaGame from "../games/trivia/TriviaGame";
@@ -36,6 +37,7 @@ const multiplayerGames = [
   "spectrum",
   "atlas",
   "emoji-decode",
+  "know-your-friends",
 ];
 
 function GamePage() {
@@ -307,6 +309,17 @@ function GamePage() {
     if (gameId === "atlas") {
       return (
         <AtlasGame
+          roomCode={roomCode}
+        />
+      );
+    }
+
+    if (
+      gameId ===
+      "know-your-friends"
+    ) {
+      return (
+        <KnowYourFriendsGame
           roomCode={roomCode}
         />
       );

@@ -5,7 +5,7 @@ import {
   it,
 } from "vitest";
 import {
-  allowedValues,
+  allowedValuesFor,
   declaredColumns,
   migrationSql,
   unionMembers,
@@ -39,8 +39,9 @@ describe("Emoji Decode code matches its migration", () => {
   });
 
   it("allows every round status the app can set", () => {
-    const allowed = allowedValues(
+    const allowed = allowedValuesFor(
       sql,
+      "emoji_rounds",
       "status",
     );
 
@@ -56,8 +57,9 @@ describe("Emoji Decode code matches its migration", () => {
   });
 
   it("allows every session status the app can set", () => {
-    const allowed = allowedValues(
+    const allowed = allowedValuesFor(
       sql,
+      "emoji_sessions",
       "status",
     );
 

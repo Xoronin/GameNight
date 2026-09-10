@@ -204,7 +204,6 @@ export const gameLibrary: GameLibraryEntry[] = [
     icon: <Heart />,
     className: "pink",
     group: "solo",
-    comingSoon: true,
   },
   {
     id: "know-their-ranking",

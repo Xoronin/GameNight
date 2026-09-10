@@ -140,4 +140,19 @@ export const gameRules: GameRules = {
       "Scheitern alle daran, wird er ausgegraut aufgedeckt und niemand bekommt Punkte.",
     ],
   },
+
+  "know-your-friends": {
+    en: [
+      "Every round is about one player, and the turn passes around the table.",
+      "That player answers a question about themselves; everyone else predicts what they picked.",
+      "All of it happens in the same window — their answer is simply hidden until the reveal.",
+      "A correct prediction is +500. The player being guessed earns +150 for every person who read them right.",
+    ],
+    de: [
+      "In jeder Runde geht es um einen Spieler, und es wird reihum gewechselt.",
+      "Diese Person beantwortet eine Frage über sich selbst, alle anderen sagen voraus, was sie gewählt hat.",
+      "Alles passiert im selben Zeitfenster — ihre Antwort bleibt bis zur Auflösung einfach verborgen.",
+      "Eine richtige Vorhersage bringt +500. Die Person, um die es geht, bekommt +150 für jeden, der sie richtig eingeschätzt hat.",
+    ],
+  },
 };

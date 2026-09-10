@@ -650,6 +650,40 @@ const de = {
     noPlayerTitle: "Kein Spieler gefunden",
     joinAgain: "Tritt dem Raum erneut bei, um zu spielen.",
   },
+  knowFriends: {
+    startTitle: "Wie gut kennt ihr euch?",
+    startDescription:
+      "In jeder Runde geht es um einen Spieler. Diese Person beantwortet heimlich eine Frage über sich selbst, alle anderen sagen voraus, was sie gewählt hat. Wer richtig rät, punktet — und je mehr Leute richtig liegen, desto mehr bekommt auch die Person selbst.",
+    taskSubject:
+      "Wähle deine eigene Antwort — niemand sieht sie bis zur Auflösung.",
+    taskPredictor: "Sage voraus, was diese Person gewählt hat.",
+    about: "Es geht um",
+    aboutYou: "Diese Runde geht um dich",
+    you: "du",
+    yourTurn: "Du bist dran",
+    yourTurnHint:
+      "Antworte ehrlich — die anderen raten gerade dich.",
+    playersAnswered: "haben geantwortet",
+    youKnew: "Du kennst sie!",
+    youMissed: "Diesmal nicht.",
+    readYou: "Richtig geraten:",
+    nextRound: "Nächste Runde",
+    seeResults: "Ergebnisse ansehen",
+    waitingForHost: "Warte auf den Host...",
+    gameComplete: "Spiel beendet",
+    finalScores: "Endstand",
+    backToLobby: "Zurück zur Lobby",
+    questionMissing:
+      "Diese Frage konnte nicht geladen werden.",
+    questionsExhausted:
+      "Keine Fragen mehr übrig — starte ein neues Spiel, um sie neu zu mischen.",
+    loading: "Kennst du deine Freunde? wird geladen...",
+    loadError: "Spiel konnte nicht geladen werden",
+    noPlayerTitle: "Kein Spieler gefunden",
+    joinAgain:
+      "Tritt dem Raum erneut bei, um zu spielen.",
+    timerLabel: "Sekunden pro Frage",
+  },
   feedback: {
     button: "Feedback",
     title: "Feedback senden",
