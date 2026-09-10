@@ -131,6 +131,17 @@ export const gameLibrary: GameLibraryEntry[] = [
     className: "green",
     group: "solo",
   },
+  {
+    id: "emoji-decode",
+    nameKey:
+      "games.emojiDecode.name",
+    descriptionKey:
+      "games.emojiDecode.description",
+    players: "2–12",
+    icon: <Smile />,
+    className: "pink",
+    group: "solo",
+  },
 
   /*
    * Placeholders for planned games — not yet
@@ -168,18 +179,6 @@ export const gameLibrary: GameLibraryEntry[] = [
     players: "4–12",
     icon: <Ban />,
     className: "red",
-    group: "team",
-    comingSoon: true,
-  },
-  {
-    id: "emoji-decode",
-    nameKey:
-      "games.emojiDecode.name",
-    descriptionKey:
-      "games.emojiDecode.description",
-    players: "2–12",
-    icon: <Smile />,
-    className: "pink",
     group: "team",
     comingSoon: true,
   },

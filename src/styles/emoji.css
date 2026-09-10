@@ -1,0 +1,350 @@
+.emojiGame {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  display: grid;
+  /* Items may shrink; without this any long word widens the whole game. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+.emojiStart {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 34px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  text-align: center;
+}
+
+.emojiHeroIcon {
+  display: grid;
+  place-items: center;
+  width: 78px;
+  height: 78px;
+  border-radius: 22px;
+  background: linear-gradient(140deg, #f5a524, #f76b8a);
+  color: #1a1020;
+}
+
+.emojiStart h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.emojiStart p {
+  max-width: 42ch;
+  margin: 0;
+  opacity: 0.75;
+  line-height: 1.55;
+}
+
+/*
+ * Round counter on one side, timer and score on the other. On a narrow
+ * phone the two sides together are wider than the screen, and a flex row
+ * that cannot wrap pushes the whole game sideways instead of stacking.
+ */
+.emojiHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+}
+
+.emojiHeader > div {
+  min-width: 0;
+}
+
+.emojiHeader strong {
+  display: block;
+  font-size: 1.05rem;
+}
+
+.emojiHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.emojiScore {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(245, 165, 36, 0.14);
+  color: #ffd79a;
+  font-weight: 700;
+}
+
+.emojiProgress {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.emojiProgress div {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f5a524, #f76b8a);
+  transition: width 320ms ease;
+}
+
+.emojiPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.emojiCategory {
+  justify-self: center;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+/*
+ * The puzzle is the whole screen, so it gets the room. Emoji have no
+ * useful font fallback chain, so the system emoji font is named directly.
+ */
+.emojiPuzzle {
+  padding: 18px 8px;
+  font-family:
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji",
+    sans-serif;
+  font-size: clamp(3rem, 14vw, 5rem);
+  line-height: 1.25;
+  text-align: center;
+  letter-spacing: 0.06em;
+  word-break: break-word;
+}
+
+.emojiForm {
+  display: flex;
+  gap: 10px;
+}
+
+.emojiInput {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.28);
+  color: inherit;
+  font: inherit;
+  font-size: 1.05rem;
+}
+
+.emojiInput:focus {
+  outline: 2px solid rgba(245, 165, 36, 0.65);
+  outline-offset: 1px;
+}
+
+.emojiSendButton {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  padding: 0;
+}
+
+.emojiMisses {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  min-width: 0;
+  gap: 8px;
+}
+
+/*
+ * A guess can run to 80 characters. Left to itself the pill refuses to be
+ * narrower than its text, which widens the whole grid and scrolls the game
+ * sideways, so the text truncates instead.
+ */
+.emojiMiss {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  min-width: 0;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(255, 120, 120, 0.12);
+  color: #ffb4b4;
+  font-size: 0.82rem;
+  text-decoration: line-through;
+}
+
+.emojiMiss svg {
+  flex-shrink: 0;
+}
+
+/* A flex item will not shrink past its text without this. */
+.emojiMissText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emojiSolved {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid rgba(110, 231, 168, 0.35);
+  border-radius: 14px;
+  background: rgba(110, 231, 168, 0.12);
+  color: #6ee7a8;
+  font-weight: 700;
+  animation: emojiPop 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.emojiFound,
+.emojiWaiting {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.9rem;
+  text-align: center;
+  opacity: 0.78;
+}
+
+.emojiError {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 96, 96, 0.14);
+  color: #ffb4b4;
+  font-size: 0.88rem;
+}
+
+.emojiReveal {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.emojiRevealLabel {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.emojiAnswer {
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  text-align: center;
+  animation: emojiPop 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.emojiSolvers,
+.emojiScoreboard {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.emojiSolverRow,
+.emojiScoreRow {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  animation: emojiRowIn 320ms ease both;
+  animation-delay: calc(var(--rowIndex, 0) * 55ms);
+}
+
+.emojiSolverRow:first-child {
+  background: rgba(245, 165, 36, 0.16);
+}
+
+.emojiSolverPlace,
+.emojiScoreRow span {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.09);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.emojiSolverRow b,
+.emojiScoreRow b {
+  color: #ffd79a;
+}
+
+.emojiNoSolvers {
+  padding: 12px;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.emojiMainButton {
+  justify-self: center;
+  min-width: 220px;
+}
+
+@keyframes emojiPop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@keyframes emojiRowIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@media (max-width: 560px) {
+  .emojiPanel {
+    padding: 16px;
+  }
+
+  .emojiHeader .eyebrow {
+    font-size: 0.68rem;
+  }
+
+  .emojiHeader strong {
+    font-size: 0.95rem;
+  }
+
+  .emojiStart {
+    padding: 24px 16px;
+  }
+
+  .emojiMainButton {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .emojiSolved,
+  .emojiAnswer,
+  .emojiSolverRow,
+  .emojiScoreRow {
+    animation: none !important;
+  }
+}

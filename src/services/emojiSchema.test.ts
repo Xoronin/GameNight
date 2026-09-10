@@ -12,12 +12,12 @@ import {
 } from "./schemaAudit";
 
 /*
- * Cross-checks the Atlas code against the Atlas migrations. See
+ * Cross-checks the Emoji Decode code against its migration. See
  * schemaAudit.ts for why this exists and how it reads the SQL.
  */
 
-describe("Atlas code matches its migrations", () => {
-  const sql = migrationSql("atlas");
+describe("Emoji Decode code matches its migration", () => {
+  const sql = migrationSql("emoji");
 
   const types = readFileSync(
     "src/types/game.ts",
@@ -25,25 +25,17 @@ describe("Atlas code matches its migrations", () => {
   );
 
   const service = readFileSync(
-    "src/services/atlasService.ts",
+    "src/services/emojiService.ts",
     "utf8",
   );
 
-  it("allows every round type the app can produce", () => {
-    const allowed = allowedValues(
+  it("has a migration at all", () => {
+    expect(
       sql,
-      "round_type",
+      "no migration file mentions emoji",
+    ).toContain(
+      "create table if not exists emoji_rounds",
     );
-
-    for (const type of unionMembers(
-      types,
-      "AtlasRoundType",
-    )) {
-      expect(
-        allowed,
-        `round type "${type}" is missing from the round_type check constraint — add a migration widening it`,
-      ).toContain(type);
-    }
   });
 
   it("allows every round status the app can set", () => {
@@ -54,11 +46,12 @@ describe("Atlas code matches its migrations", () => {
 
     for (const status of unionMembers(
       types,
-      "AtlasRoundStatus",
+      "EmojiRoundStatus",
     )) {
-      expect(allowed).toContain(
-        status,
-      );
+      expect(
+        allowed,
+        `round status "${status}" is missing from a check constraint — add a migration widening it`,
+      ).toContain(status);
     }
   });
 
@@ -70,7 +63,7 @@ describe("Atlas code matches its migrations", () => {
 
     for (const status of unionMembers(
       types,
-      "AtlasSessionStatus",
+      "EmojiSessionStatus",
     )) {
       expect(allowed).toContain(
         status,
@@ -84,14 +77,14 @@ describe("Atlas code matches its migrations", () => {
 
     const writes = [
       ...service.matchAll(
-        /\.from\(\s*"(atlas_\w+)"\s*\)\s*\n?\s*\.(insert|update)\(\{([^{}]*)\}\)/g,
+        /\.from\(\s*"(emoji_\w+)"\s*\)\s*\n?\s*\.(insert|update)\(\{([^{}]*)\}\)/g,
       ),
     ];
 
     /* If the scrape finds nothing, the test is not testing anything. */
     expect(
       writes.length,
-    ).toBeGreaterThan(4);
+    ).toBeGreaterThan(3);
 
     for (const [
       ,
@@ -112,5 +105,17 @@ describe("Atlas code matches its migrations", () => {
         ).toContain(column);
       }
     }
+  });
+
+  /*
+   * A player may guess as often as they like but score once, and that is
+   * the index rather than anything in the service.
+   */
+  it("stops a player scoring the same round twice", () => {
+    expect(
+      sql.replace(/\s+/g, " "),
+    ).toContain(
+      "create unique index if not exists emoji_guesses_solved_idx on emoji_guesses (round_id, player_id) where is_correct",
+    );
   });
 });
