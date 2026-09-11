@@ -714,6 +714,61 @@ const en = {
     noPlayerTitle: "No player found",
     joinAgain: "Join the room again to play.",
   },
+  music: {
+    startTitle: "When did this come out?",
+    startDescription:
+      "A song plays and the player whose turn it is says where it belongs in their own timeline — before this one, between those two, after that one. Land it right and the card is theirs. First to fill their timeline wins.",
+    yourTurn: "Your turn",
+    yourTurnHint: "Listen, then drop it into your timeline.",
+    yourGo: "Your go",
+    isPlacing: "is placing",
+    listening: "Listen...",
+    yourTimeline: "Your timeline",
+    timelineOf: "Timeline of",
+    before: "Before",
+    after: "After",
+    cards: "cards",
+    gotIt: "got it",
+    missedIt: "missed it",
+    replay: "Play again",
+    pause: "Pause",
+    connect: "Connect Spotify",
+    disconnect: "Disconnect",
+    tryAgain: "Try again",
+    connecting: "Connecting to Spotify...",
+    connectFailedTitle: "Spotify could not be connected",
+    connectFailed:
+      "That sign-in did not go through. Try connecting again from the game.",
+    connectDeclined:
+      "You declined the Spotify permissions, so the game will play without audio.",
+    spotify: {
+      unconfigured:
+        "Spotify is not set up on this deployment — playing without audio.",
+      disconnected:
+        "Connect Spotify to play the songs out loud in the room.",
+      connecting: "Starting the Spotify player...",
+      ready: "Spotify connected — this device is the speaker.",
+      no_premium:
+        "Spotify playback needs Premium. Playing without audio instead.",
+      error:
+        "Spotify could not start. Playing without audio instead.",
+    },
+    cannotStart:
+      "Could not start the game. There needs to be at least one player and one song.",
+    songMissing: "This song could not be loaded.",
+    nextRound: "Next song",
+    seeResults: "See results",
+    waitingForHost: "Waiting for the host...",
+    gameComplete: "Game complete",
+    finalScores: "Final scores",
+    backToLobby: "Back to lobby",
+    timerLabel: "Seconds to place a song",
+    roundCountLabel: "Cards needed to win",
+    loading: "Loading Music Timeline...",
+    loadError: "Could not load the game",
+    noPlayerTitle: "No player found",
+    joinAgain: "Join the room again to play.",
+  },
   feedback: {
     button: "Feedback",
     title: "Send feedback",

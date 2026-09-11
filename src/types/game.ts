@@ -669,3 +669,54 @@ export type SyllableTurn = {
   outcome: SyllableOutcome;
   createdAt: string;
 };
+
+export type MusicRoundStatus =
+  | "placing"
+  | "reveal"
+  | "finished";
+
+export type MusicSessionStatus =
+  | "playing"
+  | "finished";
+
+export type MusicSong = {
+  id: string;
+  title: string;
+  artist: string;
+  releaseYear: number;
+  /** Set only for a song whose search resolves to the wrong recording. */
+  spotifyTrackId: string | null;
+  locale: "intl" | "de";
+};
+
+export type MusicRound = {
+  id: string;
+  roomId: string;
+  sessionId: string;
+  roundNumber: number;
+  status: MusicRoundStatus;
+  songId: string;
+  currentPlayerId: string | null;
+  createdAt: string;
+  endsAt: string | null;
+};
+
+/** A song a player has won; their timeline is these, sorted by year. */
+export type MusicCard = {
+  id: string;
+  sessionId: string;
+  playerId: string;
+  songId: string;
+  isStarter: boolean;
+  createdAt: string;
+};
+
+export type MusicPlacement = {
+  id: string;
+  roundId: string;
+  playerId: string;
+  slotIndex: number;
+  isCorrect: boolean;
+  points: number;
+  createdAt: string;
+};

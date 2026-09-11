@@ -170,4 +170,21 @@ export const gameRules: GameRules = {
       "Jeder hat 3 Leben, und kein Wort zweimal pro Runde. Wer als Letzter übrig bleibt, gewinnt — und die Uhr wird immer kürzer.",
     ],
   },
+
+  "music-timeline": {
+    en: [
+      "Everyone starts with one song card, and each player builds their own timeline.",
+      "On your turn a mystery song plays — the host's device is the speaker for the room.",
+      "Say where it belongs: before your earliest card, between two of them, or after your latest.",
+      "Right and the card joins your timeline; wrong and it is gone. First to fill their timeline wins.",
+      "The year that counts is the year the song was originally released, not when it was remastered.",
+    ],
+    de: [
+      "Alle starten mit einer Song-Karte, und jeder baut seine eigene Zeitleiste.",
+      "Wenn du dran bist, läuft ein Song — das Gerät des Hosts ist der Lautsprecher für den Raum.",
+      "Sage, wo er hingehört: vor deine älteste Karte, zwischen zwei davon oder hinter deine neueste.",
+      "Richtig, und die Karte kommt in deine Zeitleiste; falsch, und sie ist weg. Wer zuerst voll hat, gewinnt.",
+      "Es zählt das Jahr der ursprünglichen Veröffentlichung, nicht das der Neuauflage.",
+    ],
+  },
 };

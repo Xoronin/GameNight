@@ -8,6 +8,7 @@ import JoinRoom from "./pages/JoinRoom";
 import Lobby from "./pages/Lobby";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import SpotifyCallback from "./pages/SpotifyCallback";
 
 function App() {
   return (
@@ -24,6 +25,11 @@ function App() {
           <Route path="/join" element={<JoinRoom />} />
           <Route path="/lobby/:roomCode" element={<Lobby />} />
           <Route path="/game/:gameId" element={<GamePage />} />
+
+          <Route
+            path="/spotify-callback"
+            element={<SpotifyCallback />}
+          />
         </Routes>
       </BrowserRouter>
     </MotionConfig>
