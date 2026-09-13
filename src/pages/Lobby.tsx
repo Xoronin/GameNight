@@ -94,6 +94,7 @@ const timerLabelKeys: Record<
     "knowFriends.timerLabel",
   "syllable-rush":
     "syllableRush.timerLabel",
+  scale: "scale.timerLabel",
 };
 
 function isTimedGame(
@@ -131,6 +132,7 @@ const roundCountLabelKeys: Record<
     "lobby.roundCountLabel",
   "syllable-rush":
     "syllableRush.roundCountLabel",
+  scale: "lobby.roundCountLabel",
 };
 
 const games = gameLibrary;

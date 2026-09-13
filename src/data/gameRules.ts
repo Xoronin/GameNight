@@ -170,4 +170,21 @@ export const gameRules: GameRules = {
       "Jeder hat 3 Leben, und kein Wort zweimal pro Runde. Wer als Letzter übrig bleibt, gewinnt — und die Uhr wird immer kürzer.",
     ],
   },
+
+  scale: {
+    en: [
+      "Two objects stand side by side on the same ground line. One is drawn at its true size.",
+      "Drag the handle to stretch the other one until the proportion looks right.",
+      "There is no ruler and no number on screen — you are matching one shape against another by eye.",
+      "Everyone guesses at once. Points fall off the further out you are, and the closest guess in the room takes a bonus.",
+      "Being twice too big costs exactly what being twice too small costs.",
+    ],
+    de: [
+      "Zwei Objekte stehen nebeneinander auf derselben Linie. Eines ist in seiner echten Größe gezeichnet.",
+      "Zieh am Griff, um das andere so weit zu strecken, bis das Verhältnis stimmt.",
+      "Es gibt kein Lineal und keine Zahl auf dem Bildschirm — du vergleichst nur die Formen mit dem Auge.",
+      "Alle raten gleichzeitig. Je weiter daneben, desto weniger Punkte, und wer am nächsten dran ist, bekommt einen Bonus.",
+      "Doppelt so groß zu schätzen kostet genauso viel wie halb so groß.",
+    ],
+  },
 };

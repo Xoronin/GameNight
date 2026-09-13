@@ -10,7 +10,8 @@ export type TimedGameId =
   | "atlas"
   | "emoji-decode"
   | "know-your-friends"
-  | "syllable-rush";
+  | "syllable-rush"
+  | "scale";
 
 export type CustomCategory = {
   key: string;
@@ -47,6 +48,7 @@ export const GAME_TIMER_DEFAULTS: Record<
   "emoji-decode": 45,
   "know-your-friends": 25,
   "syllable-rush": 12,
+  scale: 25,
 };
 
 export const GAME_TIMER_OPTIONS: Record<
@@ -68,6 +70,9 @@ export const GAME_TIMER_OPTIONS: Record<
   ],
   "syllable-rush": [
     8, 10, 12, 15, 20,
+  ],
+  scale: [
+    15, 20, 25, 30, 45,
   ],
 };
 
@@ -118,6 +123,7 @@ export const GAME_ROUND_COUNT_DEFAULTS: Record<
   "emoji-decode": 8,
   "know-your-friends": 8,
   "syllable-rush": 3,
+  scale: 8,
 };
 
 export const GAME_ROUND_COUNT_OPTIONS: Record<
@@ -139,6 +145,9 @@ export const GAME_ROUND_COUNT_OPTIONS: Record<
   ],
   "syllable-rush": [
     1, 2, 3, 5,
+  ],
+  scale: [
+    5, 8, 10, 12,
   ],
 };
 
