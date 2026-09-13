@@ -112,6 +112,12 @@ export function allowedValuesFor(
   );
 }
 
+/*
+ * The type list below is what marks a line as a column declaration, so a
+ * type missing from it makes that column invisible to every audit — the
+ * check passes while testing nothing. `numeric` was absent until Scale
+ * needed it, which had also been hiding Spectrum's `value` column.
+ */
 /** Columns each `create table` declares, plus any added later. */
 export function declaredColumns(
   sql: string,
@@ -132,7 +138,7 @@ export function declaredColumns(
       const column = line
         .trim()
         .match(
-          /^([a-z_]+)\s+(uuid|text|int|smallint|boolean|jsonb|timestamptz)/,
+          /^([a-z_]+)\s+(uuid|text|int|integer|smallint|bigint|numeric|decimal|real|double precision|boolean|jsonb|json|date|timestamptz)/,
         );
 
       if (column) {
@@ -154,6 +160,42 @@ export function declaredColumns(
   }
 
   return tables;
+}
+
+/*
+ * The property names an object literal sets, shorthand included.
+ *
+ * A multi-line body is read a line at a time and the trailing comma is
+ * required: without it a wrapped ternary like `? someVar` on its own line
+ * reads as a property and the audit fails on a column that does not
+ * exist. A single-line body has no commas to anchor on, so it is split
+ * instead — `.update({ status })` sets one column and has to be seen.
+ */
+function columnsIn(
+  body: string,
+): string[] {
+  if (body.includes("\n")) {
+    return [
+      ...body.matchAll(
+        /^\s*([a-z_]+)\s*(?::|,\s*$)/gm,
+      ),
+    ].map((match) => match[1]);
+  }
+
+  return body
+    .split(",")
+    .map(
+      (part) =>
+        part
+          .trim()
+          .match(
+            /^([a-z_]+)\s*(?::|$)/,
+          )?.[1],
+    )
+    .filter(
+      (name): name is string =>
+        !!name,
+    );
 }
 
 /** One `.insert({...})` or `.update({...})` a service performs. */
@@ -187,11 +229,7 @@ export function serviceWrites(
     ([, table, operation, body]) => ({
       table,
       operation,
-      columns: [
-        ...body.matchAll(
-          /^\s*([a-z_]+)\s*(?::|,?\s*$)/gm,
-        ),
-      ].map((match) => match[1]),
+      columns: columnsIn(body),
     }),
   );
 }

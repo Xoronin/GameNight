@@ -113,6 +113,12 @@ const en = {
         "Find a word containing the given syllable before the shrinking timer runs out.",
     },
 
+    scale: {
+      name: "Scale",
+      description:
+        "Stretch a mystery object until it looks the right height next to a known one.",
+    },
+
     knowYourFriends: {
       name: "Know Your Friends",
       description:
@@ -710,6 +716,38 @@ const en = {
     timerLabel: "Seconds per turn at the start",
     roundCountLabel: "Rounds (each played until one player is left)",
     loading: "Loading Syllable Rush...",
+    loadError: "Could not load the game",
+    noPlayerTitle: "No player found",
+    joinAgain: "Join the room again to play.",
+  },
+  scale: {
+    startTitle: "How tall is that, really?",
+    startDescription:
+      "One object stands next to another at its true size. Stretch the mystery one until the proportion looks right — there is no ruler and no number, just your eye. Everyone guesses at once, and the closest guess takes a bonus.",
+    taskBefore: "How tall is a",
+    taskAfter: "next to a",
+    handleLabel: "Drag to set the height",
+    tallerThan: "Taller than the reference",
+    shorterThan: "Shorter than the reference",
+    aboutTheSame: "About the same height",
+    lockIn: "Lock it in",
+    locked: "Locked in.",
+    veryClose: "Very close!",
+    notBad: "Not bad.",
+    wayOff: "Way off.",
+    noGuess: "You ran out of time on that one.",
+    closest: "Closest guess:",
+    pairMissing: "This pair could not be loaded.",
+    cannotStart:
+      "Could not start the round. There need to be at least two objects.",
+    nextRound: "Next round",
+    seeResults: "See results",
+    waitingForHost: "Waiting for the host...",
+    gameComplete: "Game complete",
+    finalScores: "Final scores",
+    backToLobby: "Back to lobby",
+    timerLabel: "Seconds to guess",
+    loading: "Loading Scale...",
     loadError: "Could not load the game",
     noPlayerTitle: "No player found",
     joinAgain: "Join the room again to play.",

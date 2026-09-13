@@ -19,6 +19,7 @@ import DrawingGame from "../games/draw-guess/DrawingGame";
 import HigherLowerGame from "../games/higher-lower/HigherLowerGame";
 import KnowYourFriendsGame from "../games/know-your-friends/KnowYourFriendsGame";
 import MinefieldGame from "../games/minefield/MinefieldGame";
+import ScaleGame from "../games/scale/ScaleGame";
 import SpectrumGame from "../games/spectrum/SpectrumGame";
 import SyllableRushGame from "../games/syllable-rush/SyllableRushGame";
 import TriviaGame from "../games/trivia/TriviaGame";
@@ -40,6 +41,7 @@ const multiplayerGames = [
   "emoji-decode",
   "know-your-friends",
   "syllable-rush",
+  "scale",
 ];
 
 function GamePage() {
@@ -332,6 +334,14 @@ function GamePage() {
     ) {
       return (
         <SyllableRushGame
+          roomCode={roomCode}
+        />
+      );
+    }
+
+    if (gameId === "scale") {
+      return (
+        <ScaleGame
           roomCode={roomCode}
         />
       );
