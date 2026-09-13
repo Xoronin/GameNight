@@ -12,6 +12,7 @@ export type TimedGameId =
   | "know-your-friends"
   | "syllable-rush"
   | "music-timeline";
+  | "scale";
 
 export type CustomCategory = {
   key: string;
@@ -49,6 +50,7 @@ export const GAME_TIMER_DEFAULTS: Record<
   "know-your-friends": 25,
   "syllable-rush": 12,
   "music-timeline": 30,
+  scale: 25,
 };
 
 export const GAME_TIMER_OPTIONS: Record<
@@ -73,6 +75,8 @@ export const GAME_TIMER_OPTIONS: Record<
   ],
   "music-timeline": [
     20, 30, 45, 60,
+  scale: [
+    15, 20, 25, 30, 45,
   ],
 };
 
@@ -124,6 +128,7 @@ export const GAME_ROUND_COUNT_DEFAULTS: Record<
   "know-your-friends": 8,
   "syllable-rush": 3,
   "music-timeline": 10,
+  scale: 8,
 };
 
 export const GAME_ROUND_COUNT_OPTIONS: Record<
@@ -148,6 +153,8 @@ export const GAME_ROUND_COUNT_OPTIONS: Record<
   ],
   "music-timeline": [
     6, 8, 10, 12,
+  scale: [
+    5, 8, 10, 12,
   ],
 };
 

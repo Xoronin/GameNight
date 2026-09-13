@@ -113,6 +113,12 @@ const de = {
         "Finde ein Wort mit der vorgegebenen Silbe, bevor der schrumpfende Timer abläuft.",
     },
 
+    scale: {
+      name: "Maßstab",
+      description:
+        "Zieh ein unbekanntes Objekt auf die Höhe, die neben einem bekannten stimmt.",
+    },
+
     knowYourFriends: {
       name: "Kennst du deine Freunde?",
       description:
@@ -771,6 +777,28 @@ const de = {
       "Spiel konnte nicht gestartet werden. Es braucht mindestens einen Spieler und einen Song.",
     songMissing: "Dieser Song konnte nicht geladen werden.",
     nextRound: "Nächster Song",
+  scale: {
+    startTitle: "Wie hoch ist das wirklich?",
+    startDescription:
+      "Ein Objekt steht in seiner echten Größe neben einem anderen. Zieh das unbekannte so weit, bis das Verhältnis stimmt — kein Lineal, keine Zahl, nur dein Auge. Alle raten gleichzeitig, und wer am nächsten dran ist, bekommt einen Bonus.",
+    taskBefore: "Wie hoch ist",
+    taskAfter: "neben",
+    handleLabel: "Ziehen, um die Höhe einzustellen",
+    tallerThan: "Höher als die Referenz",
+    shorterThan: "Niedriger als die Referenz",
+    aboutTheSame: "Etwa gleich hoch",
+    lockIn: "Festlegen",
+    locked: "Festgelegt.",
+    veryClose: "Ganz nah dran!",
+    notBad: "Nicht schlecht.",
+    wayOff: "Weit daneben.",
+    noGuess: "Dafür hat die Zeit nicht gereicht.",
+    closest: "Am nächsten dran:",
+    pairMissing:
+      "Dieses Paar konnte nicht geladen werden.",
+    cannotStart:
+      "Runde konnte nicht gestartet werden. Es braucht mindestens zwei Objekte.",
+    nextRound: "Nächste Runde",
     seeResults: "Ergebnisse ansehen",
     waitingForHost: "Warte auf den Host...",
     gameComplete: "Spiel beendet",
@@ -779,6 +807,8 @@ const de = {
     timerLabel: "Sekunden zum Einsortieren",
     roundCountLabel: "Karten zum Sieg",
     loading: "Musik-Zeitleiste wird geladen...",
+    timerLabel: "Sekunden zum Schätzen",
+    loading: "Maßstab wird geladen...",
     loadError: "Spiel konnte nicht geladen werden",
     noPlayerTitle: "Kein Spieler gefunden",
     joinAgain:

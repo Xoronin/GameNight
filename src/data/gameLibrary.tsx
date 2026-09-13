@@ -15,6 +15,7 @@ import {
   ListOrdered,
   MessageSquareQuote,
   Music2,
+  Ruler,
   Smile,
   TrendingUp,
   Type,
@@ -191,6 +192,16 @@ export const gameLibrary: GameLibraryEntry[] = [
     players: "2–10",
     icon: <Type />,
     className: "blue",
+    group: "solo",
+  },
+  {
+    id: "scale",
+    nameKey: "games.scale.name",
+    descriptionKey:
+      "games.scale.description",
+    players: "2–10",
+    icon: <Ruler />,
+    className: "orange",
     group: "solo",
   },
   {

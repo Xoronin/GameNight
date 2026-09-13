@@ -690,6 +690,25 @@ export type MusicSong = {
 };
 
 export type MusicRound = {
+export type ScaleRoundStatus =
+  | "guessing"
+  | "reveal"
+  | "finished";
+
+export type ScaleSessionStatus =
+  | "playing"
+  | "finished";
+
+export type ScaleObject = {
+  id: string;
+  /** Matches a key in scaleSilhouettes.ts. */
+  shapeKey: string;
+  nameEn: string;
+  nameDe: string;
+  heightM: number;
+};
+
+export type ScaleRound = {
   id: string;
   roomId: string;
   sessionId: string;
@@ -697,6 +716,9 @@ export type MusicRound = {
   status: MusicRoundStatus;
   songId: string;
   currentPlayerId: string | null;
+  status: ScaleRoundStatus;
+  referenceId: string;
+  mysteryId: string;
   createdAt: string;
   endsAt: string | null;
 };
@@ -717,6 +739,13 @@ export type MusicPlacement = {
   playerId: string;
   slotIndex: number;
   isCorrect: boolean;
+export type ScaleGuess = {
+  id: string;
+  roundId: string;
+  playerId: string;
+  /** How many times the reference's height the player made it. */
+  ratio: number;
+  logError: number;
   points: number;
   createdAt: string;
 };
