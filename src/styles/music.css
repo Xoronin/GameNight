@@ -1,0 +1,510 @@
+.musicGame {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  display: grid;
+  /* Items may shrink; without this a long song title widens the game. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+.musicStart {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 34px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  text-align: center;
+}
+
+.musicHeroIcon {
+  display: grid;
+  place-items: center;
+  width: 78px;
+  height: 78px;
+  border-radius: 22px;
+  background: linear-gradient(140deg, #1db954, #22d3ee);
+  color: #04140b;
+}
+
+.musicStart h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.musicStart p {
+  max-width: 44ch;
+  margin: 0;
+  opacity: 0.75;
+  line-height: 1.55;
+}
+
+/*
+ * Card count on one side, clock and score on the other. On a narrow phone
+ * the two sides together are wider than the screen, and a flex row that
+ * cannot wrap pushes the whole game sideways instead of stacking.
+ */
+.musicHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+}
+
+.musicHeader > div {
+  min-width: 0;
+}
+
+.musicHeader strong {
+  display: block;
+  font-size: 1.05rem;
+}
+
+.musicHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.musicScore {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(29, 185, 84, 0.16);
+  color: #86efac;
+  font-weight: 700;
+}
+
+/* The host's Spotify connection, and only ever on the host's screen. */
+.musicSpotify {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.85rem;
+}
+
+.musicSpotify svg {
+  flex-shrink: 0;
+}
+
+/* A flex item will not shrink past its text without this. */
+.musicSpotifyText {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  opacity: 0.85;
+}
+
+.musicSpotify.status-ready {
+  border-color: rgba(29, 185, 84, 0.4);
+  background: rgba(29, 185, 84, 0.12);
+  color: #86efac;
+}
+
+.musicSpotify.status-no_premium,
+.musicSpotify.status-error {
+  border-color: rgba(251, 191, 36, 0.35);
+  background: rgba(251, 191, 36, 0.1);
+  color: #fcd34d;
+}
+
+.musicSpotifyButton {
+  flex-shrink: 0;
+  padding: 6px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.musicSpotifyButton:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.musicPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.musicTurnOf {
+  justify-self: center;
+  max-width: 100%;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  opacity: 0.85;
+}
+
+/* The mystery card: a record sleeve until the year is revealed. */
+.musicCard {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 6px;
+  min-height: 132px;
+  padding: 18px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.28);
+  text-align: center;
+}
+
+.musicCard.isRevealed {
+  border-color: rgba(29, 185, 84, 0.45);
+  background: rgba(29, 185, 84, 0.1);
+}
+
+.musicCardHint {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.musicCardTitle {
+  font-size: clamp(1.1rem, 4.5vw, 1.5rem);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.musicCardArtist {
+  font-size: 0.92rem;
+  opacity: 0.7;
+  overflow-wrap: anywhere;
+}
+
+.musicCardYear {
+  margin-top: 4px;
+  font-size: clamp(2rem, 9vw, 3rem);
+  font-weight: 800;
+  color: #86efac;
+  letter-spacing: 0.04em;
+}
+
+.musicPlayButton {
+  display: inline-flex;
+  align-items: center;
+  justify-self: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.musicPlayButton:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.musicResult {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(255, 120, 120, 0.3);
+  border-radius: 14px;
+  background: rgba(255, 120, 120, 0.1);
+  color: #ffb4b4;
+  font-weight: 700;
+  text-align: center;
+  overflow-wrap: anywhere;
+  animation: musicPop 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.musicResult.correct {
+  border-color: rgba(110, 231, 168, 0.35);
+  background: rgba(110, 231, 168, 0.12);
+  color: #6ee7a8;
+}
+
+.musicResult svg {
+  flex-shrink: 0;
+}
+
+/*
+ * overflow-wrap on the banner is for the player name, which can be long.
+ * It must not reach the score: "+750" broken across two lines reads as
+ * two different numbers.
+ */
+.musicResult b {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/*
+ * The timeline runs down the screen, oldest first, with a tappable gap
+ * above every card and one more below the last. Vertical rather than
+ * horizontal because a phone has height to spare and no width at all.
+ */
+.musicTimeline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+
+.musicTimelineOwner {
+  margin-bottom: 2px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.musicSlotRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+
+.musicSlot {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.musicSlot:not(:disabled):hover {
+  border-color: rgba(34, 211, 238, 0.6);
+  background: rgba(34, 211, 238, 0.12);
+}
+
+.musicSlot:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.musicSlot.chosenRight {
+  border-style: solid;
+  border-color: rgba(110, 231, 168, 0.5);
+  background: rgba(110, 231, 168, 0.14);
+  color: #6ee7a8;
+  opacity: 1;
+}
+
+.musicSlot.chosenWrong {
+  border-style: solid;
+  border-color: rgba(255, 120, 120, 0.5);
+  background: rgba(255, 120, 120, 0.14);
+  color: #ffb4b4;
+  opacity: 1;
+}
+
+.musicTimelineCard {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.musicTimelineCard b {
+  grid-row: span 2;
+  color: #86efac;
+  font-size: 1.05rem;
+}
+
+.musicTimelineTitle {
+  min-width: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.musicTimelineArtist {
+  min-width: 0;
+  font-size: 0.82rem;
+  opacity: 0.65;
+  overflow-wrap: anywhere;
+}
+
+/* Who is holding how many cards. */
+.musicStandings {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.musicStandingRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  min-width: 0;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.85rem;
+}
+
+.musicStandingRow.isTurn {
+  border-color: rgba(34, 211, 238, 0.5);
+  background: rgba(34, 211, 238, 0.14);
+  color: #a5f3fc;
+}
+
+.musicStandingName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.musicStandingRow b {
+  flex-shrink: 0;
+}
+
+.musicFound,
+.musicWaiting {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.9rem;
+  text-align: center;
+  opacity: 0.78;
+}
+
+.musicError {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 96, 96, 0.14);
+  color: #ffb4b4;
+  font-size: 0.88rem;
+}
+
+.musicScoreboard {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.musicScoreRow {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  text-align: left;
+}
+
+.musicScoreRow span {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.09);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.musicScoreRow strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.musicScoreRow em {
+  font-size: 0.8rem;
+  font-style: normal;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+.musicScoreRow b {
+  color: #86efac;
+}
+
+.musicMainButton {
+  justify-self: center;
+  min-width: 220px;
+}
+
+@keyframes musicPop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 560px) {
+  .musicPanel {
+    padding: 16px;
+  }
+
+  .musicHeader .eyebrow {
+    font-size: 0.68rem;
+  }
+
+  .musicHeader strong {
+    font-size: 0.95rem;
+  }
+
+  .musicStart {
+    padding: 24px 16px;
+  }
+
+  /* The card count is the least useful column when space is short. */
+  .musicScoreRow {
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+  }
+
+  .musicScoreRow em {
+    display: none;
+  }
+
+  .musicMainButton {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .musicResult,
+  .musicScoreRow {
+    animation: none !important;
+  }
+}

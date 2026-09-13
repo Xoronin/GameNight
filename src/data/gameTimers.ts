@@ -11,6 +11,7 @@ export type TimedGameId =
   | "emoji-decode"
   | "know-your-friends"
   | "syllable-rush"
+  | "music-timeline";
   | "scale";
 
 export type CustomCategory = {
@@ -48,6 +49,7 @@ export const GAME_TIMER_DEFAULTS: Record<
   "emoji-decode": 45,
   "know-your-friends": 25,
   "syllable-rush": 12,
+  "music-timeline": 30,
   scale: 25,
 };
 
@@ -71,6 +73,8 @@ export const GAME_TIMER_OPTIONS: Record<
   "syllable-rush": [
     8, 10, 12, 15, 20,
   ],
+  "music-timeline": [
+    20, 30, 45, 60,
   scale: [
     15, 20, 25, 30, 45,
   ],
@@ -123,6 +127,7 @@ export const GAME_ROUND_COUNT_DEFAULTS: Record<
   "emoji-decode": 8,
   "know-your-friends": 8,
   "syllable-rush": 3,
+  "music-timeline": 10,
   scale: 8,
 };
 
@@ -146,6 +151,8 @@ export const GAME_ROUND_COUNT_OPTIONS: Record<
   "syllable-rush": [
     1, 2, 3, 5,
   ],
+  "music-timeline": [
+    6, 8, 10, 12,
   scale: [
     5, 8, 10, 12,
   ],

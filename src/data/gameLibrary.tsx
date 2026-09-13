@@ -272,7 +272,6 @@ export const gameLibrary: GameLibraryEntry[] = [
     icon: <Music2 />,
     className: "green",
     group: "solo",
-    comingSoon: true,
   },
   {
     id: "match-up",

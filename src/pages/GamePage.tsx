@@ -19,6 +19,7 @@ import DrawingGame from "../games/draw-guess/DrawingGame";
 import HigherLowerGame from "../games/higher-lower/HigherLowerGame";
 import KnowYourFriendsGame from "../games/know-your-friends/KnowYourFriendsGame";
 import MinefieldGame from "../games/minefield/MinefieldGame";
+import MusicTimelineGame from "../games/music-timeline/MusicTimelineGame";
 import ScaleGame from "../games/scale/ScaleGame";
 import SpectrumGame from "../games/spectrum/SpectrumGame";
 import SyllableRushGame from "../games/syllable-rush/SyllableRushGame";
@@ -41,6 +42,7 @@ const multiplayerGames = [
   "emoji-decode",
   "know-your-friends",
   "syllable-rush",
+  "music-timeline",
   "scale",
 ];
 
@@ -339,6 +341,11 @@ function GamePage() {
       );
     }
 
+    if (
+      gameId === "music-timeline"
+    ) {
+      return (
+        <MusicTimelineGame
     if (gameId === "scale") {
       return (
         <ScaleGame

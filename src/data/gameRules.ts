@@ -171,20 +171,20 @@ export const gameRules: GameRules = {
     ],
   },
 
-  scale: {
+  "music-timeline": {
     en: [
-      "Two objects stand side by side on the same ground line. One is drawn at its true size.",
-      "Drag the handle to stretch the other one until the proportion looks right.",
-      "There is no ruler and no number on screen — you are matching one shape against another by eye.",
-      "Everyone guesses at once. Points fall off the further out you are, and the closest guess in the room takes a bonus.",
-      "Being twice too big costs exactly what being twice too small costs.",
+      "Everyone starts with one song card, and each player builds their own timeline.",
+      "On your turn a mystery song plays — the host's device is the speaker for the room.",
+      "Say where it belongs: before your earliest card, between two of them, or after your latest.",
+      "Right and the card joins your timeline; wrong and it is gone. First to fill their timeline wins.",
+      "The year that counts is the year the song was originally released, not when it was remastered.",
     ],
     de: [
-      "Zwei Objekte stehen nebeneinander auf derselben Linie. Eines ist in seiner echten Größe gezeichnet.",
-      "Zieh am Griff, um das andere so weit zu strecken, bis das Verhältnis stimmt.",
-      "Es gibt kein Lineal und keine Zahl auf dem Bildschirm — du vergleichst nur die Formen mit dem Auge.",
-      "Alle raten gleichzeitig. Je weiter daneben, desto weniger Punkte, und wer am nächsten dran ist, bekommt einen Bonus.",
-      "Doppelt so groß zu schätzen kostet genauso viel wie halb so groß.",
+      "Alle starten mit einer Song-Karte, und jeder baut seine eigene Zeitleiste.",
+      "Wenn du dran bist, läuft ein Song — das Gerät des Hosts ist der Lautsprecher für den Raum.",
+      "Sage, wo er hingehört: vor deine älteste Karte, zwischen zwei davon oder hinter deine neueste.",
+      "Richtig, und die Karte kommt in deine Zeitleiste; falsch, und sie ist weg. Wer zuerst voll hat, gewinnt.",
+      "Es zählt das Jahr der ursprünglichen Veröffentlichung, nicht das der Neuauflage.",
     ],
   },
 };

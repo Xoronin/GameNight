@@ -94,6 +94,8 @@ const timerLabelKeys: Record<
     "knowFriends.timerLabel",
   "syllable-rush":
     "syllableRush.timerLabel",
+  "music-timeline":
+    "music.timerLabel",
   scale: "scale.timerLabel",
 };
 
@@ -132,6 +134,8 @@ const roundCountLabelKeys: Record<
     "lobby.roundCountLabel",
   "syllable-rush":
     "syllableRush.roundCountLabel",
+  "music-timeline":
+    "music.roundCountLabel",
   scale: "lobby.roundCountLabel",
 };
 

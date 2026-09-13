@@ -731,6 +731,52 @@ const de = {
     joinAgain:
       "Tritt dem Raum erneut bei, um zu spielen.",
   },
+  music: {
+    startTitle: "Aus welchem Jahr ist das?",
+    startDescription:
+      "Ein Song läuft, und wer dran ist, sagt, wo er in die eigene Zeitleiste gehört — vor diesen, zwischen jene beiden, nach den da. Richtig einsortiert gehört die Karte dir. Wer seine Zeitleiste zuerst voll hat, gewinnt.",
+    yourTurn: "Du bist dran",
+    yourTurnHint:
+      "Hör zu und sortiere den Song in deine Zeitleiste ein.",
+    yourGo: "Du bist dran",
+    isPlacing: "sortiert ein",
+    listening: "Hör hin...",
+    yourTimeline: "Deine Zeitleiste",
+    timelineOf: "Zeitleiste von",
+    before: "Vor",
+    after: "Nach",
+    cards: "Karten",
+    gotIt: "liegt richtig",
+    missedIt: "liegt daneben",
+    replay: "Nochmal abspielen",
+    pause: "Pause",
+    connect: "Spotify verbinden",
+    disconnect: "Trennen",
+    tryAgain: "Erneut versuchen",
+    connecting: "Verbindung zu Spotify...",
+    connectFailedTitle:
+      "Spotify konnte nicht verbunden werden",
+    connectFailed:
+      "Die Anmeldung hat nicht geklappt. Versuche es im Spiel noch einmal.",
+    connectDeclined:
+      "Du hast die Spotify-Berechtigungen abgelehnt, also läuft das Spiel ohne Ton.",
+    spotify: {
+      unconfigured:
+        "Spotify ist auf dieser Instanz nicht eingerichtet — es läuft ohne Ton.",
+      disconnected:
+        "Verbinde Spotify, um die Songs im Raum abzuspielen.",
+      connecting: "Spotify-Player wird gestartet...",
+      ready:
+        "Spotify verbunden — dieses Gerät ist der Lautsprecher.",
+      no_premium:
+        "Für die Wiedergabe braucht Spotify Premium. Es läuft ohne Ton weiter.",
+      error:
+        "Spotify konnte nicht starten. Es läuft ohne Ton weiter.",
+    },
+    cannotStart:
+      "Spiel konnte nicht gestartet werden. Es braucht mindestens einen Spieler und einen Song.",
+    songMissing: "Dieser Song konnte nicht geladen werden.",
+    nextRound: "Nächster Song",
   scale: {
     startTitle: "Wie hoch ist das wirklich?",
     startDescription:
@@ -758,6 +804,9 @@ const de = {
     gameComplete: "Spiel beendet",
     finalScores: "Endstand",
     backToLobby: "Zurück zur Lobby",
+    timerLabel: "Sekunden zum Einsortieren",
+    roundCountLabel: "Karten zum Sieg",
+    loading: "Musik-Zeitleiste wird geladen...",
     timerLabel: "Sekunden zum Schätzen",
     loading: "Maßstab wird geladen...",
     loadError: "Spiel konnte nicht geladen werden",
